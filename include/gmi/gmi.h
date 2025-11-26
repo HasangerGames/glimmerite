@@ -6,6 +6,6 @@
 
 namespace gmi {
 
-std::vector<GraphicsApi> getSupportedGraphicsApis(RendererType rendererType = RendererType::Auto);
+std::vector<GraphicsApi> getSupportedRenderers(BackendType rendererType = BackendType::Auto);
 
 }

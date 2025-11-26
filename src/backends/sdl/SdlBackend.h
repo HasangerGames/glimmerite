@@ -1,15 +1,15 @@
 #pragma once
 #include "gmi/Application.h"
-#include "gmi/Renderer.h"
+#include "gmi/Backend.h"
 #include "SDL3/SDL_render.h"
 
 namespace gmi {
 
-class SdlRenderer : public Renderer {
+class SdlBackend : public Backend {
     SDL_Renderer* m_renderer;
     GraphicsApi m_graphicsApi;
 public:
-    explicit SdlRenderer(Application* parentApp);
+    explicit SdlBackend(Application* parentApp);
 
     void init() override;
 

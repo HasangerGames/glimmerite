@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 
+#include "Backend.h"
 #include "Renderer.h"
 #include "math/Size.h"
 #include "SDL3/SDL_video.h"
@@ -10,7 +11,7 @@
 namespace gmi {
 
 /** Renderers supported by Glimmerite. See @ref Renderer for more info. */
-enum class RendererType {
+enum class BackendType {
     Sdl,
     Bgfx,
     Auto
@@ -45,7 +46,7 @@ struct ApplicationConfig {
     Color backgroundColor = Color::fromRgb(0, 0, 0);
 
     /** The renderer to use. See @ref Renderer for more information. */
-    RendererType renderer{ RendererType::Auto };
+    BackendType renderer{ BackendType::Auto };
 
     /**
      * The @ref GraphicsApi to use.
@@ -58,7 +59,7 @@ struct ApplicationConfig {
 
 class Application {
     SDL_Window* m_window;
-    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<Backend> m_backend;
     bool m_closeRequested = false;
 public:
     /**
@@ -84,8 +85,8 @@ public:
      */
     [[nodiscard]] bool closeRequested() const;
 
-    /** @return The active Renderer associated with this Application */
-    Renderer& getRenderer() const;
+    /** @return The @ref Backend associated with this Application */
+    Backend& getBackend() const;
 
     /** @return The Size of the Application window */
     math::Size getSize() const;

@@ -1,6 +1,6 @@
 #include "gmi/Application.h"
 
-#include "gmi/renderers/sdl/SdlRenderer.h"
+#include "backends/sdl/SdlBackend.h"
 #include "SDL3/SDL_init.h"
 
 namespace gmi {

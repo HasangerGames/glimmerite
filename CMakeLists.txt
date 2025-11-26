@@ -16,8 +16,8 @@ target_include_directories(glimmerite
     PUBLIC
     include
     ${PROJECT_SOURCE_DIR}/src
-        ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(glimmerite PRIVATE SDL3::SDL3)
-target_link_libraries(helloworld PRIVATE glimmerite SDL3::SDL3)
+target_link_libraries(glimmerite PRIVATE SDL3::SDL3 bgfx bx bimg_decode)
+target_link_libraries(helloworld PRIVATE glimmerite SDL3::SDL3 bgfx bx bimg_decode)

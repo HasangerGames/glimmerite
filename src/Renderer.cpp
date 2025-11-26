@@ -2,9 +2,9 @@
 
 namespace gmi {
 
-Renderer::Renderer(Application *parentApp) : m_parentApp(parentApp) {}
+Backend::Backend(Application *parentApp) : m_parentApp(parentApp) {}
 
-std::unique_ptr<Renderer> createRenderer(Application *parentApp, GraphicsApi graphicsApi) {
+std::unique_ptr<Backend> createBackend(Application *parentApp, GraphicsApi graphicsApi) {
 
 }
 
