@@ -7,11 +7,16 @@ namespace gmi {
 
 class SdlBackend : public Backend {
     SDL_Renderer* m_renderer;
-    GraphicsApi m_graphicsApi;
+    RendererType m_rendererType;
+    uint16_t m_maxFps = 0;
 public:
-    explicit SdlBackend(Application* parentApp);
+    SdlBackend(const Application& parentApp, RendererType rendererType);
 
-    void init() override;
+    [[nodiscard]] BackendType getType() const override { return BackendType::Sdl; }
+
+    void setVsync(bool vsync) override;
+
+    [[nodiscard]] Texture& createTexture(const std::string& filename) override;
 
     void renderFrame() override;
     void setClearColor(Color color) override;
