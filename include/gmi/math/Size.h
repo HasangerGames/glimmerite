@@ -2,6 +2,6 @@
 
 namespace gmi::math {
 
-struct Size { int width = 0, height = 0; };
+struct Size { int width{0}, height{0}; };
 
 }

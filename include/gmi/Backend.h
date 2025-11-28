@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "math/Geometry.h"
-#include "util/Color.h"
+#include "Color.h"
 
 namespace gmi {
 

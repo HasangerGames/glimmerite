@@ -9,11 +9,11 @@ namespace gmi {
 
 class Container {
 protected:
-    Container* m_parent = nullptr;
+    Container* m_parent{nullptr};
     std::vector<std::unique_ptr<Container>> m_children;
     math::Transform m_transform;
-    int m_zIndex = 0;
-    bool m_autoSortChildren = false;
+    int m_zIndex{0};
+    bool m_autoSortChildren{false};
 public:
     virtual ~Container();
 
@@ -42,19 +42,9 @@ public:
 
     /**
      * Manually sorts this Container's children by Z index.
-     * If auto sorting is enabled using `setAutoSortChildren(true)`,
-     * this method will be called automatically when adding a child or changing its Z index.
+     * Setting Z index of a child will have no effect unless this method is called.
      */
     void sortChildren();
-
-    /** @return Whether sortChildren() should be called automatically when adding a child or changing its Z index. */
-    [[nodiscard]] bool getAutoSortChildren() const { return m_autoSortChildren; }
-
-    /**
-     * Sets whether sortChildren() should be called automatically when adding a child or changing its Z index.
-     * @param autoSortChildren Whether to sort children automatically
-     */
-    void setAutoSortChildren(const bool autoSortChildren) { m_autoSortChildren = autoSortChildren; }
 
     [[nodiscard]] math::Transform& getTransform() { return m_transform; }
 
@@ -65,7 +55,7 @@ public:
      * Sets the Z index of this Container.
      * @param zIndex The new Z index to set
      */
-    void setZIndex(int zIndex);
+    void setZIndex(const int zIndex) { m_zIndex = zIndex; }
 
     /** @return A pointer to this Container's parent. If this Container does not have a parent, returns nullptr. */
     [[nodiscard]] Container* getParent() const { return m_parent; }
@@ -84,7 +74,7 @@ T* Container::createChild(Args&&... args) {
     m_children.push_back(std::make_unique<T>(std::forward<Args>(args)...));
     if (m_autoSortChildren) sortChildren();
 
-    T* childPtr = static_cast<T*>(m_children.back().get());
+    auto childPtr{static_cast<T*>(m_children.back().get())};
     childPtr->m_parent = this;
     return childPtr;
 }

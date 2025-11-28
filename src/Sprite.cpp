@@ -15,7 +15,7 @@ const std::vector<math::Vertex> QUAD_VERTS{
 
 void Sprite::render(Backend& backend, const math::Transform& transform) const {
     Container::render(backend, transform);
-    math::Transform finalTransform = math::combineTransforms(m_transform, transform);
+    math::Transform finalTransform{math::combineTransforms(m_transform, transform)};
     finalTransform.scale *= math::Vec2{ m_texture.getWidth(), m_texture.getHeight() };
     backend.queueGeometry({
         finalTransform,

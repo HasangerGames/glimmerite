@@ -8,13 +8,13 @@ namespace gmi {
  */
 struct Color {
     /** The red component of the color, ranging from 0-1. */
-    float r = 1.0f;
+    float r{1.0f};
     /** The green component of the color, ranging from 0-1. */
-    float g = 1.0f;
+    float g{1.0f};
     /** The blue component of the color, ranging from 0-1. */
-    float b = 1.0f;
+    float b{1.0f};
     /** The alpha component of the color, ranging from 0-1. */
-    float a = 1.0f;
+    float a{1.0f};
 
     /**
      * Creates a Color from red, green, and blue components, ranging from 0-255.
@@ -80,8 +80,8 @@ struct Color {
             return {l, l, l}; // achromatic
         }
 
-        float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        float p = 2 * l - q;
+        const float q{l < 0.5 ? l * (1 + s) : l + s - l * s};
+        const float p{2 * l - q};
         return {
             .r = hue2rgb(p, q, h + 1./3),
             .g = hue2rgb(p, q, h),

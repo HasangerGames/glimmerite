@@ -6,7 +6,7 @@
 #include "SdlTexture.h"
 #include "gmi/Application.h"
 #include "gmi/gmi.h"
-#include "gmi/util/Color.h"
+#include "../../../include/gmi/Color.h"
 #include "internal/utils.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_timer.h"
@@ -15,7 +15,7 @@ namespace gmi {
 
 SdlBackend::SdlBackend(const Application& parentApp, RendererType rendererType) : Backend(parentApp, rendererType) {
     // Auto-detect best renderer / fall back if provided renderer is not supported
-    std::set<RendererType> supportedRenderers = getSupportedRenderers(BackendType::Sdl);
+    std::set supportedRenderers{getSupportedRenderers(BackendType::Sdl)};
     if (rendererType == RendererType::Auto || !supportedRenderers.contains(rendererType)) {
         for (int i = 0, len = std::size(PREFERRED_RENDERERS); i < len; i++) {
             RendererType preferredType = PREFERRED_RENDERERS[i];
@@ -49,8 +49,8 @@ void SdlBackend::setVsync(const bool vsync) {
 }
 
 Texture& SdlBackend::createTexture(const std::string& filename) {
-    SDL_Surface* surface = SDL_LoadPNG(filename.c_str());
-    SDL_Texture* rawTexture = SDL_CreateTextureFromSurface(m_renderer, surface);
+    SDL_Surface* surface{SDL_LoadPNG(filename.c_str())};
+    SDL_Texture* rawTexture{SDL_CreateTextureFromSurface(m_renderer, surface)};
     m_textures.push_back(std::make_unique<SdlTexture>(rawTexture));
     return *m_textures.back().get();
 }

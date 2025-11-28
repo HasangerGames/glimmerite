@@ -8,7 +8,7 @@
 #include "math/Size.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_video.h"
-#include "util/Color.h"
+#include "Color.h"
 
 namespace gmi {
 
@@ -50,15 +50,15 @@ constexpr RendererType PREFERRED_RENDERERS[]{
 /** Configuration options used when creating an Application instance. */
 struct ApplicationConfig {
     /** Initial width of the Application window. */
-    int width = 800;
+    int width{800};
     /** Initial height of the Application window. */
-    int height = 600;
+    int height{600};
 
     /** Title of the Application window. */
-    std::string title = "Glimmerite Application";
+    std::string title{"Glimmerite Application"};
 
     /** Background color of the Application window. */
-    Color backgroundColor = Color::fromRgb(0, 0, 0);
+    Color backgroundColor{Color::fromRgb(0, 0, 0)};
 
     /**
      * The @ref Renderer to use.
@@ -66,10 +66,10 @@ struct ApplicationConfig {
      * Not all renderers are available on all platforms.
      * If the specified renderer is not available, Glimmerite will automatically fall back to a different one.
      */
-    RendererType renderer{ RendererType::Auto };
+    RendererType renderer{RendererType::Auto};
 
     /** The @ref Backend to use. */
-    BackendType backend{ BackendType::Auto };
+    BackendType backend{BackendType::Auto};
 
     /**
      * Syncs the framerate of the Application to the monitor's refresh rate.
@@ -86,7 +86,7 @@ class Application {
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
     float m_dt = 0.0f;
 
-    std::function<void()> m_ticker = []{};
+    std::function<void()> m_ticker{[]{}};
     std::unordered_map<Uint32, std::function<void(SDL_Event)>> m_eventListeners;
 
     bool m_closeRequested = false;
@@ -126,6 +126,7 @@ public:
 
     void shutdown() const;
 
+    /** @return The root Container of the Application */
     Container& getStage() { return m_stage; }
 
     /**
@@ -177,8 +178,10 @@ public:
 
     /** @return The Size of the Application window */
     [[nodiscard]] math::Size getSize() const;
+
     /** @param size The Size to set the Application window to */
     void setSize(math::Size size) const;
+
     /**
      * @param width The width to set the Application window to
      * @param height The height to set the Application window to

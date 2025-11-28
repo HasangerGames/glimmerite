@@ -5,10 +5,10 @@
 
 namespace gmi {
 
-class SdlBackend : public Backend {
+class SdlBackend final : public Backend {
     SDL_Renderer* m_renderer;
     RendererType m_rendererType;
-    uint16_t m_maxFps = 0;
+    uint16_t m_maxFps{0};
 public:
     SdlBackend(const Application& parentApp, RendererType rendererType);
 

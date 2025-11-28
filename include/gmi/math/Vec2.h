@@ -7,12 +7,25 @@ namespace gmi::math {
 /** Represents a two-dimensional vector. */
 struct Vec2 {
     /** The x-component of the vector. */
-    float x = 0;
+    float x{0};
     /** The y-component of the vector. */
-    float y = 0;
+    float y{0};
 
+    /** Creates an empty Vec2. */
     Vec2() = default;
+
+    /**
+     * Creates a Vec2 with float components.
+     * @param x The x-component
+     * @param y The y-component
+     */
     Vec2(const float x, const float y) : x(x), y(y) {}
+
+    /**
+     * Creates a Vec2 with int components.
+     * @param x The x-component
+     * @param y The y-component
+     */
     Vec2(const int x, const int y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
 };
 

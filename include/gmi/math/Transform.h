@@ -5,7 +5,7 @@ namespace gmi::math {
 
 struct Transform {
     Vec2 position;
-    float rotation = 0;
+    float rotation{0};
     Vec2 pivot{0.5f, 0.5f};
     Vec2 scale{1, 1};
 };
@@ -31,7 +31,7 @@ inline Transform combineTransforms(const Transform& a, const Transform& b) {
  * @return The transformed vector
  */
 inline Vec2 applyTransform(const Vec2& v, const Transform& t) {
-    const Vec2 scaled = (v - t.pivot) * t.scale;
+    const Vec2 scaled{(v - t.pivot) * t.scale};
     return t.position + rotate(scaled, t.rotation);
 }
 

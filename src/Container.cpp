@@ -24,10 +24,10 @@ Container* Container::addChild(std::unique_ptr<Container> child) {
 }
 
 void Container::removeChild(Container* child) {
-    const auto it = std::ranges::find_if(
+    const auto it{std::ranges::find_if(
         m_children,
         [child](const std::unique_ptr<Container>& m_child) { return m_child.get() == child; }
-    );
+    )};
     if (it != m_children.end()) {
         m_children.erase(it);
         child->m_parent = nullptr;
@@ -39,11 +39,6 @@ void Container::sortChildren() {
         m_children,
         [](const std::unique_ptr<Container>& a, const std::unique_ptr<Container>& b) { return a->m_zIndex < b->m_zIndex; }
     );
-}
-
-void Container::setZIndex(const int zIndex) {
-    m_zIndex = zIndex;
-    if (m_autoSortChildren) sortChildren();
 }
 
 void Container::render(Backend &backend, const math::Transform& transform) const {

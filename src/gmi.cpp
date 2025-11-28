@@ -17,7 +17,7 @@ std::set<RendererType> getSupportedRenderers(BackendType backend = BackendType::
     switch (backend) {
         case BackendType::Bgfx: {
             bgfx::RendererType::Enum rendererTypes[bgfx::RendererType::Count];
-            uint8_t numRenderers = bgfx::getSupportedRenderers(bgfx::RendererType::Count, rendererTypes);
+            const uint8_t numRenderers{bgfx::getSupportedRenderers(bgfx::RendererType::Count, rendererTypes)};
             for (int i = 0; i < numRenderers; i++) {
                 RendererType rendererType;
 
@@ -38,9 +38,9 @@ std::set<RendererType> getSupportedRenderers(BackendType backend = BackendType::
             break;
         }
         case BackendType::Sdl: {
-            const int numRenderers = SDL_GetNumRenderDrivers();
+            const int numRenderers{SDL_GetNumRenderDrivers()};
             for (int i = 0; i < numRenderers; i++) {
-                RendererType rendererType = internal::sdlRendererNameToType(SDL_GetRenderDriver(i));
+                const RendererType rendererType{internal::sdlRendererNameToType(SDL_GetRenderDriver(i))};
                 if (rendererType != RendererType::Unknown) {
                     renderers.insert(rendererType);
                 }

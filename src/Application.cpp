@@ -56,7 +56,7 @@ void Application::pollEvents() {
 }
 
 void Application::mainLoop() {
-    const auto frameStart = steady_clock::now();
+    const auto frameStart{steady_clock::now()};
     m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
     m_lastFrame = frameStart;
 
@@ -66,8 +66,8 @@ void Application::mainLoop() {
     m_backend->renderFrame();
 
     if (m_maxFps > 0) {
-        const float elapsed = duration<float, std::milli>(steady_clock::now() - frameStart).count();
-        const float idealDt = 1000.0f / m_maxFps;
+        const float elapsed{duration<float, std::milli>(steady_clock::now() - frameStart).count()};
+        const float idealDt{1000.0f / static_cast<float>(m_maxFps)};
         if (elapsed < idealDt) {
             std::this_thread::sleep_for(duration<float, std::milli>(idealDt - elapsed));
         }
