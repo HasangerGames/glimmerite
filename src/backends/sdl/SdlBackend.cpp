@@ -41,6 +41,10 @@ SdlBackend::SdlBackend(const Application& parentApp, RendererType rendererType) 
 
     // Create the renderer
     m_renderer = SDL_CreateRenderer(m_parentApp.getWindow(), rendererName);
+    if (!m_renderer) {
+        throw GmiException(std::string{"Failed to create renderer: "} + SDL_GetError());
+    }
+
     m_rendererType = internal::sdlRendererNameToType(rendererName);
 }
 
@@ -50,7 +54,15 @@ void SdlBackend::setVsync(const bool vsync) {
 
 Texture& SdlBackend::createTexture(const std::string& filename) {
     SDL_Surface* surface{SDL_LoadPNG(filename.c_str())};
+    if (!surface) {
+        throw GmiException(std::string{"Failed to load texture: "} + SDL_GetError());
+    }
+
     SDL_Texture* rawTexture{SDL_CreateTextureFromSurface(m_renderer, surface)};
+    if (!rawTexture) {
+        throw GmiException(std::string{"Failed to create texture from surface: "} + SDL_GetError());
+    }
+
     m_textures.push_back(std::make_unique<SdlTexture>(rawTexture));
     return *m_textures.back().get();
 }
@@ -60,18 +72,20 @@ void SdlBackend::setClearColor(const Color color) {
 }
 
 constexpr int VERTEX_STRIDE = sizeof(math::Vertex);
-constexpr SDL_FColor vertexColor{1, 1, 1, 1};
 
 void SdlBackend::renderFrame() {
     SDL_RenderClear(m_renderer);
 
-    for (auto&[transform, texture, vertices] : m_queue) {
+    for (auto&[affine, color, texture, vertices] : m_queue) {
         const size_t numVertices = vertices.size();
         for (int i = 0; i < numVertices; i++) {
-            auto [x, y] = math::applyTransform(math::Vec2{vertices[i].x, vertices[i].y}, transform);
+            math::Vec2 n = math::affineApply(affine, math::Vec2{vertices[i].x, vertices[i].y});
+            auto [x, y] = n;
             vertices[i].x = x;
             vertices[i].y = y;
         }
+        const auto [r, g, b, a] = color;
+        const SDL_FColor fColor{r, g, b, a};
 
         const auto rawTexture = static_cast<SDL_Texture*>(texture != nullptr ? texture->getRawTexture() : nullptr);
         SDL_RenderGeometryRaw(
@@ -79,7 +93,7 @@ void SdlBackend::renderFrame() {
             rawTexture,
             &vertices[0].x,
             VERTEX_STRIDE,
-            &vertexColor,
+            &fColor,
             0,
             &vertices[0].u,
             VERTEX_STRIDE,

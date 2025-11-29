@@ -11,26 +11,16 @@ struct Vec2 {
     /** The y-component of the vector. */
     float y{0};
 
-    /** Creates an empty Vec2. */
-    Vec2() = default;
-
-    /**
-     * Creates a Vec2 with float components.
-     * @param x The x-component
-     * @param y The y-component
-     */
-    Vec2(const float x, const float y) : x(x), y(y) {}
-
     /**
      * Creates a Vec2 with int components.
      * @param x The x-component
      * @param y The y-component
      */
-    Vec2(const int x, const int y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
+    static Vec2 fromInt(const int x, const int y) { return { static_cast<float>(x), static_cast<float>(y) }; }
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Vec2& a) {
-    stream << "{" << a.x << ", " << a.y << "}";
+    stream << "Vec2{" << a.x << ", " << a.y << "}";
     return stream;
 }
 

@@ -18,12 +18,12 @@ Application::Application(const ApplicationConfig& config) {
     }
 
     m_window = SDL_CreateWindow(config.title.c_str(), config.width, config.height, SDL_WINDOW_RESIZABLE);
-    if (m_window == nullptr) {
+    if (!m_window) {
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
 
     m_backend = internal::createBackend(*this, config.renderer, config.backend);
-    if (m_backend == nullptr) {
+    if (!m_backend) {
         throw GmiException("Unable to initialize backend");
     }
 

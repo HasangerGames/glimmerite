@@ -102,4 +102,13 @@ struct Color {
     }
 };
 
+inline std::ostream& operator<<(std::ostream& stream, const Color& c) {
+    stream << "Color{" << c.r << ", " << c.g << ", " << c.b << ", " << c.a << "}";
+    return stream;
+}
+
+inline Color operator*(const Color& a, const Color& b) {
+    return {a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a};
+}
+
 }

@@ -3,23 +3,24 @@
 #include <algorithm>
 
 #include "gmi/gmi.h"
+#include "gmi/math/Affine.h"
 
 namespace gmi {
 
 Container::~Container() = default;
 
 Container* Container::addChild(std::unique_ptr<Container> child) {
-    if (child.get() == this) {
+    Container* childPtr = child.get();
+    if (childPtr == this) {
         throw GmiException("Container cannot be its own child");
     }
 
     if (child->m_parent) {
-        child->m_parent->removeChild(child.get());
+        child->m_parent->removeChild(childPtr);
     }
     child->m_parent = this;
 
     m_children.push_back(std::move(child));
-    if (m_autoSortChildren) sortChildren();
     return m_children.back().get();
 }
 
@@ -41,9 +42,9 @@ void Container::sortChildren() {
     );
 }
 
-void Container::render(Backend &backend, const math::Transform& transform) const {
+void Container::render(Backend &backend, const math::Affine& affine = {}) const {
     for (const auto& child : m_children) {
-        child->render(backend, math::combineTransforms(transform, m_transform));
+        child->render(backend, m_affine * affine);
     }
 }
 

@@ -2,6 +2,8 @@
 
 namespace gmi::math {
 
+constexpr float PI = std::numbers::pi_v<float>;
+constexpr float TAU = 2 * PI;
 constexpr float EPSILON = 0.001;
 
 /**
@@ -13,6 +15,17 @@ constexpr float EPSILON = 0.001;
  */
 inline bool nearlyEqual(const float a, const float b, const float epsilon = EPSILON) {
     return std::abs(a - b) < epsilon * std::max(std::abs(a), std::abs(b));
+}
+
+/**
+ * Checks if a number is nearly zero.
+ * @param n The number
+ * @param epsilon The error tolerance, defaults to 0.001
+ * @return Whether the number is nearly zero
+ */
+inline bool nearlyZero(const float n, const float epsilon = EPSILON) {
+    const float an = std::abs(n);
+    return an < epsilon * an;
 }
 
 /**
@@ -43,7 +56,7 @@ inline float fmodAbs(const float a, const float n) {
  * @return The angle in radians
  */
 inline float degreesToRadians(const float degrees) {
-    return degrees * std::numbers::pi_v<float> / 180.0f;
+    return degrees * PI / 180.0f;
 }
 
 /**
@@ -52,7 +65,7 @@ inline float degreesToRadians(const float degrees) {
  * @return The angle in degrees
  */
 inline float radiansToDegrees(const float radians) {
-    return radians * 180.0f / std::numbers::pi_v<float>;
+    return radians * 180.0f / PI;
 }
 
 /**
@@ -61,8 +74,7 @@ inline float radiansToDegrees(const float radians) {
  * @return The normalized angle
  */
 inline float normalizeAngle(const float radians) {
-    constexpr float pi = std::numbers::pi_v<float>;
-    return fmodAbs(radians - pi, pi * 2) - pi;
+    return fmodAbs(radians - PI, PI * 2) - PI;
 }
 
 }

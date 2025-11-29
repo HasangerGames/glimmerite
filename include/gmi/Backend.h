@@ -25,7 +25,7 @@ protected:
 
     std::vector<math::Geometry> m_queue;
 
-    Backend(const Application& parentApp, RendererType rendererType);
+    Backend(const Application& parentApp, const RendererType rendererType) : m_parentApp(parentApp), m_rendererType(rendererType) {}
 public:
     virtual ~Backend() = default;
 
