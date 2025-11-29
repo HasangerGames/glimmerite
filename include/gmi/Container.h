@@ -17,9 +17,7 @@ protected:
     int m_zIndex{0};
 public:
     Container() = default;
-    explicit Container(const math::Transform& transform) : m_transform(transform) {
-        m_affine = math::transformToAffine(m_transform);
-    }
+    explicit Container(const math::Transform& transform) : m_transform(transform) { updateAffine(); }
     virtual ~Container();
 
     /**
@@ -54,10 +52,11 @@ public:
     /** @return The Transform applied to this Container (position, rotation, scale, etc.) */
     [[nodiscard]] const math::Transform& getTransform() const { return m_transform; }
 
-    virtual void setTransform(const math::Transform& transform) {
-        m_transform = transform;
-        m_affine = math::transformToAffine(m_transform);
-    }
+    void setTransform(const math::Transform& transform);
+
+    [[nodiscard]] virtual math::Affine getAffine() const;
+
+    void updateAffine();
 
     /** @return This Container's Z index */
     [[nodiscard]] int getZIndex() const { return m_zIndex; }
@@ -75,7 +74,7 @@ public:
      * Renders the contents of this Container using the given @ref Backend.
      * @param backend The backend to use
      */
-    virtual void render(Backend& backend, const math::Affine& affine) const;
+    virtual void render(Backend& backend) const;
 };
 
 // this function must be here and not in Container.cpp or it'll cause linker errors

@@ -4,11 +4,11 @@ namespace gmi {
 
 Sprite::~Sprite() = default;
 
-void Sprite::setTransform(const math::Transform &transform) {
-    m_transform = transform;
-    m_affine = math::transformToAffine(m_transform);
+math::Affine Sprite::getAffine() const {
+    math::Transform t = m_transform;
+    t.scale *= math::Vec2::fromInt(m_texture.getWidth(), m_texture.getHeight());
+    return math::Affine::fromTransform(t);
 }
-
 
 const std::vector<math::Vertex> QUAD_VERTS{
     {0.0f, 1.0f, 0.0f, 1.0f}, // Top left
@@ -19,11 +19,10 @@ const std::vector<math::Vertex> QUAD_VERTS{
     {1.0f, 1.0f, 1.0f, 1.0f}, // Top right
 };
 
-void Sprite::render(Backend& backend, const math::Affine& affine) const {
-    Container::render(backend, affine);
-    const math::Affine scaled = math::affineScale(m_affine * affine, math::Vec2::fromInt(m_texture.getWidth(), m_texture.getHeight()));
+void Sprite::render(Backend& backend) const {
+    Container::render(backend);
     backend.queueGeometry({
-        scaled,
+        m_affine,
         {},
         &m_texture,
         QUAD_VERTS

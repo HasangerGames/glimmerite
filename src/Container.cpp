@@ -42,9 +42,29 @@ void Container::sortChildren() {
     );
 }
 
-void Container::render(Backend &backend, const math::Affine& affine = {}) const {
+void Container::setTransform(const math::Transform& transform) {
+    m_transform = transform;
+    updateAffine();
+}
+
+math::Affine Container::getAffine() const {
+    return math::Affine::fromTransform(m_transform);
+}
+
+void Container::updateAffine() {
+    if (m_parent) {
+        m_affine = m_parent->m_affine * getAffine();
+    } else {
+        m_affine = getAffine();
+    }
     for (const auto& child : m_children) {
-        child->render(backend, m_affine * affine);
+        child->updateAffine();
+    }
+}
+
+void Container::render(Backend &backend) const {
+    for (const auto& child : m_children) {
+        child->render(backend);
     }
 }
 

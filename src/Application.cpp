@@ -1,6 +1,5 @@
 #include "gmi/Application.h"
 
-#include <iostream>
 #include <thread>
 
 #include "backends/sdl/SdlBackend.h"
@@ -62,7 +61,7 @@ void Application::mainLoop() {
 
     pollEvents();
     m_ticker();
-    m_stage.render(*m_backend, {});
+    m_stage.render(*m_backend);
     m_backend->renderFrame();
 
     if (m_maxFps > 0) {
