@@ -2,27 +2,11 @@
 
 #include <algorithm>
 
-#include "gmi/gmi.h"
 #include "gmi/math/Affine.h"
 
 namespace gmi {
 
 Container::~Container() = default;
-
-Container* Container::addChild(std::unique_ptr<Container> child) {
-    Container* childPtr = child.get();
-    if (childPtr == this) {
-        throw GmiException("Container cannot be its own child");
-    }
-
-    if (child->m_parent) {
-        child->m_parent->removeChild(childPtr);
-    }
-    child->m_parent = this;
-
-    m_children.push_back(std::move(child));
-    return m_children.back().get();
-}
 
 void Container::removeChild(Container* child) {
     const auto it{std::ranges::find_if(
@@ -42,25 +26,53 @@ void Container::sortChildren() {
     );
 }
 
+void Container::setPosition(const math::Vec2& position) {
+    m_transform.position = position;
+    updateAffine();
+}
+
+void Container::setRotation(const float rotation) {
+    m_transform.rotation = rotation;
+    updateAffine();
+}
+
+void Container::setScale(const math::Vec2& scale) {
+    m_transform.scale = scale;
+    updateAffine();
+}
+
+void Container::setScale(const float scale) {
+    m_transform.scale = {scale, scale};
+    updateAffine();
+}
+
+void Container::setPivot(const math::Vec2 &pivot) {
+    m_transform.pivot = pivot;
+    updateAffine();
+}
+
 void Container::setTransform(const math::Transform& transform) {
     m_transform = transform;
     updateAffine();
 }
 
-math::Affine Container::getAffine() const {
-    return math::Affine::fromTransform(m_transform);
-}
-
 void Container::updateAffine() {
+    const math::Affine affine = math::Affine::fromTransform(m_transform);
     if (m_parent) {
-        m_affine = m_parent->m_affine * getAffine();
+        m_affine = m_parent->m_affine * affine;
     } else {
-        m_affine = getAffine();
+        m_affine = affine;
     }
+
     for (const auto& child : m_children) {
         child->updateAffine();
     }
 }
+
+void Container::animate(math::EasingFn fn) {
+
+}
+
 
 void Container::render(Backend &backend) const {
     for (const auto& child : m_children) {

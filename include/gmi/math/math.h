@@ -3,7 +3,8 @@
 namespace gmi::math {
 
 constexpr float PI = std::numbers::pi_v<float>;
-constexpr float TAU = 2 * PI;
+constexpr float TAU = PI * 2;
+constexpr float PI_HALF = PI / 2;
 constexpr float EPSILON = 0.001;
 
 /**
@@ -37,6 +38,17 @@ inline bool nearlyZero(const float n, const float epsilon = EPSILON) {
  */
 inline float lerp(const float start, const float end, const float interpFactor) {
     return start * (1 - interpFactor) + end * interpFactor;
+}
+
+/**
+ * Clamps a number to specified bounds.
+ * @param value The number to clamp
+ * @param min The minimum value the number can be
+ * @param max The maximum value the number can be
+ * @returns The number, clamped to the interval `[min, max]`
+ */
+inline float clamp(const float value, const float min, const float max) {
+    return value < max ? value > min ? value : min : max;
 }
 
 /**

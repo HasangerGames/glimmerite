@@ -6,11 +6,18 @@ namespace gmi::math {
 
 struct Transform {
     Vec2 position;
-    Vec2 size;
     float rotation{0};
     Vec2 scale{1, 1};
     Vec2 pivot{0.5f, 0.5f};
     Color color;
+};
+
+enum class TransformProps {
+    Position,
+    Rotation,
+    Scale,
+    Pivot,
+    Color
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Transform& t) {

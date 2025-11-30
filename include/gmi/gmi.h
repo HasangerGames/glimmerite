@@ -2,8 +2,6 @@
 
 #include <set>
 
-#include "Application.h"
-
 namespace gmi {
 
 struct GmiException final : std::runtime_error {
@@ -12,12 +10,12 @@ struct GmiException final : std::runtime_error {
 
 /**
  * Checks which renderers are supported with the given backend.
- * @param rendererType The @ref BackendType to use to check supported renderers.
- *                     Different backends may support different sets of renderers.
- *                     Currently defaults to bgfx.
+ * @param backend The @ref BackendType to use to check supported renderers.
+ *                Different backends may support different sets of renderers.
+ *                Currently defaults to bgfx.
  * @return
  */
-[[nodiscard]] std::set<RendererType> getSupportedRenderers(BackendType rendererType = BackendType::Auto);
+[[nodiscard]] std::set<RendererType> getSupportedRenderers(BackendType backend);
 
 [[nodiscard]] std::string getRendererName(RendererType rendererType);
 

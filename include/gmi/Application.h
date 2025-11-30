@@ -82,14 +82,14 @@ class Application {
     SDL_Window* m_window;
     std::unique_ptr<Backend> m_backend;
 
-    uint16_t m_maxFps = 0;
+    uint16_t m_maxFps{0};
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
-    float m_dt = 0.0f;
+    float m_dt{0.0f};
 
     std::function<void()> m_ticker{[]{}};
     std::unordered_map<Uint32, std::function<void(SDL_Event)>> m_eventListeners;
 
-    bool m_closeRequested = false;
+    bool m_closeRequested{false};
 
     Container m_stage;
 

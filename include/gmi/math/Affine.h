@@ -7,7 +7,7 @@
 namespace gmi::math {
 
 /**
- * A fast matrix for 2D transformations, supporting position, rotation, scale, and shear.
+ * A fast matrix for 2D transformations, supporting position, rotation, scale, and pivot.
  * Heavily based on Pixi.js' Matrix.
  * Represents a 3x3 transformation matrix:
  *
@@ -41,23 +41,29 @@ struct Affine {
      * @param t A transform
      * @return The affine equivalent
      */
-    static Affine fromTransform(const Transform& t) {
-        auto [position, size, rotation, scale, pivot, _]{t};
-        Affine m;
+    static Affine fromTransform(const Transform& t);
 
-        const float c{std::cos(rotation)};
-        const float s{std::sin(rotation)};
+    /**
+     * Creates an Affine that applies a translation.
+     * @param translation The translation as a Vec2
+     * @return The affine
+     */
+    static Affine translate(const Vec2& translation);
 
-        m.a = c * scale.x;
-        m.b = s * scale.x;
-        m.c = -s * scale.y;
-        m.d = c * scale.y;
+    /**
+     * Creates an Affine that applies a scaling transformation.
+     * @param scale A Vec2 representing the scale
+     * @return The affine equivalent
+     */
+    static Affine scale(const Vec2& scale);
 
-        m.x = position.x + pivot.x - ((pivot.x * m.a) + (pivot.y * m.c));
-        m.y = position.y + pivot.y - ((pivot.x * m.b) + (pivot.y * m.d));
-
-        return m;
-    }
+    /**
+     * Creates an Affine that applies a scaling transformation about a pivot.
+     * @param pivot A normalized Vec2 representing the pivot (components 0-1)
+     * @param scaleFactor A Vec2 representing the scale
+     * @return The affine
+     */
+    static Affine scaleAbout(const Vec2& pivot, const Vec2& scaleFactor);
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Affine& m) {
@@ -87,6 +93,42 @@ inline Affine operator*(const Affine& a, const Affine& b) {
     m.y = a.b * b.x + a.d * b.y + a.y;
 
     return m;
+}
+
+inline Affine Affine::fromTransform(const Transform& t) {
+    auto [position, rotation, scale, pivot, _]{t};
+    Affine m;
+
+    const float c{std::cos(rotation)};
+    const float s{std::sin(rotation)};
+
+    m.a = c * scale.x;
+    m.b = s * scale.x;
+    m.c = -s * scale.y;
+    m.d = c * scale.y;
+
+    m.x = position.x + pivot.x - ((pivot.x * m.a) + (pivot.y * m.c));
+    m.y = position.y + pivot.y - ((pivot.x * m.b) + (pivot.y * m.d));
+
+    return m;
+}
+
+inline Affine Affine::scale(const Vec2& scale) {
+    Affine m;
+    m.a = scale.x;
+    m.d = scale.y;
+    return m;
+}
+
+inline Affine Affine::translate(const Vec2& translation) {
+    Affine m;
+    m.x = translation.x;
+    m.y = translation.y;
+    return m;
+}
+
+inline Affine Affine::scaleAbout(const Vec2& pivot, const Vec2& scaleFactor) {
+    return translate(pivot) * scale(scaleFactor) * translate(invert(pivot));
 }
 
 /**

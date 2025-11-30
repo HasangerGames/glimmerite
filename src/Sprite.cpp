@@ -4,10 +4,12 @@ namespace gmi {
 
 Sprite::~Sprite() = default;
 
-math::Affine Sprite::getAffine() const {
-    math::Transform t = m_transform;
-    t.scale *= math::Vec2::fromInt(m_texture.getWidth(), m_texture.getHeight());
-    return math::Affine::fromTransform(t);
+void Sprite::updateAffine() {
+    Container::updateAffine();
+    m_affineScaled = m_affine * math::Affine::scaleAbout(
+        m_transform.pivot,
+        math::Vec2::fromInt(m_texture.getWidth(), m_texture.getHeight())
+    );
 }
 
 const std::vector<math::Vertex> QUAD_VERTS{
@@ -22,7 +24,7 @@ const std::vector<math::Vertex> QUAD_VERTS{
 void Sprite::render(Backend& backend) const {
     Container::render(backend);
     backend.queueGeometry({
-        m_affine,
+        m_affineScaled,
         {},
         &m_texture,
         QUAD_VERTS
