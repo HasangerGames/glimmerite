@@ -12,7 +12,7 @@ struct Geometry {
     Affine affine;
     Color color;
     Texture* texture;
-    std::vector<Vertex> vertices;
+    const std::vector<Vertex>* vertices;
 };
 
 }

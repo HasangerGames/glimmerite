@@ -1,5 +1,7 @@
 #pragma once
 
+#include <numbers>
+
 namespace gmi::math {
 
 constexpr float PI = std::numbers::pi_v<float>;

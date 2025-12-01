@@ -52,7 +52,7 @@ void SdlBackend::setVsync(const bool vsync) {
     SDL_SetRenderVSync(m_renderer, vsync ? SDL_RENDERER_VSYNC_ADAPTIVE : SDL_RENDERER_VSYNC_DISABLED);
 }
 
-Texture& SdlBackend::createTexture(const std::string& filename) {
+Texture& SdlBackend::loadTexture(const std::string& filename) {
     SDL_Surface* surface{SDL_LoadPNG(filename.c_str())};
     if (!surface) {
         throw GmiException(std::string{"Failed to load texture: "} + SDL_GetError());
@@ -76,7 +76,8 @@ constexpr int VERTEX_STRIDE = sizeof(math::Vertex);
 void SdlBackend::renderFrame() {
     SDL_RenderClear(m_renderer);
 
-    for (auto&[affine, color, texture, vertices] : m_queue) {
+    for (auto& [affine, color, texture, rawVertices] : m_queue) {
+        auto vertices{*rawVertices};
         const size_t numVertices = vertices.size();
         for (int i = 0; i < numVertices; i++) {
             math::Vec2 n = math::affineApply(affine, math::Vec2{vertices[i].x, vertices[i].y});

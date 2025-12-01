@@ -38,8 +38,8 @@ public:
     /** Controls VSync. See @ref Application for more info. */
     virtual void setVsync(bool vsync) = 0;
 
-    /** Creates a texture. See @ref Application for more info. */
-    [[nodiscard]] virtual Texture& createTexture(const std::string& filePath) = 0;
+    /** Loads a texture from disk. See @ref Application for more info. */
+    [[nodiscard]] virtual Texture& loadTexture(const std::string& filePath) = 0;
 
     virtual void renderFrame() = 0;
 

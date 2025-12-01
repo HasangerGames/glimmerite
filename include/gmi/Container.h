@@ -10,16 +10,27 @@
 
 namespace gmi {
 
+template<typename T>
+struct AnimateOptions {
+    math::TransformProps prop;
+    T target;
+    uint64_t duration;
+    math::EasingFn easing{math::Easing::linear};
+    bool yoyo{false};
+    bool infinite{false};
+};
+
 class Container {
 protected:
     Container* m_parent{nullptr};
     std::vector<std::unique_ptr<Container>> m_children;
-    math::Transform m_transform;
+
     math::Affine m_affine;
     int m_zIndex{0};
 public:
+    math::Transform m_transform;
     Container() = default;
-    explicit Container(const math::Transform& transform) : m_transform(transform) { updateAffine(); }
+    explicit Container(const math::Transform& transform) : m_transform(transform) { Container::updateAffine(); }
     virtual ~Container();
 
     /**
@@ -70,9 +81,6 @@ public:
     /** @return The Transform applied to this Container (position, rotation, scale, etc.) */
     [[nodiscard]] const math::Transform& getTransform() const { return m_transform; }
 
-    /** @param transform The new Transform to apply */
-    void setTransform(const math::Transform& transform);
-
     /**
      * Updates the internal matrix used to calculate transforms.
      * This method should never need to be called manually.
@@ -88,7 +96,7 @@ public:
      */
     void setZIndex(const int zIndex) { m_zIndex = zIndex; }
 
-    void animate(math::EasingFn fn);
+    void animate(const AnimateOptions<math::Vec2>& opts);
 
     /** @return A pointer to this Container's parent. If this Container does not have a parent, returns nullptr. */
     [[nodiscard]] Container* getParent() const { return m_parent; }

@@ -8,7 +8,9 @@
 #include "math/Size.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_video.h"
+#include "SDL3/SDL_init.h"
 #include "Color.h"
+#include "Tween.h"
 
 namespace gmi {
 
@@ -86,54 +88,29 @@ class Application {
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
     float m_dt{0.0f};
 
-    std::function<void()> m_ticker{[]{}};
-    std::unordered_map<Uint32, std::function<void(SDL_Event)>> m_eventListeners;
-
-    bool m_closeRequested{false};
+    std::vector<std::function<void()>> m_tickers;
+    std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
+    TweenManager m_tweenManager;
 
     Container m_stage;
-
-    void pollEvents();
 public:
     /**
      * Creates a new Application.
      * @param config The configuration to use
      */
     explicit Application(const ApplicationConfig& config);
-    ~Application();
-
-    /**
-     * Starts the Application loop. This method will block the current thread until the Application window is closed.
-     *
-     * If you wish to implement your own loop, you can instead call mainLoop() once per frame, using closeRequested()
-     * to detect when the Application window should be closed, then call shutdown(), like so:
-     *
-     * ```cpp
-     * while (!app.closeRequested()) {
-     *     app.mainLoop();
-     * }
-     *
-     * app.shutdown();
-     * ```
-     */
-    void start();
-
-    /**
-     * This method is called internally once per frame when the Application is started via start().
-     * If you wish to implement your own loop, you must do the same.
-     */
-    void mainLoop();
-
-    void shutdown() const;
+    ~Application() = default;
 
     /** @return The root Container of the Application */
     Container& getStage() { return m_stage; }
+
+    TweenManager& getTweenManager() { return m_tweenManager; }
 
     /**
      * Registers a function to be called every frame.
      * @param ticker The ticker function
      */
-    void setTicker(const std::function<void()>& ticker) { m_ticker = ticker; }
+    void addTicker(const std::function<void()>& ticker);
 
     /**
      * Registers a function to listen for an event.
@@ -141,14 +118,14 @@ public:
      * @param event The event to listen for
      * @param listener The function to be called when the event is triggered
      */
-    void addEventListener(const SDL_EventType event, const std::function<void(SDL_Event)>& listener) { m_eventListeners[event] = listener; }
+    void addEventListener(const SDL_EventType event, const std::function<void(const SDL_Event&)>& listener) { m_eventListeners[event] = listener; }
 
     /**
      * Loads a @ref Texture from disk.
      * @param filePath The path to the texture file to load
      * @return A pointer to the newly created texture
      */
-    [[nodiscard]] Texture& createTexture(const std::string& filePath) const;
+    [[nodiscard]] Texture& loadTexture(const std::string& filePath) const;
 
     /**
      * Sets the frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
@@ -167,12 +144,6 @@ public:
     /** @return Delta time (time elapsed since previous frame) in milliseconds. */
     [[nodiscard]] float getDt() const { return m_dt; }
 
-    /**
-     * @return Whether this Application should close.
-     *         Set to true when the user clicks the close button on the window.
-     */
-    [[nodiscard]] bool closeRequested() const { return m_closeRequested; }
-
     /** @return The @ref Backend associated with this Application */
     [[nodiscard]] Backend& getBackend() const { return *m_backend; }
 
@@ -190,6 +161,15 @@ public:
 
     /** @return The window object backing this Application, or nullptr if it hasn't been initialized yet */
     [[nodiscard]] SDL_Window* getWindow() const { return m_window; }
+
+    /** This method is called internally once per frame and should never be called manually. */
+    SDL_AppResult iterate();
+
+    /** This method is called internally when an event is received and should never be called manually. */
+    SDL_AppResult processEvent(const SDL_Event* event);
+
+    /** This method is called internally when the program terminates and should never be called manually. */
+    void shutdown(SDL_AppResult result);
 };
 
 }

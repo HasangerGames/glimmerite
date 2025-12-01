@@ -51,11 +51,6 @@ void Container::setPivot(const math::Vec2 &pivot) {
     updateAffine();
 }
 
-void Container::setTransform(const math::Transform& transform) {
-    m_transform = transform;
-    updateAffine();
-}
-
 void Container::updateAffine() {
     const math::Affine affine = math::Affine::fromTransform(m_transform);
     if (m_parent) {
@@ -69,7 +64,7 @@ void Container::updateAffine() {
     }
 }
 
-void Container::animate(math::EasingFn fn) {
+void Container::animate(const AnimateOptions<math::Vec2>& opts) {
 
 }
 

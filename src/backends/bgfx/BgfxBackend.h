@@ -12,7 +12,7 @@ public:
 
     void setVsync(bool vsync) override;
 
-    Texture& createTexture(const std::string& filename) override;
+    Texture& loadTexture(const std::string& filename) override;
 
     void renderFrame() override;
     void setClearColor(Color color) override;

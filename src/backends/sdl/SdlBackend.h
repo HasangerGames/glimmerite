@@ -16,7 +16,7 @@ public:
 
     void setVsync(bool vsync) override;
 
-    [[nodiscard]] Texture& createTexture(const std::string& filename) override;
+    [[nodiscard]] Texture& loadTexture(const std::string& filename) override;
 
     void renderFrame() override;
     void setClearColor(Color color) override;

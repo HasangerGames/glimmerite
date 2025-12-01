@@ -1,3 +1,7 @@
+#define SDL_MAIN_USE_CALLBACKS 1
+
+#include "SDL3/SDL_main.h"
+
 #include "gmi/Application.h"
 
 #include <thread>
@@ -5,7 +9,29 @@
 #include "backends/sdl/SdlBackend.h"
 #include "gmi/gmi.h"
 #include "internal/utils.h"
-#include "SDL3/SDL_init.h"
+
+using namespace gmi;
+
+Application* gmiMain();
+
+SDL_AppResult SDL_AppInit(void** appstate, int argc, char *argv[]) {
+    *appstate = gmiMain();
+    return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event) {
+    return static_cast<Application*>(appstate)->processEvent(event);
+}
+
+SDL_AppResult SDL_AppIterate(void* appstate) {
+    return static_cast<Application*>(appstate)->iterate();
+}
+
+void SDL_AppQuit(void* appstate, SDL_AppResult result) {
+    const auto app = static_cast<Application*>(appstate);
+    app->shutdown(result);
+    delete app;
+}
 
 using namespace std::chrono;
 
@@ -30,56 +56,12 @@ Application::Application(const ApplicationConfig& config) {
     m_backend->setVsync(config.vsync);
 }
 
-Application::~Application() {
-    SDL_DestroyWindow(m_window);
-    // we don't SDL_Quit() to avoid interrupting other things SDL might be doing
+void Application::addTicker(const std::function<void()> &ticker) {
+    m_tickers.push_back(ticker);
 }
 
-void Application::start() {
-    while (!m_closeRequested) {
-        mainLoop();
-    }
-    shutdown();
-}
-
-void Application::pollEvents() {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_EVENT_QUIT) {
-            m_closeRequested = true;
-        }
-        if (m_eventListeners.contains(event.type)) {
-            m_eventListeners[event.type](event);
-        }
-    }
-}
-
-void Application::mainLoop() {
-    const auto frameStart{steady_clock::now()};
-    m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
-    m_lastFrame = frameStart;
-
-    pollEvents();
-    m_ticker();
-    m_stage.render(*m_backend);
-    m_backend->renderFrame();
-
-    if (m_maxFps > 0) {
-        const float elapsed{duration<float, std::milli>(steady_clock::now() - frameStart).count()};
-        const float idealDt{1000.0f / static_cast<float>(m_maxFps)};
-        if (elapsed < idealDt) {
-            std::this_thread::sleep_for(duration<float, std::milli>(idealDt - elapsed));
-        }
-    }
-}
-
-void Application::shutdown() const {
-    SDL_DestroyWindow(m_window);
-    SDL_Quit();
-}
-
-Texture& Application::createTexture(const std::string &filePath) const {
-    return m_backend->createTexture(filePath);
+Texture& Application::loadTexture(const std::string &filePath) const {
+    return m_backend->loadTexture(filePath);
 }
 
 math::Size Application::getSize() const {
@@ -94,6 +76,43 @@ void Application::setSize(const math::Size size) const {
 
 void Application::setSize(const int width, const int height) const {
     SDL_SetWindowSize(m_window, width, height);
+}
+
+SDL_AppResult Application::processEvent(const SDL_Event* event) {
+    if (event->type == SDL_EVENT_QUIT) {
+        return SDL_APP_SUCCESS;
+    }
+
+    if (m_eventListeners.contains(event->type)) {
+        m_eventListeners[event->type](*event);
+    }
+
+    return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult Application::iterate() {
+    const auto frameStart{steady_clock::now()};
+    m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
+    m_lastFrame = frameStart;
+
+    for (const auto& ticker : m_tickers) ticker();
+    m_tweenManager.update();
+    m_stage.render(*m_backend);
+    m_backend->renderFrame();
+
+    if (m_maxFps > 0) {
+        const float elapsed{duration<float, std::milli>(steady_clock::now() - frameStart).count()};
+        const float idealDt{1000.0f / static_cast<float>(m_maxFps)};
+        if (elapsed < idealDt) {
+            std::this_thread::sleep_for(duration<float, std::milli>(idealDt - elapsed));
+        }
+    }
+
+    return SDL_APP_CONTINUE;
+}
+
+void Application::shutdown(SDL_AppResult result) {
+
 }
 
 }
