@@ -35,7 +35,7 @@ using namespace std::chrono;
 
 namespace gmi {
 
-Application::Application(const ApplicationConfig& config) : m_backend() {
+Application::Application(const ApplicationConfig& config) : m_backend(), m_stage(this) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
@@ -45,9 +45,8 @@ Application::Application(const ApplicationConfig& config) : m_backend() {
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
 
-    m_backend.init(*this, config.width, config.height, config.renderer);
+    m_backend.init(*this, config.width, config.height, config.vsync, config.renderer);
     m_backend.setClearColor(config.backgroundColor);
-    m_backend.setVsync(config.vsync);
 }
 
 void Application::addTicker(const std::function<void()> &ticker) {

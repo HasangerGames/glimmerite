@@ -25,7 +25,7 @@ void TweenManager::update() {
         const float factor{math::clamp(static_cast<float>(now - tween->startTime) / opts.duration, 0.0f, 1.0f)};
         const float eased{opts.ease(factor)};
 
-        for (TweenVar& v : opts.values) {
+        for (const TweenVar& v : opts.values) {
             if (!v.var) {
                 throw GmiException("Attempted to tween a value that no longer exists");
             }
@@ -47,7 +47,7 @@ void TweenManager::update() {
                 tween->startTime = now;
                 tween->endTime = tween->startTime + opts.duration;
             } else {
-                for (TweenVar& v : opts.values) {
+                for (const TweenVar& v : opts.values) {
                     if (!v.var) {
                         throw GmiException("Attempted to tween a value that no longer exists");
                     }

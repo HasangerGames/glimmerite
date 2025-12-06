@@ -27,12 +27,12 @@ protected:
     std::vector<Drawable> m_queue;
     bool m_initialized;
 
-    void submitBatch(std::vector<math::Vertex>& vertices, Texture* texture);
+    void submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const;
 public:
     Backend() = default;
     virtual ~Backend() = default;
 
-    void init(const Application& parentApp, uint32_t width, uint32_t height, bgfx::RendererType::Enum rendererType);
+    void init(const Application& parentApp, uint32_t width, uint32_t height, bool vsync, bgfx::RendererType::Enum rendererType);
 
     /** @return The type of renderer being used by this Backend. */
     [[nodiscard]] bgfx::RendererType getRendererType();

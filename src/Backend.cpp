@@ -12,7 +12,13 @@
 
 namespace gmi {
 
-void Backend::init(const Application &parentApp, const uint32_t width, const uint32_t height, const bgfx::RendererType::Enum rendererType) {
+void Backend::init(
+    const Application& parentApp,
+    const uint32_t width,
+    const uint32_t height,
+    const bool vsync,
+    const bgfx::RendererType::Enum rendererType
+) {
     if (m_initialized) {
         throw GmiException("Backend has already been initialized");
     }
@@ -25,6 +31,7 @@ void Backend::init(const Application &parentApp, const uint32_t width, const uin
     init.type = rendererType;
     init.resolution.width = width;
     init.resolution.height = height;
+    init.resolution.reset = vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE;
     const SDL_PropertiesID props = SDL_GetWindowProperties(parentApp.getWindow());
 #if defined(SDL_PLATFORM_WIN32)
     init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
@@ -130,11 +137,13 @@ void Backend::renderFrame() {
     bgfx::frame();
 }
 
-void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) {
+constexpr size_t VERT_SIZE = sizeof(math::Vertex);
+
+void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const {
     const size_t numVertices = vertices.size();
     bgfx::TransientVertexBuffer vertexBuffer;
     bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
-    std::memcpy(vertexBuffer.data, vertices.data(), numVertices * sizeof(math::Vertex));
+    std::memcpy(vertexBuffer.data, vertices.data(), numVertices * VERT_SIZE);
     vertices.clear();
     bgfx::setVertexBuffer(0, &vertexBuffer);
 

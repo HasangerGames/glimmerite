@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "gmi/Application.h"
 #include "gmi/math/Affine.h"
 
 namespace gmi {
@@ -65,7 +66,30 @@ void Container::updateAffine() {
 }
 
 void Container::animate(const AnimateOptions<math::Vec2>& opts) {
-
+    math::Vec2* prop;
+    switch (opts.prop) {
+        case math::TransformProps::Position:
+            prop = &m_transform.position;
+            break;
+        case math::TransformProps::Scale:
+            prop = &m_transform.scale;
+            break;
+        case math::TransformProps::Pivot:
+            prop = &m_transform.pivot;
+            break;
+        default:
+            throw GmiException("Attempted to animate a non-Vec2 property to a Vec2 target");
+    }
+    m_parentApp->getTweenManager().addTween({
+        .values = {
+            {&prop->x, opts.target.x},
+            {&prop->y, opts.target.y}
+        },
+        .duration = 125,
+        .ease = math::Easing::cubicOut,
+        .yoyo = true,
+        .onUpdate = [this] { m_transformDirty = true; }
+    });
 }
 
 

@@ -22,15 +22,20 @@ struct AnimateOptions {
 
 class Container {
 protected:
+    Application* m_parentApp{nullptr};
+
     Container* m_parent{nullptr};
     std::vector<std::unique_ptr<Container>> m_children;
 
     math::Affine m_affine;
-    int m_zIndex{0};
-public:
     math::Transform m_transform;
     bool m_transformDirty{true};
+    int m_zIndex{0};
+
+    virtual void updateAffine();
+public:
     Container() = default;
+    explicit Container(Application* app) : m_parentApp(app) {}
     explicit Container(const math::Transform& transform) : m_transform(transform) {}
     virtual ~Container();
 
@@ -82,12 +87,6 @@ public:
     /** @return The Transform applied to this Container (position, rotation, scale, etc.) */
     [[nodiscard]] const math::Transform& getTransform() const { return m_transform; }
 
-    /**
-     * Updates the internal matrix used to calculate transforms.
-     * This method should never need to be called manually.
-     */
-    virtual void updateAffine();
-
     /** @return This Container's Z index */
     [[nodiscard]] int getZIndex() const { return m_zIndex; }
 
@@ -130,6 +129,7 @@ template<typename T, typename... Args>
 T* Container::createChild(Args&&... args) {
     m_children.push_back(std::make_unique<T>(std::forward<Args>(args)...));
     auto childPtr{static_cast<T*>(m_children.back().get())};
+    childPtr->m_parentApp = this->m_parentApp;
     childPtr->m_parent = this;
     return childPtr;
 }
