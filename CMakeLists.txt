@@ -16,7 +16,6 @@ add_executable(helloworld examples/1-helloworld/helloworld.cpp)
 set(BGFX_DIR "${CMAKE_CURRENT_LIST_DIR}/vendored/bgfx.cmake/bgfx")
 set(BX_DIR "${CMAKE_CURRENT_LIST_DIR}/vendored/bgfx.cmake/bx")
 set(BIMG_DIR "${CMAKE_CURRENT_LIST_DIR}/vendored/bgfx.cmake/bimg")
-set(BGFX_BUILD_TOOLS ON CACHE BOOL "Build bgfx tools")
 
 # makes cmake shut up about bgfx.cmake's use of add_custom_command
 set(CMAKE_POLICY_DEFAULT_CMP0175 "OLD")
@@ -24,6 +23,7 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
 target_include_directories(glimmerite
     PUBLIC
@@ -48,5 +48,5 @@ bgfx_compile_shaders(
     AS_HEADERS
 )
 
-target_link_libraries(glimmerite PUBLIC SDL3::SDL3 bgfx bx bimg_decode)
+target_link_libraries(glimmerite PUBLIC SDL3::SDL3 SDL3_mixer::SDL3_mixer bgfx bx bimg_decode)
 target_link_libraries(helloworld PRIVATE glimmerite SDL3::SDL3 bgfx bx bimg_decode)

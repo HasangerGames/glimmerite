@@ -1,10 +1,10 @@
-#include "gmi/Tween.h"
+#include "gmi/TweenManager.h"
 
 #include "gmi/gmi.h"
 
 namespace gmi {
 
-void TweenManager::addTween(const TweenOptions& opts) {
+void TweenManager::add(const TweenOptions& opts) {
     if (opts.duration <= 0) {
         throw GmiException("Tween duration must be greater than zero");
     }

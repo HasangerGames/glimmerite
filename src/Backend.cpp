@@ -7,7 +7,6 @@
 #include "bx/math.h"
 #include "gmi/Application.h"
 #include "gmi/gmi.h"
-#include "gmi/Sprite.h"
 #include "shaders/shaders.h"
 
 namespace gmi {
@@ -147,7 +146,7 @@ void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture)
     vertices.clear();
     bgfx::setVertexBuffer(0, &vertexBuffer);
 
-    bgfx::setTexture(0, m_sampler, texture->getRawTexture());
+    bgfx::setTexture(0, m_sampler, texture->getHandle());
 
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
 
@@ -157,7 +156,7 @@ void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture)
 
 void Backend::shutdown() {
     for (Texture& texture : m_textures) {
-        bgfx::destroy(texture.getRawTexture());
+        bgfx::destroy(texture.getHandle());
     }
     bgfx::destroy(m_spriteProgram);
     bgfx::destroy(m_sampler);

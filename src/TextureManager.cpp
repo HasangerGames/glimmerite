@@ -1,4 +1,4 @@
-#include "gmi/Texture.h"
+#include "gmi/TextureManager.h"
 
 #include <fstream>
 #include <iostream>

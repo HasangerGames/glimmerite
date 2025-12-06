@@ -1,6 +1,5 @@
 #pragma once
 #include <functional>
-#include <memory>
 #include <string>
 
 #include "Backend.h"
@@ -10,7 +9,8 @@
 #include "SDL3/SDL_video.h"
 #include "SDL3/SDL_init.h"
 #include "Color.h"
-#include "Tween.h"
+#include "SoundManager.h"
+#include "TweenManager.h"
 
 namespace gmi {
 
@@ -52,6 +52,7 @@ class Application {
     std::vector<std::function<void()>> m_tickers;
     std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
     TweenManager m_tweenManager;
+    SoundManager m_soundManager;
 
     Container m_stage;
 public:
@@ -64,8 +65,6 @@ public:
 
     /** @return The root Container of the Application */
     Container& getStage() { return m_stage; }
-
-    TweenManager& getTweenManager() { return m_tweenManager; }
 
     /**
      * Registers a function to be called every frame.
@@ -88,6 +87,13 @@ public:
      */
     [[nodiscard]] Texture& loadTexture(const std::string& filePath) { return m_backend.loadTexture(filePath); }
 
+    /** @return The @ref Backend associated with this Application */
+    [[nodiscard]] Backend& backend() { return m_backend; }
+
+    [[nodiscard]] SoundManager& sound() { return m_soundManager; }
+
+    [[nodiscard]] TweenManager& tween() { return m_tweenManager; }
+
     /**
      * Sets the frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
      * If set to 0 or lower, this frame limit will be disabled, although VSync will continue to limit framerate if enabled.
@@ -104,9 +110,6 @@ public:
 
     /** @return Delta time (time elapsed since previous frame) in milliseconds. */
     [[nodiscard]] float getDt() const { return m_dt; }
-
-    /** @return The @ref Backend associated with this Application */
-    [[nodiscard]] Backend& getBackend() { return m_backend; }
 
     /** @return The Size of the Application window */
     [[nodiscard]] math::Size getSize() const;

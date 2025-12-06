@@ -31,7 +31,7 @@ struct Tween {
 class TweenManager {
     std::vector<Tween> m_tweens;
 public:
-    void addTween(const TweenOptions& opts);
+    void add(const TweenOptions& opts);
 
     void update();
 };

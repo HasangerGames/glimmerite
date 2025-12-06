@@ -92,6 +92,7 @@ public:
 
     /**
      * Sets the Z index of this Container.
+     * IMPORTANT: This value will not be respected until sortChildren() is called on the parent.
      * @param zIndex The new Z index to set
      */
     void setZIndex(const int zIndex) { m_zIndex = zIndex; }

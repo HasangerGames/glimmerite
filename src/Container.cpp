@@ -80,7 +80,7 @@ void Container::animate(const AnimateOptions<math::Vec2>& opts) {
         default:
             throw GmiException("Attempted to animate a non-Vec2 property to a Vec2 target");
     }
-    m_parentApp->getTweenManager().addTween({
+    m_parentApp->tween().add({
         .values = {
             {&prop->x, opts.target.x},
             {&prop->y, opts.target.y}
