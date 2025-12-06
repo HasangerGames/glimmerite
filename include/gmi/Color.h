@@ -103,12 +103,20 @@ struct Color {
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Color& c) {
-    stream << "Color{" << c.r << ", " << c.g << ", " << c.b << ", " << c.a << "}";
+    stream << "Color{r=" << c.r << ", g=" << c.g << ", b=" << c.b << ", a=" << c.a << "}";
     return stream;
 }
 
 inline Color operator*(const Color& a, const Color& b) {
     return {a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a};
+}
+
+inline uint32_t colorToNumber(const Color& color) {
+    const uint8_t r = color.r * 255,
+                  g = color.g * 255,
+                  b = color.b * 255,
+                  a = color.a * 255;
+    return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
 }

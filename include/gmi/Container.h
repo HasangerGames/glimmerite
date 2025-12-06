@@ -29,8 +29,9 @@ protected:
     int m_zIndex{0};
 public:
     math::Transform m_transform;
+    bool m_transformDirty{true};
     Container() = default;
-    explicit Container(const math::Transform& transform) : m_transform(transform) { Container::updateAffine(); }
+    explicit Container(const math::Transform& transform) : m_transform(transform) {}
     virtual ~Container();
 
     /**
@@ -105,10 +106,8 @@ public:
      * Renders the contents of this Container using the given @ref Backend.
      * @param backend The backend to use
      */
-    virtual void render(Backend& backend) const;
+    virtual void render(Backend& backend);
 };
-
-// These functions must be here and not in Container.cpp or it'll cause linker errors
 
 template<typename T>
 T* Container::addChild(std::unique_ptr<T> child) {
@@ -121,7 +120,7 @@ T* Container::addChild(std::unique_ptr<T> child) {
         child->m_parent->removeChild(childPtr);
     }
     child->m_parent = this;
-    child->updateAffine();
+    child->m_transformDirty = true;
 
     m_children.push_back(std::move(child));
     return m_children.back().get();
@@ -132,7 +131,6 @@ T* Container::createChild(Args&&... args) {
     m_children.push_back(std::make_unique<T>(std::forward<Args>(args)...));
     auto childPtr{static_cast<T*>(m_children.back().get())};
     childPtr->m_parent = this;
-    childPtr->updateAffine();
     return childPtr;
 }
 

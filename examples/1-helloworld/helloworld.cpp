@@ -7,8 +7,7 @@ Application* gmiMain() {
         .width = 960,
         .height = 540,
         .title = "Hello World!",
-        .backgroundColor = Color::fromRgb(128, 128, 255),
-        .backend = BackendType::Sdl
+        .backgroundColor = Color::fromRgb(128, 128, 255)
     });
     return app;
 }

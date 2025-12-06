@@ -1,2 +1,7 @@
 .idea
 docs_html
+src/shaders/essl
+src/shaders/glsl
+src/shaders/spirv
+src/shaders/dx11
+src/shaders/mtl

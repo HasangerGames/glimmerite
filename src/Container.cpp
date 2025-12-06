@@ -28,27 +28,27 @@ void Container::sortChildren() {
 
 void Container::setPosition(const math::Vec2& position) {
     m_transform.position = position;
-    updateAffine();
+    m_transformDirty = true;
 }
 
 void Container::setRotation(const float rotation) {
     m_transform.rotation = rotation;
-    updateAffine();
+    m_transformDirty = true;
 }
 
 void Container::setScale(const math::Vec2& scale) {
     m_transform.scale = scale;
-    updateAffine();
+    m_transformDirty = true;
 }
 
 void Container::setScale(const float scale) {
     m_transform.scale = {scale, scale};
-    updateAffine();
+    m_transformDirty = true;
 }
 
 void Container::setPivot(const math::Vec2 &pivot) {
     m_transform.pivot = pivot;
-    updateAffine();
+    m_transformDirty = true;
 }
 
 void Container::updateAffine() {
@@ -69,7 +69,11 @@ void Container::animate(const AnimateOptions<math::Vec2>& opts) {
 }
 
 
-void Container::render(Backend &backend) const {
+void Container::render(Backend& backend) {
+    if (m_transformDirty) {
+        updateAffine();
+    }
+
     for (const auto& child : m_children) {
         child->render(backend);
     }

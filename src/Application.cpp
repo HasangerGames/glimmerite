@@ -6,9 +6,7 @@
 
 #include <thread>
 
-#include "backends/sdl/SdlBackend.h"
 #include "gmi/gmi.h"
-#include "internal/utils.h"
 
 using namespace gmi;
 
@@ -37,7 +35,7 @@ using namespace std::chrono;
 
 namespace gmi {
 
-Application::Application(const ApplicationConfig& config) {
+Application::Application(const ApplicationConfig& config) : m_backend() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
@@ -47,21 +45,13 @@ Application::Application(const ApplicationConfig& config) {
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
 
-    m_backend = internal::createBackend(*this, config.renderer, config.backend);
-    if (!m_backend) {
-        throw GmiException("Unable to initialize backend");
-    }
-
-    m_backend->setClearColor(config.backgroundColor);
-    m_backend->setVsync(config.vsync);
+    m_backend.init(*this, config.width, config.height, config.renderer);
+    m_backend.setClearColor(config.backgroundColor);
+    m_backend.setVsync(config.vsync);
 }
 
 void Application::addTicker(const std::function<void()> &ticker) {
     m_tickers.push_back(ticker);
-}
-
-Texture& Application::loadTexture(const std::string &filePath) const {
-    return m_backend->loadTexture(filePath);
 }
 
 math::Size Application::getSize() const {
@@ -83,6 +73,12 @@ SDL_AppResult Application::processEvent(const SDL_Event* event) {
         return SDL_APP_SUCCESS;
     }
 
+    if (event->type == SDL_EVENT_WINDOW_RESIZED) {
+        int w, h;
+        SDL_GetWindowSize(m_window, &w, &h);
+        m_backend.resize(w, h);
+    }
+
     if (m_eventListeners.contains(event->type)) {
         m_eventListeners[event->type](*event);
     }
@@ -97,8 +93,8 @@ SDL_AppResult Application::iterate() {
 
     for (const auto& ticker : m_tickers) ticker();
     m_tweenManager.update();
-    m_stage.render(*m_backend);
-    m_backend->renderFrame();
+    m_stage.render(m_backend);
+    m_backend.renderFrame();
 
     if (m_maxFps > 0) {
         const float elapsed{duration<float, std::milli>(steady_clock::now() - frameStart).count()};
@@ -112,7 +108,7 @@ SDL_AppResult Application::iterate() {
 }
 
 void Application::shutdown(SDL_AppResult result) {
-
+    m_backend.shutdown();
 }
 
 }

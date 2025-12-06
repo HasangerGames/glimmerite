@@ -36,6 +36,8 @@ struct Affine {
     /** Translation on the y axis. */
     float y{0};
 
+    Color color;
+
     /**
      * Creates an Affine from a Transform.
      * @param t A transform
@@ -91,6 +93,8 @@ inline Affine operator*(const Affine& a, const Affine& b) {
 
     m.x = a.a * b.x + a.c * b.y + a.x;
     m.y = a.b * b.x + a.d * b.y + a.y;
+
+    m.color = a.color * b.color;
 
     return m;
 }

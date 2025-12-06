@@ -1,51 +1,55 @@
 #pragma once
 #include <chrono>
+#include <deque>
 #include <vector>
 
-#include "math/Geometry.h"
+#include "Drawable.h"
 #include "Color.h"
+#include "bgfx/bgfx.h"
 
 namespace gmi {
 
 class Application;
-enum class BackendType;
-enum class RendererType;
 
 /**
- * A Backend is an API which takes geometry and renders it via a library like bgfx or SDL.
- *
- * Backends also handle things like batching, ensuring rendering happens fast with as few draw calls as possible.
+ * The Backend is an API which handles communication between the Application and bgfx.
  */
 class Backend {
 protected:
-    const Application& m_parentApp;
-    RendererType m_rendererType;
-
-    std::vector<std::unique_ptr<Texture>> m_textures;
-
-    std::vector<math::Geometry> m_queue;
-
-    Backend(const Application& parentApp, const RendererType rendererType) : m_parentApp(parentApp), m_rendererType(rendererType) {}
+    const Application* m_parentApp;
+    uint32_t m_width, m_height;
+    float m_viewMatrix[16];
+    float m_projMatrix[16];
+    bgfx::ProgramHandle m_spriteProgram;
+    bgfx::UniformHandle m_sampler;
+    bgfx::VertexLayout m_vertexLayout;
+    std::deque<Texture> m_textures;
+    std::vector<Drawable> m_queue;
+    bool m_initialized;
 public:
+    Backend() = default;
     virtual ~Backend() = default;
 
-    /** @return The type of Backend this is. */
-    [[nodiscard]] virtual BackendType getType() const = 0;
+    void init(const Application& parentApp, uint32_t width, uint32_t height, bgfx::RendererType::Enum rendererType);
 
     /** @return The type of renderer being used by this Backend. */
-    [[nodiscard]] RendererType getRendererType() const { return m_rendererType; }
+    [[nodiscard]] bgfx::RendererType getRendererType();
 
     /** Controls VSync. See @ref Application for more info. */
-    virtual void setVsync(bool vsync) = 0;
+    void setVsync(bool vsync) const;
+
+    void resize(uint32_t width, uint32_t height);
 
     /** Loads a texture from disk. See @ref Application for more info. */
-    [[nodiscard]] virtual Texture& loadTexture(const std::string& filePath) = 0;
+    [[nodiscard]] Texture& loadTexture(const std::string& filePath);
 
-    virtual void renderFrame() = 0;
+    static void setClearColor(Color color);
 
-    virtual void setClearColor(Color color) = 0;
+    void queueDrawable(const Drawable& drawable);
 
-    void queueGeometry(const math::Geometry& geometry);
+    void renderFrame();
+
+    void shutdown();
 };
 
 }

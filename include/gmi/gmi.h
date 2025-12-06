@@ -14,18 +14,4 @@ inline uint64_t nowMs() {
     return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
 }
 
-enum class RendererType;
-enum class BackendType;
-
-/**
- * Checks which renderers are supported with the given backend.
- * @param backend The @ref BackendType to use to check supported renderers.
- *                Different backends may support different sets of renderers.
- *                Currently defaults to bgfx.
- * @return
- */
-[[nodiscard]] std::set<RendererType> getSupportedRenderers(BackendType backend);
-
-[[nodiscard]] std::string getRendererName(RendererType rendererType);
-
 }

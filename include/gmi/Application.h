@@ -14,41 +14,6 @@
 
 namespace gmi {
 
-/** Backends supported by Glimmerite. See @ref Backend for more info. */
-enum class BackendType {
-    Sdl,
-    Bgfx,
-    Auto
-};
-
-/** Renderers supported by Glimmerite. */
-enum class RendererType {
-    Metal,
-    Direct3d12,
-    Direct3d11,
-    Vulkan,
-    OpenGl,
-    OpenGlEs,
-    Software,
-    Auto,
-    Unknown
-};
-
-/**
- * If a @ref Backend is initialized with RendererType::Auto,
- * or the provided RendererType is not supported by the system or the Backend,
- * the first supported RendererType in this list will be chosen automatically.
- */
-constexpr RendererType PREFERRED_RENDERERS[]{
-    RendererType::Metal,
-    RendererType::Direct3d12,
-    RendererType::Direct3d11,
-    RendererType::Vulkan,
-    RendererType::OpenGl,
-    RendererType::OpenGlEs,
-    RendererType::Software
-};
-
 /** Configuration options used when creating an Application instance. */
 struct ApplicationConfig {
     /** Initial width of the Application window. */
@@ -63,15 +28,11 @@ struct ApplicationConfig {
     Color backgroundColor{Color::fromRgb(0, 0, 0)};
 
     /**
-     * The @ref Renderer to use.
-     *
+     * The renderer/graphics API to use.
      * Not all renderers are available on all platforms.
      * If the specified renderer is not available, Glimmerite will automatically fall back to a different one.
      */
-    RendererType renderer{RendererType::Auto};
-
-    /** The @ref Backend to use. */
-    BackendType backend{BackendType::Auto};
+    bgfx::RendererType::Enum renderer{bgfx::RendererType::Count};
 
     /**
      * Syncs the framerate of the Application to the monitor's refresh rate.
@@ -82,11 +43,11 @@ struct ApplicationConfig {
 
 class Application {
     SDL_Window* m_window;
-    std::unique_ptr<Backend> m_backend;
+    Backend m_backend;
 
-    uint16_t m_maxFps{0};
+    uint16_t m_maxFps;
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
-    float m_dt{0.0f};
+    float m_dt;
 
     std::vector<std::function<void()>> m_tickers;
     std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
@@ -125,7 +86,7 @@ public:
      * @param filePath The path to the texture file to load
      * @return A pointer to the newly created texture
      */
-    [[nodiscard]] Texture& loadTexture(const std::string& filePath) const;
+    [[nodiscard]] Texture& loadTexture(const std::string& filePath) { return m_backend.loadTexture(filePath); }
 
     /**
      * Sets the frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
@@ -139,13 +100,13 @@ public:
      * VSync is enabled by default. When enabled, it reduces screen tearing and resource usage.
      * @param vsync Whether VSync should be enabled
      */
-    void setVsync(const bool vsync) const { m_backend->setVsync(vsync); }
+    void setVsync(const bool vsync) { m_backend.setVsync(vsync); }
 
     /** @return Delta time (time elapsed since previous frame) in milliseconds. */
     [[nodiscard]] float getDt() const { return m_dt; }
 
     /** @return The @ref Backend associated with this Application */
-    [[nodiscard]] Backend& getBackend() const { return *m_backend; }
+    [[nodiscard]] Backend& getBackend() { return m_backend; }
 
     /** @return The Size of the Application window */
     [[nodiscard]] math::Size getSize() const;
