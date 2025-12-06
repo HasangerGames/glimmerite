@@ -2,7 +2,7 @@
 #include <functional>
 #include <string>
 
-#include "Backend.h"
+#include "Renderer.h"
 #include "Container.h"
 #include "math/Size.h"
 #include "SDL3/SDL_events.h"
@@ -38,12 +38,17 @@ struct ApplicationConfig {
      * Syncs the framerate of the Application to the monitor's refresh rate.
      * Recommended to reduce resource usage and screen tearing.
      */
-    bool vsync = true;
+    bool vsync{true};
+
+    /**
+     * The frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
+     * If set to 0 or lower, this frame limit will be disabled, although VSync will continue to limit framerate if enabled.
+     */
+    uint16_t maxFps{0};
 };
 
 class Application {
     SDL_Window* m_window;
-    Backend m_backend;
 
     uint16_t m_maxFps;
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
@@ -51,8 +56,11 @@ class Application {
 
     std::vector<std::function<void()>> m_tickers;
     std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
-    TweenManager m_tweenManager;
+
+    TextureManager m_textureManager;
     SoundManager m_soundManager;
+    TweenManager m_tweenManager;
+    Renderer m_renderer;
 
     Container m_stage;
 public:
@@ -63,8 +71,37 @@ public:
     explicit Application(const ApplicationConfig& config);
     ~Application() = default;
 
+    /** @return The @ref TextureManager associated with the Application, used to load textures */
+    [[nodiscard]] TextureManager& texture() { return m_textureManager; }
+
+    /** @return The @ref SoundManager associated with the Application, used to load and play sounds */
+    [[nodiscard]] SoundManager& sound() { return m_soundManager; }
+
+    /** @return The @ref TweenManager associated with the Application, used to animate values */
+    [[nodiscard]] TweenManager& tween() { return m_tweenManager; }
+
+    /** @return The @ref Renderer associated with the Application */
+    [[nodiscard]] Renderer& renderer() { return m_renderer; }
+
     /** @return The root Container of the Application */
-    Container& getStage() { return m_stage; }
+    Container& stage() { return m_stage; }
+
+    /**
+     * Controls VSync, which syncs the framerate to the monitor's refresh rate.
+     * VSync is enabled by default. When enabled, it reduces screen tearing and resource usage.
+     * @param vsync Whether VSync should be enabled
+     */
+    void setVsync(const bool vsync) const { m_renderer.setVsync(vsync); }
+
+    /**
+     * Sets the frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
+     * If set to 0 or lower, this frame limit will be disabled, although VSync will continue to limit framerate if enabled.
+     * @param fps Maximum frames per second
+     */
+    void setMaxFps(const uint16_t fps) { m_maxFps = fps; }
+
+    /** @return Delta time (time elapsed since previous frame) in milliseconds. */
+    [[nodiscard]] float getDt() const { return m_dt; }
 
     /**
      * Registers a function to be called every frame.
@@ -79,37 +116,6 @@ public:
      * @param listener The function to be called when the event is triggered
      */
     void addEventListener(const SDL_EventType event, const std::function<void(const SDL_Event&)>& listener) { m_eventListeners[event] = listener; }
-
-    /**
-     * Loads a @ref Texture from disk.
-     * @param filePath The path to the texture file to load
-     * @return A pointer to the newly created texture
-     */
-    [[nodiscard]] Texture& loadTexture(const std::string& filePath) { return m_backend.loadTexture(filePath); }
-
-    /** @return The @ref Backend associated with this Application */
-    [[nodiscard]] Backend& backend() { return m_backend; }
-
-    [[nodiscard]] SoundManager& sound() { return m_soundManager; }
-
-    [[nodiscard]] TweenManager& tween() { return m_tweenManager; }
-
-    /**
-     * Sets the frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
-     * If set to 0 or lower, this frame limit will be disabled, although VSync will continue to limit framerate if enabled.
-     * @param fps Maximum frames per second
-     */
-    void setMaxFps(const uint16_t fps) { m_maxFps = fps; }
-
-    /**
-     * Controls VSync, which syncs the framerate to the monitor's refresh rate.
-     * VSync is enabled by default. When enabled, it reduces screen tearing and resource usage.
-     * @param vsync Whether VSync should be enabled
-     */
-    void setVsync(const bool vsync) { m_backend.setVsync(vsync); }
-
-    /** @return Delta time (time elapsed since previous frame) in milliseconds. */
-    [[nodiscard]] float getDt() const { return m_dt; }
 
     /** @return The Size of the Application window */
     [[nodiscard]] math::Size getSize() const;

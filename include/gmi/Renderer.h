@@ -12,9 +12,9 @@ namespace gmi {
 class Application;
 
 /**
- * The Backend is an API which handles communication between the Application and bgfx.
+ * The Renderer is an API which handles communication between the Application and bgfx.
  */
-class Backend {
+class Renderer {
 protected:
     const Application* m_parentApp;
     uint32_t m_width, m_height;
@@ -23,27 +23,23 @@ protected:
     bgfx::ProgramHandle m_spriteProgram;
     bgfx::UniformHandle m_sampler;
     bgfx::VertexLayout m_vertexLayout;
-    std::deque<Texture> m_textures;
     std::vector<Drawable> m_queue;
     bool m_initialized;
 
     void submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const;
 public:
-    Backend() = default;
-    virtual ~Backend() = default;
+    Renderer() = default;
+    virtual ~Renderer() = default;
 
     void init(const Application& parentApp, uint32_t width, uint32_t height, bool vsync, bgfx::RendererType::Enum rendererType);
 
-    /** @return The type of renderer being used by this Backend. */
-    [[nodiscard]] bgfx::RendererType getRendererType();
+    /** @return The type of renderer being used. */
+    [[nodiscard]] bgfx::RendererType getType();
 
     /** Controls VSync. See @ref Application for more info. */
     void setVsync(bool vsync) const;
 
     void resize(uint32_t width, uint32_t height);
-
-    /** Loads a texture from disk. See @ref Application for more info. */
-    [[nodiscard]] Texture& loadTexture(const std::string& filePath);
 
     static void setClearColor(Color color);
 

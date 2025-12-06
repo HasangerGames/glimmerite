@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 
-#include "Backend.h"
+#include "Renderer.h"
 #include "gmi.h"
 #include "math/Affine.h"
 #include "math/Easing.h"
@@ -36,7 +36,7 @@ protected:
 public:
     Container() = default;
     explicit Container(Application* app) : m_parentApp(app) {}
-    explicit Container(const math::Transform& transform) : m_transform(transform) {}
+    explicit Container(Application* app, const math::Transform& transform) : m_parentApp(app), m_transform(transform) {}
     virtual ~Container();
 
     /**
@@ -103,10 +103,10 @@ public:
     [[nodiscard]] Container* getParent() const { return m_parent; }
 
     /**
-     * Renders the contents of this Container using the given @ref Backend.
-     * @param backend The backend to use
+     * Renders the contents of this Container using the given @ref Renderer.
+     * @param renderer The renderer to use
      */
-    virtual void render(Backend& backend);
+    virtual void render(Renderer& renderer);
 };
 
 template<typename T>
@@ -128,9 +128,8 @@ T* Container::addChild(std::unique_ptr<T> child) {
 
 template<typename T, typename... Args>
 T* Container::createChild(Args&&... args) {
-    m_children.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+    m_children.push_back(std::make_unique<T>(m_parentApp, std::forward<Args>(args)...));
     auto childPtr{static_cast<T*>(m_children.back().get())};
-    childPtr->m_parentApp = this->m_parentApp;
     childPtr->m_parent = this;
     return childPtr;
 }

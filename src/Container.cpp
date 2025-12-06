@@ -93,13 +93,13 @@ void Container::animate(const AnimateOptions<math::Vec2>& opts) {
 }
 
 
-void Container::render(Backend& backend) {
+void Container::render(Renderer& renderer) {
     if (m_transformDirty) {
         updateAffine();
     }
 
     for (const auto& child : m_children) {
-        child->render(backend);
+        child->render(renderer);
     }
 }
 

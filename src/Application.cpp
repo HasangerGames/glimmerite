@@ -35,7 +35,7 @@ using namespace std::chrono;
 
 namespace gmi {
 
-Application::Application(const ApplicationConfig& config) : m_backend(), m_stage(this) {
+Application::Application(const ApplicationConfig& config) : m_renderer(), m_stage(this) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
@@ -45,8 +45,8 @@ Application::Application(const ApplicationConfig& config) : m_backend(), m_stage
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
 
-    m_backend.init(*this, config.width, config.height, config.vsync, config.renderer);
-    m_backend.setClearColor(config.backgroundColor);
+    m_renderer.init(*this, config.width, config.height, config.vsync, config.renderer);
+    m_renderer.setClearColor(config.backgroundColor);
 
     m_soundManager.init();
 }
@@ -77,7 +77,7 @@ SDL_AppResult Application::processEvent(const SDL_Event* event) {
     if (event->type == SDL_EVENT_WINDOW_RESIZED) {
         int w, h;
         SDL_GetWindowSize(m_window, &w, &h);
-        m_backend.resize(w, h);
+        m_renderer.resize(w, h);
     }
 
     if (m_eventListeners.contains(event->type)) {
@@ -94,8 +94,8 @@ SDL_AppResult Application::iterate() {
 
     for (const auto& ticker : m_tickers) ticker();
     m_tweenManager.update();
-    m_stage.render(m_backend);
-    m_backend.renderFrame();
+    m_stage.render(m_renderer);
+    m_renderer.renderFrame();
 
     if (m_maxFps > 0) {
         const float elapsed{duration<float, std::milli>(steady_clock::now() - frameStart).count()};
@@ -109,7 +109,8 @@ SDL_AppResult Application::iterate() {
 }
 
 void Application::shutdown(SDL_AppResult result) {
-    m_backend.shutdown();
+    m_textureManager.destroyAll();
+    m_renderer.shutdown();
 }
 
 }

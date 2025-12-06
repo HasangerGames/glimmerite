@@ -1,26 +1,31 @@
 #pragma once
 #include <string>
+#include <unordered_map>
 
 #include "bgfx/bgfx.h"
 
 namespace gmi {
 
-class Texture {
-    bgfx::TextureHandle m_textureHandle{};
-    uint32_t m_width;
-    uint32_t m_height;
+struct Texture {
+    bgfx::TextureHandle handle;
+    uint32_t width;
+    uint32_t height;
+};
+
+class TextureManager {
+    std::unordered_map<std::string, Texture> m_textures;
 public:
-    explicit Texture(const std::string& filePath);
-    ~Texture() = default;
+    /**
+     * Loads a @ref Texture from disk.
+     * @param name The name to give the texture
+     * @param filePath The path to the texture file to load
+     */
+    void load(const std::string& name, const std::string& filePath);
 
-    /** @return The width of this Texture in pixels */
-    [[nodiscard]] uint32_t getWidth() const { return m_width; }
+    /** @return The @ref Texture with the given name */
+    Texture& get(const std::string& name);
 
-    /** @return The height of this Texture in pixels */
-    [[nodiscard]] uint32_t getHeight() const { return m_height; }
-
-    /** @return A reference to the bgfx texture object backing this Texture */
-    [[nodiscard]] bgfx::TextureHandle& getHandle() { return m_textureHandle; }
+    void destroyAll();
 };
 
 }

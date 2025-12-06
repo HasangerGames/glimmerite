@@ -2,6 +2,14 @@
 
 namespace gmi {
 
+Sprite::Sprite(Application *app, const std::string &textureName, const math::Transform &transform) :
+    Container(app),
+    m_texture(app->texture().get(textureName)) {
+    m_transform = transform;
+    m_transformDirty = true;
+}
+
+
 Sprite::~Sprite() = default;
 
 const std::vector<math::Vertex> QUAD_VERTS{
@@ -17,7 +25,7 @@ void Sprite::updateAffine() {
     Container::updateAffine();
     const math::Affine affineScaled = m_affine * math::Affine::scaleAbout(
         m_transform.pivot,
-        math::Vec2::fromInt(m_texture.getWidth(), m_texture.getHeight())
+        math::Vec2::fromInt(m_texture.width, m_texture.height)
     );
     m_drawable = {
         math::transformVertices(QUAD_VERTS, affineScaled),
@@ -25,9 +33,9 @@ void Sprite::updateAffine() {
     };
 }
 
-void Sprite::render(Backend& backend) {
-    Container::render(backend);
-    backend.queueDrawable(m_drawable);
+void Sprite::render(Renderer& renderer) {
+    Container::render(renderer);
+    renderer.queueDrawable(m_drawable);
 }
 
 }

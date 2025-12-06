@@ -1,4 +1,4 @@
-#include "gmi/Backend.h"
+#include "gmi/Renderer.h"
 
 #include <cstring>
 
@@ -11,7 +11,7 @@
 
 namespace gmi {
 
-void Backend::init(
+void Renderer::init(
     const Application& parentApp,
     const uint32_t width,
     const uint32_t height,
@@ -19,7 +19,7 @@ void Backend::init(
     const bgfx::RendererType::Enum rendererType
 ) {
     if (m_initialized) {
-        throw GmiException("Backend has already been initialized");
+        throw GmiException("Renderer has already been initialized");
     }
 
     m_parentApp = &parentApp;
@@ -78,11 +78,11 @@ void Backend::init(
 }
 
 
-void Backend::setVsync(const bool vsync) const {
+void Renderer::setVsync(const bool vsync) const {
     bgfx::reset(m_width, m_height, vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
 }
 
-void Backend::resize(const uint32_t width, const uint32_t height) {
+void Renderer::resize(const uint32_t width, const uint32_t height) {
     m_width = width;
     m_height = height;
 
@@ -102,20 +102,15 @@ void Backend::resize(const uint32_t width, const uint32_t height) {
     bgfx::setViewRect(0, 0, 0, width, height);
 }
 
-Texture& Backend::loadTexture(const std::string& filePath) {
-    m_textures.emplace_back(filePath);
-    return m_textures.back();
-}
-
-void Backend::setClearColor(const Color color) {
+void Renderer::setClearColor(const Color color) {
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR, colorToNumber(color));
 }
 
-void Backend::queueDrawable(const Drawable& drawable) {
+void Renderer::queueDrawable(const Drawable& drawable) {
     m_queue.push_back(drawable);
 }
 
-void Backend::renderFrame() {
+void Renderer::renderFrame() {
     std::vector<math::Vertex> batchVertices;
     Texture* batchTexture{nullptr};
     for (auto& [currentVertices, currentTexture] : m_queue) {
@@ -138,7 +133,7 @@ void Backend::renderFrame() {
 
 constexpr size_t VERT_SIZE = sizeof(math::Vertex);
 
-void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const {
+void Renderer::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const {
     const size_t numVertices = vertices.size();
     bgfx::TransientVertexBuffer vertexBuffer;
     bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
@@ -146,18 +141,14 @@ void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture)
     vertices.clear();
     bgfx::setVertexBuffer(0, &vertexBuffer);
 
-    bgfx::setTexture(0, m_sampler, texture->getHandle());
+    bgfx::setTexture(0, m_sampler, texture->handle);
 
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
 
     bgfx::submit(0, m_spriteProgram);
 }
 
-
-void Backend::shutdown() {
-    for (Texture& texture : m_textures) {
-        bgfx::destroy(texture.getHandle());
-    }
+void Renderer::shutdown() {
     bgfx::destroy(m_spriteProgram);
     bgfx::destroy(m_sampler);
     bgfx::shutdown();
