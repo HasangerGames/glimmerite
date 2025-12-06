@@ -26,6 +26,8 @@ protected:
     std::deque<Texture> m_textures;
     std::vector<Drawable> m_queue;
     bool m_initialized;
+
+    void submitBatch(std::vector<math::Vertex>& vertices, Texture* texture);
 public:
     Backend() = default;
     virtual ~Backend() = default;

@@ -110,24 +110,41 @@ void Backend::queueDrawable(const Drawable& drawable) {
 }
 
 void Backend::renderFrame() {
-    for (auto& [vertices, textureRef] : m_queue) {
-        const size_t numVertices = vertices.size();
-        bgfx::TransientVertexBuffer vertexBuffer;
-        bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
-        std::memcpy(vertexBuffer.data, vertices.data(), numVertices * sizeof(math::Vertex));
-        bgfx::setVertexBuffer(0, &vertexBuffer);
+    std::vector<math::Vertex> batchVertices;
+    Texture* batchTexture{nullptr};
+    for (auto& [currentVertices, currentTexture] : m_queue) {
+        if (currentTexture != batchTexture && batchTexture != nullptr) {
+            submitBatch(batchVertices, batchTexture);
+        }
 
-        const bgfx::TextureHandle texture = textureRef->getRawTexture();
-        bgfx::setTexture(0, m_sampler, texture);
-
-        bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
-
-        bgfx::submit(0, m_spriteProgram);
+        batchVertices.insert(
+            batchVertices.end(),
+            std::make_move_iterator(currentVertices.begin()),
+            std::make_move_iterator(currentVertices.end())
+        );
+        batchTexture = currentTexture;
     }
+    submitBatch(batchVertices, batchTexture);
     m_queue.clear();
 
     bgfx::frame();
 }
+
+void Backend::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) {
+    const size_t numVertices = vertices.size();
+    bgfx::TransientVertexBuffer vertexBuffer;
+    bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
+    std::memcpy(vertexBuffer.data, vertices.data(), numVertices * sizeof(math::Vertex));
+    vertices.clear();
+    bgfx::setVertexBuffer(0, &vertexBuffer);
+
+    bgfx::setTexture(0, m_sampler, texture->getRawTexture());
+
+    bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
+
+    bgfx::submit(0, m_spriteProgram);
+}
+
 
 void Backend::shutdown() {
     for (Texture& texture : m_textures) {
