@@ -4,6 +4,7 @@
 #include "math.h"
 
 namespace gmi::math {
+
 /** Represents a two-dimensional vector. */
 struct Vec2 {
     /** The x-component of the vector. */
@@ -12,12 +13,16 @@ struct Vec2 {
     float y{0};
 
     /**
-     * Creates a Vec2 with int components.
+     * Creates a Vec2 with arbitrary components.
      * @param x The x-component
      * @param y The y-component
      */
-    static Vec2 fromInt(const int x, const int y) { return { static_cast<float>(x), static_cast<float>(y) }; }
+    template<typename T>
+    static Vec2 fromAny(T x, T y);
 };
+
+template <typename T>
+Vec2 Vec2::fromAny(T x, T y) { return { static_cast<float>(x), static_cast<float>(y) }; }
 
 inline std::ostream& operator<<(std::ostream& stream, const Vec2& a) {
     stream << "Vec2{" << a.x << ", " << a.y << "}";
@@ -187,7 +192,7 @@ inline Vec2 invert(const Vec2& v) {
  * @param angle The angle in radians to rotate the vector by
  * @returns A new vector resulting from the rotation of the input vector by the given angle
  */
-inline Vec2 rotate(const Vec2& v, const float angle) {
+inline Vec2 rotate(const Vec2& v, float angle) {
     const float c = std::cos(angle);
     const float s = std::sin(angle);
     return { v.x * c - v.y * s, v.x * s + v.y * c };
@@ -204,7 +209,7 @@ inline Vec2 rotate(const Vec2& v, const float angle) {
  * @param interpFactor The interpolation factor, ranging from 0 to 1
  * @return The vector corresponding to the linear interpolation between `start` and `end` at factor `interpFactor`
  */
-inline Vec2 lerp(const Vec2& start, const Vec2& end, const float interpFactor) {
+inline Vec2 lerp(const Vec2& start, const Vec2& end, float interpFactor) {
     return start * (1 - interpFactor) + end * interpFactor;
 }
 

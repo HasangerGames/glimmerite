@@ -39,18 +39,12 @@ struct ApplicationConfig {
      * Recommended to reduce resource usage and screen tearing.
      */
     bool vsync{true};
-
-    /**
-     * The frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
-     * If set to 0 or lower, this frame limit will be disabled, although VSync will continue to limit framerate if enabled.
-     */
-    uint16_t maxFps{0};
 };
 
 class Application {
     SDL_Window* m_window;
 
-    uint16_t m_maxFps;
+    uint16_t m_maxFps{0};
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
     float m_dt;
 
@@ -61,7 +55,6 @@ class Application {
     SoundManager m_soundManager;
     TweenManager m_tweenManager;
     Renderer m_renderer;
-
     Container m_stage;
 public:
     /**
@@ -91,14 +84,14 @@ public:
      * VSync is enabled by default. When enabled, it reduces screen tearing and resource usage.
      * @param vsync Whether VSync should be enabled
      */
-    void setVsync(const bool vsync) const { m_renderer.setVsync(vsync); }
+    void setVsync(bool vsync) { m_renderer.setVsync(vsync); }
 
     /**
      * Sets the frame limit. In most cases, it is recommended to use VSync instead, which is enabled by default.
      * If set to 0 or lower, this frame limit will be disabled, although VSync will continue to limit framerate if enabled.
      * @param fps Maximum frames per second
      */
-    void setMaxFps(const uint16_t fps) { m_maxFps = fps; }
+    void setMaxFps(uint16_t fps) { m_maxFps = fps; }
 
     /** @return Delta time (time elapsed since previous frame) in milliseconds. */
     [[nodiscard]] float getDt() const { return m_dt; }
@@ -115,7 +108,7 @@ public:
      * @param event The event to listen for
      * @param listener The function to be called when the event is triggered
      */
-    void addEventListener(const SDL_EventType event, const std::function<void(const SDL_Event&)>& listener) { m_eventListeners[event] = listener; }
+    void addEventListener(SDL_EventType event, const std::function<void(const SDL_Event&)>& listener) { m_eventListeners[event] = listener; }
 
     /** @return The Size of the Application window */
     [[nodiscard]] math::Size getSize() const;

@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 4.0)
 project(glimmerite)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB_RECURSE GLIMMERITE_SRC
     "src/*.h" "src/*.cpp"
@@ -24,6 +25,7 @@ set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/glaze EXCLUDE_FROM_ALL)
 
 target_include_directories(glimmerite
     PUBLIC
@@ -48,5 +50,12 @@ bgfx_compile_shaders(
     AS_HEADERS
 )
 
-target_link_libraries(glimmerite PUBLIC SDL3::SDL3 SDL3_mixer::SDL3_mixer bgfx bx bimg_decode)
+target_link_libraries(glimmerite PUBLIC
+    SDL3::SDL3
+    SDL3_mixer::SDL3_mixer
+    bgfx
+    bx
+    bimg_decode
+    glaze::glaze
+)
 target_link_libraries(helloworld PRIVATE glimmerite SDL3::SDL3 bgfx bx bimg_decode)

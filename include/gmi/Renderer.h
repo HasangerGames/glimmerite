@@ -18,6 +18,7 @@ class Renderer {
 protected:
     const Application* m_parentApp;
     uint32_t m_width, m_height;
+    bool m_vsync;
     float m_viewMatrix[16];
     float m_projMatrix[16];
     bgfx::ProgramHandle m_spriteProgram;
@@ -26,7 +27,9 @@ protected:
     std::vector<Drawable> m_queue;
     bool m_initialized;
 
-    void submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const;
+    void reset() const;
+
+    void submitBatch(const std::vector<math::Vertex> &vertices, bgfx::TextureHandle texture) const;
 public:
     Renderer() = default;
     virtual ~Renderer() = default;
@@ -34,20 +37,20 @@ public:
     void init(const Application& parentApp, uint32_t width, uint32_t height, bool vsync, bgfx::RendererType::Enum rendererType);
 
     /** @return The type of renderer being used. */
-    [[nodiscard]] bgfx::RendererType getType();
+    [[nodiscard]] bgfx::RendererType::Enum getType();
 
     /** Controls VSync. See @ref Application for more info. */
-    void setVsync(bool vsync) const;
+    void setVsync(bool vsync);
 
     void resize(uint32_t width, uint32_t height);
 
-    static void setClearColor(Color color);
+    static void setClearColor(const Color& color);
 
     void queueDrawable(const Drawable& drawable);
 
     void renderFrame();
 
-    void shutdown();
+    void shutdown() const;
 };
 
 }

@@ -13,10 +13,10 @@ namespace gmi {
 
 void Renderer::init(
     const Application& parentApp,
-    const uint32_t width,
-    const uint32_t height,
-    const bool vsync,
-    const bgfx::RendererType::Enum rendererType
+    uint32_t width,
+    uint32_t height,
+    bool vsync,
+    bgfx::RendererType::Enum rendererType
 ) {
     if (m_initialized) {
         throw GmiException("Renderer has already been initialized");
@@ -77,12 +77,17 @@ void Renderer::init(
     m_initialized = true;
 }
 
-
-void Renderer::setVsync(const bool vsync) const {
-    bgfx::reset(m_width, m_height, vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
+bgfx::RendererType::Enum Renderer::getType() { // TODO Move to Application::getRendererType()
+    return bgfx::getRendererType();
 }
 
-void Renderer::resize(const uint32_t width, const uint32_t height) {
+
+void Renderer::setVsync(bool vsync) {
+    m_vsync = vsync;
+    reset();
+}
+
+void Renderer::resize(uint32_t width, uint32_t height) {
     m_width = width;
     m_height = height;
 
@@ -100,9 +105,15 @@ void Renderer::resize(const uint32_t width, const uint32_t height) {
 
     bgfx::setViewTransform(0, m_viewMatrix, m_projMatrix);
     bgfx::setViewRect(0, 0, 0, width, height);
+
+    reset();
 }
 
-void Renderer::setClearColor(const Color color) {
+void Renderer::reset() const {
+    bgfx::reset(m_width, m_height, m_vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
+}
+
+void Renderer::setClearColor(const Color& color) {
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR, colorToNumber(color));
 }
 
@@ -112,10 +123,14 @@ void Renderer::queueDrawable(const Drawable& drawable) {
 
 void Renderer::renderFrame() {
     std::vector<math::Vertex> batchVertices;
-    Texture* batchTexture{nullptr};
+    bgfx::TextureHandle* batchTexture{nullptr};
     for (auto& [currentVertices, currentTexture] : m_queue) {
-        if (currentTexture != batchTexture && batchTexture != nullptr) {
-            submitBatch(batchVertices, batchTexture);
+        if (currentTexture != batchTexture) {
+            if (!batchVertices.empty()) {
+                submitBatch(batchVertices, *batchTexture);
+                batchVertices.clear();
+            }
+            batchTexture = currentTexture;
         }
 
         batchVertices.insert(
@@ -123,9 +138,8 @@ void Renderer::renderFrame() {
             std::make_move_iterator(currentVertices.begin()),
             std::make_move_iterator(currentVertices.end())
         );
-        batchTexture = currentTexture;
     }
-    submitBatch(batchVertices, batchTexture);
+    submitBatch(batchVertices, *batchTexture);
     m_queue.clear();
 
     bgfx::frame();
@@ -133,22 +147,40 @@ void Renderer::renderFrame() {
 
 constexpr size_t VERT_SIZE = sizeof(math::Vertex);
 
-void Renderer::submitBatch(std::vector<math::Vertex>& vertices, Texture* texture) const {
-    const size_t numVertices = vertices.size();
+void Renderer::submitBatch(const std::vector<math::Vertex>& vertices, bgfx::TextureHandle texture) const {
+    size_t numVertices = vertices.size();
+    size_t numQuads = numVertices / 4;
+
+    // Create vertex buffer
     bgfx::TransientVertexBuffer vertexBuffer;
     bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
     std::memcpy(vertexBuffer.data, vertices.data(), numVertices * VERT_SIZE);
-    vertices.clear();
     bgfx::setVertexBuffer(0, &vertexBuffer);
 
-    bgfx::setTexture(0, m_sampler, texture->handle);
+    // Create index buffer
+    bgfx::TransientIndexBuffer indexBuffer;
+    bgfx::allocTransientIndexBuffer(&indexBuffer, numQuads * 6);
+    auto indices = std::bit_cast<uint16_t*>(indexBuffer.data);
+    uint16_t idx = -1;
+    for (uint16_t i = 0; i < numQuads; i++) {
+        uint16_t base = i * 4;
+        indices[++idx] = base + 0;
+        indices[++idx] = base + 1;
+        indices[++idx] = base + 2;
+        indices[++idx] = base + 0;
+        indices[++idx] = base + 2;
+        indices[++idx] = base + 3;
+    }
+    bgfx::setIndexBuffer(&indexBuffer);
+
+    bgfx::setTexture(0, m_sampler, texture);
 
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
 
     bgfx::submit(0, m_spriteProgram);
 }
 
-void Renderer::shutdown() {
+void Renderer::shutdown() const {
     bgfx::destroy(m_spriteProgram);
     bgfx::destroy(m_sampler);
     bgfx::shutdown();

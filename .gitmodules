@@ -7,3 +7,6 @@
 [submodule "vendored/SDL_mixer"]
 	path = vendored/SDL_mixer
 	url = https://github.com/libsdl-org/SDL_mixer.git
+[submodule "vendored/glaze"]
+	path = vendored/glaze
+	url = https://github.com/stephenberry/glaze.git

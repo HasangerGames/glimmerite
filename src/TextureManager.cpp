@@ -2,11 +2,14 @@
 
 #include <fstream>
 #include <iostream>
-#include <ranges>
 
 #include "bimg/decode.h"
 #include "bx/allocator.h"
 #include "gmi/gmi.h"
+#include "gmi/math/Rect.h"
+
+#include "glaze/glaze.hpp"
+#include "gmi/Sprite.h"
 
 namespace gmi {
 
@@ -15,18 +18,19 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
         throw GmiException("Failed to load texture '" + name + "': Texture already exists");
     }
 
-    std::ifstream stream(filePath, std::ios::binary);
-    // TODO Check if file exists
+    std::ifstream stream{filePath, std::ios::binary};
+    if (!stream.good()) {
+        throw GmiException("Failed to load texture '" + name + "': File not found: " + filePath);
+    }
 
     stream.seekg(0, std::ios::end);
-    const std::streamsize size = stream.tellg();
+    const std::streamsize size{stream.tellg()};
     stream.seekg(0, std::ios::beg);
 
     char data[size];
     stream.read(data, size);
 
-    bx::DefaultAllocator allocator;
-    bimg::ImageContainer* image = bimg::imageParse(&allocator, data, size);
+    bimg::ImageContainer* image{bimg::imageParse(&m_allocator, data, size)};
     const uint32_t width = image->m_width;
     const uint32_t height = image->m_height;
     const bgfx::TextureHandle handle = bgfx::createTexture2D(
@@ -38,16 +42,78 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
         BGFX_TEXTURE_NONE,
         bgfx::copy(image->m_data, image->m_size)
     );
-    m_textures[name] = {
-        .handle = handle,
-        .width = image->m_width,
-        .height = image->m_height
-    };
     bimg::imageFree(image);
 
     if (!bgfx::isValid(handle)) {
         throw GmiException("Failed to load texture '" + name + "': Texture is not valid");
     }
+
+    m_handles.push_back(handle);
+    m_textures[name] = {
+        .handle = handle,
+        .size = {
+            .w = width,
+            .h = height
+        },
+        .frame = {
+            .x = 0,
+            .y = 0,
+            .w = width,
+            .h = height
+        }
+    };
+}
+
+void TextureManager::load(const std::string& filePath) {
+    load(std::filesystem::path{filePath}.stem(), filePath);
+}
+
+struct SpritesheetFrame {
+    math::UintRect frame;
+    math::UintSize sourceSize;
+};
+
+struct SpritesheetMeta {
+    std::string image;
+    float scale;
+    math::UintSize size;
+};
+
+struct Spritesheet {
+    SpritesheetMeta meta;
+    std::unordered_map<std::string, SpritesheetFrame> frames;
+};
+
+void TextureManager::loadSpritesheet(const std::string& name, const std::string& filePath) {
+    std::ifstream dataFile{filePath};
+    if (!dataFile.good()) {
+        throw GmiException("Failed to parse spritesheet '" + name + "': File not found: " + filePath);
+    }
+
+    std::ostringstream stream;
+    stream << dataFile.rdbuf();
+    std::string sheetData = stream.str();
+
+    Spritesheet sheet{};
+    if (const glz::error_ctx err{glz::read_json(sheet, sheetData)}) {
+        throw GmiException("Failed to parse spritesheet '" + name + "': " + glz::format_error(err, sheetData));
+    }
+
+    std::string sheetPath{std::filesystem::path{filePath}.parent_path() / sheet.meta.image};
+    load(name, sheetPath);
+    Texture texture{m_textures[name]};
+
+    for (const auto& [subName, frame] : sheet.frames) {
+        m_textures[subName] = {
+            .handle = texture.handle,
+            .size = texture.size,
+            .frame = frame.frame
+        };
+    }
+}
+
+void TextureManager::loadSpritesheet(const std::string &filePath) {
+    loadSpritesheet(std::filesystem::path{filePath}.stem(), filePath);
 }
 
 Texture& TextureManager::get(const std::string& name) {
@@ -57,9 +123,9 @@ Texture& TextureManager::get(const std::string& name) {
     return m_textures[name];
 }
 
-void TextureManager::destroyAll() {
-    for (const Texture& texture : m_textures | std::views::values) {
-        bgfx::destroy(texture.handle);
+void TextureManager::destroyAll() const {
+    for (const bgfx::TextureHandle& handle : m_handles) {
+        bgfx::destroy(handle);
     }
 }
 

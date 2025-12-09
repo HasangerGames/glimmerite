@@ -61,11 +61,11 @@ math::Size Application::getSize() const {
     return size;
 }
 
-void Application::setSize(const math::Size size) const {
+void Application::setSize(math::Size size) const {
     SDL_SetWindowSize(m_window, size.width, size.height);
 }
 
-void Application::setSize(const int width, const int height) const {
+void Application::setSize(int width, int height) const {
     SDL_SetWindowSize(m_window, width, height);
 }
 
