@@ -11,17 +11,17 @@ void SoundManager::init() {
     }
 
     if (!MIX_Init()) {
-        throw GmiException(std::string{"Unable to initialize SDL_mixer: "} + SDL_GetError());
+        throw GmiException(std::string("Unable to initialize SDL_mixer: ") + SDL_GetError());
     }
 
     const SDL_AudioDeviceID device = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
     if (device == 0) {
-        throw GmiException(std::string{"Unable to initialize audio device: "} + SDL_GetError());
+        throw GmiException(std::string("Unable to initialize audio device: ") + SDL_GetError());
     }
 
     m_mixer = MIX_CreateMixerDevice(device, nullptr);
     if (!m_mixer) {
-        throw GmiException(std::string{"Unable to initialize audio mixer: "} + SDL_GetError());
+        throw GmiException(std::string("Unable to initialize audio mixer: ") + SDL_GetError());
     }
 
     m_initialized = true;

@@ -26,7 +26,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result) {
-    const auto app = static_cast<Application*>(appstate);
+    auto app = static_cast<Application*>(appstate);
     app->shutdown(result);
     delete app;
 }
@@ -51,7 +51,7 @@ Application::Application(const ApplicationConfig& config) : m_renderer(), m_stag
     m_soundManager.init();
 }
 
-void Application::addTicker(const std::function<void()> &ticker) {
+void Application::addTicker(const std::function<void()>& ticker) {
     m_tickers.push_back(ticker);
 }
 
@@ -69,7 +69,7 @@ void Application::setSize(int width, int height) const {
     SDL_SetWindowSize(m_window, width, height);
 }
 
-SDL_AppResult Application::processEvent(const SDL_Event* event) {
+SDL_AppResult Application::processEvent(SDL_Event* event) {
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;
     }
@@ -88,7 +88,7 @@ SDL_AppResult Application::processEvent(const SDL_Event* event) {
 }
 
 SDL_AppResult Application::iterate() {
-    const auto frameStart{steady_clock::now()};
+    time_point<steady_clock> frameStart = steady_clock::now();
     m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
     m_lastFrame = frameStart;
 
@@ -98,8 +98,8 @@ SDL_AppResult Application::iterate() {
     m_renderer.renderFrame();
 
     if (m_maxFps > 0) {
-        const float elapsed{duration<float, std::milli>(steady_clock::now() - frameStart).count()};
-        const float idealDt{1000.0f / static_cast<float>(m_maxFps)};
+        float elapsed = duration<float, std::milli>(steady_clock::now() - frameStart).count();
+        float idealDt = 1000.0f / static_cast<float>(m_maxFps);
         if (elapsed < idealDt) {
             std::this_thread::sleep_for(duration<float, std::milli>(idealDt - elapsed));
         }

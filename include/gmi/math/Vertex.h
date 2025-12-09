@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Affine.h"
 
 namespace gmi::math {

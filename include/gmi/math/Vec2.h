@@ -8,9 +8,9 @@ namespace gmi::math {
 /** Represents a two-dimensional vector. */
 struct Vec2 {
     /** The x-component of the vector. */
-    float x{0};
+    float x = 0;
     /** The y-component of the vector. */
-    float y{0};
+    float y = 0;
 
     /**
      * Creates a Vec2 with arbitrary components.
@@ -81,53 +81,53 @@ inline Vec2& operator/=(Vec2& a, const Vec2& b) {
     return a;
 }
 
-inline Vec2 operator+(const Vec2& a, const float n) {
+inline Vec2 operator+(const Vec2& a, float n) {
     return { a.x + n, a.y + n };
 }
-inline Vec2 operator+(const float n, const Vec2& a) {
+inline Vec2 operator+(float n, const Vec2& a) {
     return { a.x + n, a.y + n };
 }
 
-inline Vec2 operator-(const Vec2& a, const float n) {
+inline Vec2 operator-(const Vec2& a, float n) {
     return { a.x - n, a.y - n };
 }
-inline Vec2 operator-(const float n, const Vec2& a) {
+inline Vec2 operator-(float n, const Vec2& a) {
     return { a.x - n, a.y - n };
 }
 
-inline Vec2 operator*(const Vec2& a, const float n) {
+inline Vec2 operator*(const Vec2& a, float n) {
     return { a.x * n, a.y * n };
 }
-inline Vec2 operator*(const float n, const Vec2& a) {
+inline Vec2 operator*(float n, const Vec2& a) {
     return { a.x * n, a.y * n };
 }
 
-inline Vec2 operator/(const Vec2& a, const float n) {
+inline Vec2 operator/(const Vec2& a, float n) {
     return { a.x / n, a.y / n };
 }
-inline Vec2 operator/(const float n, const Vec2& a) {
+inline Vec2 operator/(float n, const Vec2& a) {
     return { a.x / n, a.y / n };
 }
 
-inline Vec2& operator+=(Vec2& a, const float n) {
+inline Vec2& operator+=(Vec2& a, float n) {
     a.x += n;
     a.y += n;
     return a;
 }
 
-inline Vec2& operator-=(Vec2& a, const float n) {
+inline Vec2& operator-=(Vec2& a, float n) {
     a.x -= n;
     a.y -= n;
     return a;
 }
 
-inline Vec2& operator*=(Vec2& a, const float n) {
+inline Vec2& operator*=(Vec2& a, float n) {
     a.x *= n;
     a.y *= n;
     return a;
 }
 
-inline Vec2& operator/=(Vec2& a, const float n) {
+inline Vec2& operator/=(Vec2& a, float n) {
     a.x /= n;
     a.y /= n;
     return a;
@@ -171,7 +171,7 @@ inline float lengthSquared(const Vec2& v) {
  * @returns A vector whose length is 1 and is parallel to the original vector
  */
 inline Vec2 normalize(const Vec2& v) {
-    const float len = length(v);
+    float len = length(v);
     return nearlyEqual(len, 0)
         ? Vec2{ v.x / len, v.y / len }
         : Vec2{ v.x, v.y };
@@ -193,8 +193,8 @@ inline Vec2 invert(const Vec2& v) {
  * @returns A new vector resulting from the rotation of the input vector by the given angle
  */
 inline Vec2 rotate(const Vec2& v, float angle) {
-    const float c = std::cos(angle);
-    const float s = std::sin(angle);
+    float c = std::cos(angle);
+    float s = std::sin(angle);
     return { v.x * c - v.y * s, v.x * s + v.y * c };
 }
 

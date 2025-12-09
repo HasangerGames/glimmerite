@@ -8,7 +8,7 @@ void TweenManager::add(const TweenOptions& opts) {
     if (opts.duration <= 0) {
         throw GmiException("Tween duration must be greater than zero");
     }
-    Tween tween{opts};
+    auto tween = Tween(opts);
     tween.startTime = nowMs();
     tween.endTime = tween.startTime + tween.opts.duration;
     for (auto& var : tween.opts.values) {
@@ -18,12 +18,12 @@ void TweenManager::add(const TweenOptions& opts) {
 }
 
 void TweenManager::update() {
-    const uint64_t now = nowMs();
+    uint64_t now = nowMs();
     auto tween = m_tweens.begin();
     while (tween != m_tweens.end()) {
-        TweenOptions& opts{tween->opts};
-        const float factor{math::clamp(static_cast<float>(now - tween->startTime) / opts.duration, 0.0f, 1.0f)};
-        const float eased{opts.ease(factor)};
+        TweenOptions& opts = tween->opts;
+        const float factor = math::clamp(static_cast<float>(now - tween->startTime) / opts.duration, 0.0f, 1.0f);
+        const float eased = opts.ease(factor);
 
         for (const TweenVar& v : opts.values) {
             if (!v.var) {

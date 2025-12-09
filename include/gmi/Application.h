@@ -17,34 +17,34 @@ namespace gmi {
 /** Configuration options used when creating an Application instance. */
 struct ApplicationConfig {
     /** Initial width of the Application window. */
-    int width{800};
+    int width = 800;
     /** Initial height of the Application window. */
-    int height{600};
+    int height = 600;
 
     /** Title of the Application window. */
-    std::string title{"Glimmerite Application"};
+    std::string title = "Glimmerite Application";
 
     /** Background color of the Application window. */
-    Color backgroundColor{Color::fromRgb(0, 0, 0)};
+    Color backgroundColor = Color::fromRgb(0, 0, 0);
 
     /**
      * The renderer/graphics API to use.
      * Not all renderers are available on all platforms.
      * If the specified renderer is not available, Glimmerite will automatically fall back to a different one.
      */
-    bgfx::RendererType::Enum renderer{bgfx::RendererType::Count};
+    bgfx::RendererType::Enum renderer = bgfx::RendererType::Count;
 
     /**
      * Syncs the framerate of the Application to the monitor's refresh rate.
      * Recommended to reduce resource usage and screen tearing.
      */
-    bool vsync{true};
+    bool vsync = true;
 };
 
 class Application {
     SDL_Window* m_window;
 
-    uint16_t m_maxFps{0};
+    uint16_t m_maxFps = 0;
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
     float m_dt;
 
@@ -129,7 +129,7 @@ public:
     SDL_AppResult iterate();
 
     /** This method is called internally when an event is received and should never be called manually. */
-    SDL_AppResult processEvent(const SDL_Event* event);
+    SDL_AppResult processEvent(SDL_Event *event);
 
     /** This method is called internally when the program terminates and should never be called manually. */
     void shutdown(SDL_AppResult result);

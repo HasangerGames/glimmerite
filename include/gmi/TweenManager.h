@@ -17,11 +17,11 @@ struct TweenVar {
 struct TweenOptions {
     std::vector<TweenVar> values;
     uint64_t duration;
-    math::EasingFn ease{math::Easing::linear};
-    bool yoyo{false};
-    bool infinite{false};
-    std::function<void()> onUpdate{nullptr};
-    std::function<void()> onComplete{nullptr};
+    math::EasingFn ease = math::Easing::linear;
+    bool yoyo = false;
+    bool infinite = false;
+    std::function<void()> onUpdate = nullptr;
+    std::function<void()> onComplete = nullptr;
 };
 
 struct Tween {

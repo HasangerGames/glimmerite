@@ -10,10 +10,10 @@ namespace gmi {
 Container::~Container() = default;
 
 void Container::removeChild(Container* child) {
-    const auto it{std::ranges::find_if(
+    auto it = std::ranges::find_if(
         m_children,
         [child](const std::unique_ptr<Container>& m_child) { return m_child.get() == child; }
-    )};
+    );
     if (it != m_children.end()) {
         m_children.erase(it);
         child->m_parent = nullptr;
@@ -32,7 +32,7 @@ void Container::setPosition(const math::Vec2& position) {
     m_transformDirty = true;
 }
 
-void Container::setRotation(const float rotation) {
+void Container::setRotation(float rotation) {
     m_transform.rotation = rotation;
     m_transformDirty = true;
 }
@@ -42,12 +42,12 @@ void Container::setScale(const math::Vec2& scale) {
     m_transformDirty = true;
 }
 
-void Container::setScale(const float scale) {
+void Container::setScale(float scale) {
     m_transform.scale = {scale, scale};
     m_transformDirty = true;
 }
 
-void Container::setPivot(const math::Vec2 &pivot) {
+void Container::setPivot(const math::Vec2& pivot) {
     m_transform.pivot = pivot;
     m_transformDirty = true;
 }
@@ -85,7 +85,7 @@ void Container::animate(const AnimateOptions<math::Vec2>& opts) {
             {&prop->x, opts.target.x},
             {&prop->y, opts.target.y}
         },
-        .duration = 125,
+        .duration = opts.duration,
         .ease = math::Easing::cubicOut,
         .yoyo = true,
         .onUpdate = [this] { m_transformDirty = true; }

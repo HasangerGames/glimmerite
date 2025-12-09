@@ -15,22 +15,22 @@ struct AnimateOptions {
     math::TransformProps prop;
     T target;
     uint64_t duration;
-    math::EasingFn easing{math::Easing::linear};
-    bool yoyo{false};
-    bool infinite{false};
+    math::EasingFn easing = math::Easing::linear;
+    bool yoyo = false;
+    bool infinite = false;
 };
 
 class Container {
 protected:
-    Application* m_parentApp{nullptr};
+    Application* m_parentApp = nullptr;
 
-    Container* m_parent{nullptr};
+    Container* m_parent = nullptr;
     std::vector<std::unique_ptr<Container>> m_children;
 
     math::Affine m_affine;
     math::Transform m_transform;
-    bool m_transformDirty{true};
-    int m_zIndex{0};
+    bool m_transformDirty = true;
+    int m_zIndex = 0;
 
     virtual void updateAffine();
 public:
@@ -95,7 +95,7 @@ public:
      * IMPORTANT: This value will not be respected until sortChildren() is called on the parent.
      * @param zIndex The new Z index to set
      */
-    void setZIndex(const int zIndex) { m_zIndex = zIndex; }
+    void setZIndex(int zIndex) { m_zIndex = zIndex; }
 
     void animate(const AnimateOptions<math::Vec2>& opts);
 

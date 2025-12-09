@@ -15,7 +15,7 @@ public:
 
     [[nodiscard]] Texture& getTexture() const { return m_texture; }
 
-    void render(Renderer &renderer) override;
+    void render(Renderer& renderer) override;
 };
 
 }

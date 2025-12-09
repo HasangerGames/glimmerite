@@ -16,7 +16,7 @@ class Application;
  */
 class Renderer {
 protected:
-    const Application* m_parentApp;
+    const Application *m_parentApp;
     uint32_t m_width, m_height;
     bool m_vsync;
     float m_viewMatrix[16];
@@ -25,11 +25,11 @@ protected:
     bgfx::UniformHandle m_sampler;
     bgfx::VertexLayout m_vertexLayout;
     std::vector<Drawable> m_queue;
-    bool m_initialized;
+    bool m_initialized = false;
 
     void reset() const;
 
-    void submitBatch(const std::vector<math::Vertex> &vertices, bgfx::TextureHandle texture) const;
+    void submitBatch(const std::vector<math::Vertex>& vertices, bgfx::TextureHandle texture) const;
 public:
     Renderer() = default;
     virtual ~Renderer() = default;

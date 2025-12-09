@@ -18,22 +18,22 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
         throw GmiException("Failed to load texture '" + name + "': Texture already exists");
     }
 
-    std::ifstream stream{filePath, std::ios::binary};
+    auto stream = std::ifstream(filePath, std::ios::binary);
     if (!stream.good()) {
         throw GmiException("Failed to load texture '" + name + "': File not found: " + filePath);
     }
 
     stream.seekg(0, std::ios::end);
-    const std::streamsize size{stream.tellg()};
+    std::streamsize size = stream.tellg();
     stream.seekg(0, std::ios::beg);
 
     char data[size];
     stream.read(data, size);
 
-    bimg::ImageContainer* image{bimg::imageParse(&m_allocator, data, size)};
-    const uint32_t width = image->m_width;
-    const uint32_t height = image->m_height;
-    const bgfx::TextureHandle handle = bgfx::createTexture2D(
+    bimg::ImageContainer* image = bimg::imageParse(&m_allocator, data, size);
+    uint32_t width = image->m_width;
+    uint32_t height = image->m_height;
+    bgfx::TextureHandle handle = bgfx::createTexture2D(
         width,
         height,
         image->m_numMips > 1,
@@ -65,7 +65,7 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
 }
 
 void TextureManager::load(const std::string& filePath) {
-    load(std::filesystem::path{filePath}.stem(), filePath);
+    load(std::filesystem::path(filePath).stem(), filePath);
 }
 
 struct SpritesheetFrame {
@@ -85,7 +85,7 @@ struct Spritesheet {
 };
 
 void TextureManager::loadSpritesheet(const std::string& name, const std::string& filePath) {
-    std::ifstream dataFile{filePath};
+    auto dataFile = std::ifstream(filePath);
     if (!dataFile.good()) {
         throw GmiException("Failed to parse spritesheet '" + name + "': File not found: " + filePath);
     }
@@ -95,13 +95,13 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
     std::string sheetData = stream.str();
 
     Spritesheet sheet{};
-    if (const glz::error_ctx err{glz::read_json(sheet, sheetData)}) {
+    if (const glz::error_ctx err = glz::read_json(sheet, sheetData)) {
         throw GmiException("Failed to parse spritesheet '" + name + "': " + glz::format_error(err, sheetData));
     }
 
-    std::string sheetPath{std::filesystem::path{filePath}.parent_path() / sheet.meta.image};
+    std::string sheetPath = std::filesystem::path{filePath}.parent_path() / sheet.meta.image;
     load(name, sheetPath);
-    Texture texture{m_textures[name]};
+    Texture texture = m_textures[name];
 
     for (const auto& [subName, frame] : sheet.frames) {
         m_textures[subName] = {
@@ -113,7 +113,7 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
 }
 
 void TextureManager::loadSpritesheet(const std::string &filePath) {
-    loadSpritesheet(std::filesystem::path{filePath}.stem(), filePath);
+    loadSpritesheet(std::filesystem::path(filePath).stem(), filePath);
 }
 
 Texture& TextureManager::get(const std::string& name) {

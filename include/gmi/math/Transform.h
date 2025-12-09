@@ -6,9 +6,9 @@ namespace gmi::math {
 
 struct Transform {
     Vec2 position;
-    float rotation{0};
-    Vec2 scale{1, 1};
-    Vec2 pivot{0.5f, 0.5f};
+    float rotation = 0;
+    Vec2 scale = {1, 1};
+    Vec2 pivot = {0.5f, 0.5f};
     Color color;
 };
 

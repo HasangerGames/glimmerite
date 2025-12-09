@@ -54,8 +54,8 @@ void Renderer::init(
 #endif
     bgfx::init(init);
 
-    constexpr bx::Vec3 eye{ 0.0f, 0.0f, -1.0f };
-    constexpr bx::Vec3 at { 0.0f, 0.0f, 0.0f };
+    static constexpr bx::Vec3 eye{ 0.0f, 0.0f, -1.0f };
+    static constexpr bx::Vec3 at { 0.0f, 0.0f, 0.0f };
     bx::mtxLookAt(m_viewMatrix, eye, at);
     resize(width, height);
 
@@ -80,7 +80,6 @@ void Renderer::init(
 bgfx::RendererType::Enum Renderer::getType() { // TODO Move to Application::getRendererType()
     return bgfx::getRendererType();
 }
-
 
 void Renderer::setVsync(bool vsync) {
     m_vsync = vsync;
@@ -123,7 +122,7 @@ void Renderer::queueDrawable(const Drawable& drawable) {
 
 void Renderer::renderFrame() {
     std::vector<math::Vertex> batchVertices;
-    bgfx::TextureHandle* batchTexture{nullptr};
+    bgfx::TextureHandle* batchTexture = nullptr;
     for (auto& [currentVertices, currentTexture] : m_queue) {
         if (currentTexture != batchTexture) {
             if (!batchVertices.empty()) {
