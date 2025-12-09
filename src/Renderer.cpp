@@ -117,43 +117,30 @@ void Renderer::setClearColor(const Color& color) {
 }
 
 void Renderer::queueDrawable(const Drawable& drawable) {
-    m_queue.push_back(drawable);
-}
-
-void Renderer::renderFrame() {
-    std::vector<math::Vertex> batchVertices;
-    bgfx::TextureHandle* batchTexture = nullptr;
-    for (auto& [currentVertices, currentTexture] : m_queue) {
-        if (currentTexture != batchTexture) {
-            if (!batchVertices.empty()) {
-                submitBatch(batchVertices, *batchTexture);
-                batchVertices.clear();
-            }
-            batchTexture = currentTexture;
+    if (drawable.texture != m_batchTexture) {
+        if (!m_batchVertices.empty()) {
+            submitBatch();
         }
-
-        batchVertices.insert(
-            batchVertices.end(),
-            std::make_move_iterator(currentVertices.begin()),
-            std::make_move_iterator(currentVertices.end())
-        );
+        m_batchTexture = drawable.texture;
     }
-    submitBatch(batchVertices, *batchTexture);
-    m_queue.clear();
 
-    bgfx::frame();
+    m_batchVertices.insert(
+        m_batchVertices.end(),
+        std::make_move_iterator(drawable.vertices.begin()),
+        std::make_move_iterator(drawable.vertices.end())
+    );
 }
 
-constexpr size_t VERT_SIZE = sizeof(math::Vertex);
+void Renderer::submitBatch() {
+    static constexpr size_t VERT_SIZE = sizeof(math::Vertex);
 
-void Renderer::submitBatch(const std::vector<math::Vertex>& vertices, bgfx::TextureHandle texture) const {
-    size_t numVertices = vertices.size();
+    size_t numVertices = m_batchVertices.size();
     size_t numQuads = numVertices / 4;
 
     // Create vertex buffer
     bgfx::TransientVertexBuffer vertexBuffer;
     bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
-    std::memcpy(vertexBuffer.data, vertices.data(), numVertices * VERT_SIZE);
+    std::memcpy(vertexBuffer.data, m_batchVertices.data(), numVertices * VERT_SIZE);
     bgfx::setVertexBuffer(0, &vertexBuffer);
 
     // Create index buffer
@@ -172,11 +159,20 @@ void Renderer::submitBatch(const std::vector<math::Vertex>& vertices, bgfx::Text
     }
     bgfx::setIndexBuffer(&indexBuffer);
 
-    bgfx::setTexture(0, m_sampler, texture);
+    bgfx::setTexture(0, m_sampler, *m_batchTexture);
 
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
 
     bgfx::submit(0, m_spriteProgram);
+
+    m_batchVertices.clear();
+    m_batchTexture = nullptr;
+}
+
+void Renderer::render(Container& container) {
+    container.render(*this);
+    submitBatch();
+    bgfx::frame();
 }
 
 void Renderer::shutdown() const {

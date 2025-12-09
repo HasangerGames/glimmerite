@@ -1,6 +1,4 @@
 #pragma once
-#include <chrono>
-#include <deque>
 #include <vector>
 
 #include "Drawable.h"
@@ -10,12 +8,12 @@
 namespace gmi {
 
 class Application;
+class Container;
 
 /**
  * The Renderer is an API which handles communication between the Application and bgfx.
  */
 class Renderer {
-protected:
     const Application *m_parentApp;
     uint32_t m_width, m_height;
     bool m_vsync;
@@ -24,12 +22,13 @@ protected:
     bgfx::ProgramHandle m_spriteProgram;
     bgfx::UniformHandle m_sampler;
     bgfx::VertexLayout m_vertexLayout;
-    std::vector<Drawable> m_queue;
     bool m_initialized = false;
 
     void reset() const;
 
-    void submitBatch(const std::vector<math::Vertex>& vertices, bgfx::TextureHandle texture) const;
+    std::vector<math::Vertex> m_batchVertices;
+    bgfx::TextureHandle* m_batchTexture = nullptr;
+    void submitBatch();
 public:
     Renderer() = default;
     virtual ~Renderer() = default;
@@ -48,7 +47,7 @@ public:
 
     void queueDrawable(const Drawable& drawable);
 
-    void renderFrame();
+    void render(Container& container);
 
     void shutdown() const;
 };

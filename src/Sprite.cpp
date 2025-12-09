@@ -49,7 +49,10 @@ void Sprite::updateAffine() {
 
 void Sprite::render(Renderer& renderer) {
     Container::render(renderer);
-    renderer.queueDrawable(m_drawable); // TODO Add getDrawable() method implemented by all Containers, loop over Containers in renderFrame method
+
+    if (m_visible) {
+        renderer.queueDrawable(m_drawable);
+    }
 }
 
 }

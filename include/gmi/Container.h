@@ -20,6 +20,9 @@ struct AnimateOptions {
     bool infinite = false;
 };
 
+class Application;
+class Renderer;
+
 class Container {
 protected:
     Application* m_parentApp = nullptr;
@@ -31,6 +34,7 @@ protected:
     math::Transform m_transform;
     bool m_transformDirty = true;
     int m_zIndex = 0;
+    bool m_visible = true;
 
     virtual void updateAffine();
 public:
@@ -83,6 +87,9 @@ public:
 
     /** @param pivot The center of rotation to set, as a normalized vector (components 0-1) */
     void setPivot(const math::Vec2& pivot);
+
+    /** @param visible Whether the Container should be visible */
+    void setVisible(bool visible) { m_visible = visible; }
 
     /** @return The Transform applied to this Container (position, rotation, scale, etc.) */
     [[nodiscard]] const math::Transform& getTransform() const { return m_transform; }

@@ -94,8 +94,7 @@ SDL_AppResult Application::iterate() {
 
     for (const auto& ticker : m_tickers) ticker();
     m_tweenManager.update();
-    m_stage.render(m_renderer);
-    m_renderer.renderFrame();
+    m_renderer.render(m_stage);
 
     if (m_maxFps > 0) {
         float elapsed = duration<float, std::milli>(steady_clock::now() - frameStart).count();
