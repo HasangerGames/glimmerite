@@ -16,7 +16,7 @@ constexpr float EPSILON = 0.001;
  * @param epsilon The error tolerance, defaults to 0.001
  * @return Whether the two numbers are nearly equal
  */
-inline bool nearlyEqual(const float a, const float b, const float epsilon = EPSILON) {
+inline bool nearlyEqual(float a, float b, float epsilon = EPSILON) {
     return std::abs(a - b) < epsilon * std::max(std::abs(a), std::abs(b));
 }
 
@@ -26,8 +26,8 @@ inline bool nearlyEqual(const float a, const float b, const float epsilon = EPSI
  * @param epsilon The error tolerance, defaults to 0.001
  * @return Whether the number is nearly zero
  */
-inline bool nearlyZero(const float n, const float epsilon = EPSILON) {
-    const float an = std::abs(n);
+inline bool nearlyZero(float n, float epsilon = EPSILON) {
+    float an = std::abs(n);
     return an < epsilon * an;
 }
 
@@ -38,7 +38,7 @@ inline bool nearlyZero(const float n, const float epsilon = EPSILON) {
  * @param interpFactor The interpolation factor
  * @return The number corresponding to the linear interpolation between `start` and `end` at factor `interpFactor`
  */
-inline float lerp(const float start, const float end, const float interpFactor) {
+inline float lerp(float start, float end, float interpFactor) {
     return start * (1 - interpFactor) + end * interpFactor;
 }
 
@@ -49,7 +49,7 @@ inline float lerp(const float start, const float end, const float interpFactor) 
  * @param max The maximum value the number can be
  * @returns The number, clamped to the interval `[min, max]`
  */
-inline float clamp(const float value, const float min, const float max) {
+inline float clamp(float value, float min, float max) {
     return value < max ? value > min ? value : min : max;
 }
 
@@ -60,7 +60,7 @@ inline float clamp(const float value, const float min, const float max) {
  * @param n The divisor
  * @return The remainder of the division
  */
-inline float fmodAbs(const float a, const float n) {
+inline float fmodAbs(float a, float n) {
     return std::fmod(std::fmod(a, n) + n, n);
 }
 
@@ -69,7 +69,7 @@ inline float fmodAbs(const float a, const float n) {
  * @param degrees An angle in degrees
  * @return The angle in radians
  */
-inline float degreesToRadians(const float degrees) {
+inline float degreesToRadians(float degrees) {
     return degrees * PI / 180.0f;
 }
 
@@ -78,7 +78,7 @@ inline float degreesToRadians(const float degrees) {
  * @param radians An angle in radians
  * @return The angle in degrees
  */
-inline float radiansToDegrees(const float radians) {
+inline float radiansToDegrees(float radians) {
     return radians * 180.0f / PI;
 }
 
@@ -87,7 +87,7 @@ inline float radiansToDegrees(const float radians) {
  * @param radians The angle, in radians
  * @return The normalized angle
  */
-inline float normalizeAngle(const float radians) {
+inline float normalizeAngle(float radians) {
     return fmodAbs(radians - PI, PI * 2) - PI;
 }
 
