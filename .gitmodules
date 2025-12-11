@@ -10,3 +10,6 @@
 [submodule "vendored/glaze"]
 	path = vendored/glaze
 	url = https://github.com/stephenberry/glaze.git
+[submodule "vendored/earcut.hpp"]
+	path = vendored/earcut.hpp
+	url = https://github.com/mapbox/earcut.hpp.git

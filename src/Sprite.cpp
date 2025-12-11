@@ -38,13 +38,13 @@ void Sprite::updateAffine() {
 
     m_drawable = {
         .vertices = {
-            {a + c + x, b + d + y, rx, by, finalColor}, // Top right
             {c + x,     d + y,     lx, by, finalColor}, // Top left
-            {x,         y,         lx, ty, finalColor}, // Bottom left
+            {a + c + x, b + d + y, rx, by, finalColor}, // Top right
             {a + x,     b + y,     rx, ty, finalColor}, // Bottom right
+            {x,         y,         lx, ty, finalColor}, // Bottom left
         },
         .indices = { 0, 1, 2, 0, 2, 3 },
-        .texture = &handle
+        .texture = handle
     };
 }
 

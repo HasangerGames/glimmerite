@@ -59,9 +59,15 @@ void Renderer::init(
     bx::mtxLookAt(m_viewMatrix, eye, at);
     resize(width, height);
 
+    bgfx::RendererType::Enum actualRenderer = bgfx::getRendererType();
     m_spriteProgram = bgfx::createProgram(
-        bgfx::createEmbeddedShader(&internal::VS_SPRITE, bgfx::getRendererType(), "vs_sprite"),
-        bgfx::createEmbeddedShader(&internal::FS_SPRITE, bgfx::getRendererType(), "fs_sprite"),
+        bgfx::createEmbeddedShader(&internal::VS_SPRITE, actualRenderer, "vs_sprite"),
+        bgfx::createEmbeddedShader(&internal::FS_SPRITE, actualRenderer, "fs_sprite"),
+        true
+    );
+    m_colorProgram = bgfx::createProgram(
+        bgfx::createEmbeddedShader(&internal::VS_COLOR, actualRenderer, "vs_color"),
+        bgfx::createEmbeddedShader(&internal::FS_COLOR, actualRenderer, "fs_color"),
         true
     );
 
@@ -119,7 +125,7 @@ void Renderer::setClearColor(const Color& color) {
 void Renderer::queueDrawable(const Drawable& drawable) {
     auto& [vertices, indices, texture] = drawable;
 
-    if (texture != m_batchTexture) {
+    if (texture.idx != m_batchTexture.idx) {
         submitBatch();
         m_batchTexture = texture;
     }
@@ -150,15 +156,18 @@ void Renderer::submitBatch() {
     std::memcpy(indexBuffer.data, m_batchIndices.data(), numIndices * IND_SIZE);
     bgfx::setIndexBuffer(&indexBuffer);
 
-    bgfx::setTexture(0, m_sampler, *m_batchTexture);
-
     bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA);
 
-    bgfx::submit(0, m_spriteProgram);
+    if (bgfx::isValid(m_batchTexture)) {
+        bgfx::setTexture(0, m_sampler, m_batchTexture);
+        bgfx::submit(0, m_spriteProgram);
+    } else {
+        bgfx::submit(0, m_colorProgram);
+    }
 
     m_batchVertices.clear();
     m_batchIndices.clear();
-    m_batchTexture = nullptr;
+    m_batchTexture = BGFX_INVALID_HANDLE;
 }
 
 void Renderer::render(Container& container) {
@@ -169,6 +178,7 @@ void Renderer::render(Container& container) {
 
 void Renderer::shutdown() const {
     bgfx::destroy(m_spriteProgram);
+    bgfx::destroy(m_colorProgram);
     bgfx::destroy(m_sampler);
     bgfx::shutdown();
 }

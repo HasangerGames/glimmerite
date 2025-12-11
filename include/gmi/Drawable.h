@@ -8,7 +8,7 @@ namespace gmi {
 struct Drawable {
     std::vector<math::Vertex> vertices;
     std::vector<uint16_t> indices;
-    bgfx::TextureHandle* texture;
+    bgfx::TextureHandle texture = BGFX_INVALID_HANDLE;
 };
 
 }

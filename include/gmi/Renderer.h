@@ -21,6 +21,7 @@ class Renderer {
     float m_viewMatrix[16];
     float m_projMatrix[16];
     bgfx::ProgramHandle m_spriteProgram;
+    bgfx::ProgramHandle m_colorProgram;
     bgfx::UniformHandle m_sampler;
     bgfx::VertexLayout m_vertexLayout;
 
@@ -28,7 +29,7 @@ class Renderer {
 
     std::vector<math::Vertex> m_batchVertices;
     std::vector<uint16_t> m_batchIndices;
-    bgfx::TextureHandle* m_batchTexture = nullptr;
+    bgfx::TextureHandle m_batchTexture = BGFX_INVALID_HANDLE;
     void submitBatch();
 public:
     Renderer() = default;

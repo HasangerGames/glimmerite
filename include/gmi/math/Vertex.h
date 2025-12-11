@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Affine.h"
+#include <vector>
 
 namespace gmi::math {
 

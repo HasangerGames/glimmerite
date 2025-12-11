@@ -26,6 +26,11 @@ add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/glaze EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/earcut.hpp EXCLUDE_FROM_ALL)
+
+option(EARCUT_BUILD_TESTS OFF)
+option(EARCUT_BUILD_BENCH OFF)
+option(EARCUT_BUILD_VIZ OFF)
 
 target_include_directories(glimmerite
     PUBLIC
@@ -35,18 +40,35 @@ target_include_directories(glimmerite
 
 bgfx_compile_shaders(
     TYPE VERTEX
-    SHADERS shaders/vs_sprite.sc
-    VARYING_DEF ${CMAKE_CURRENT_LIST_DIR}/shaders/varying.def.sc
+    SHADERS ${CMAKE_CURRENT_LIST_DIR}/shaders/sprite/vs_sprite.sc
+    VARYING_DEF ${CMAKE_CURRENT_LIST_DIR}/shaders/sprite/varying.def.sc
     INCLUDE_DIRS ${BGFX_DIR}/src
-    OUTPUT_DIR ../src/shaders
+    OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/src/shaders
     AS_HEADERS
 )
 bgfx_compile_shaders(
     TYPE FRAGMENT
-    SHADERS shaders/fs_sprite.sc
-    VARYING_DEF ${CMAKE_CURRENT_LIST_DIR}/shaders/varying.def.sc
+    SHADERS ${CMAKE_CURRENT_LIST_DIR}/shaders/sprite/fs_sprite.sc
+    VARYING_DEF ${CMAKE_CURRENT_LIST_DIR}/shaders/sprite/varying.def.sc
     INCLUDE_DIRS ${BGFX_DIR}/src
-    OUTPUT_DIR ../src/shaders
+    OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/src/shaders
+    AS_HEADERS
+)
+
+bgfx_compile_shaders(
+    TYPE VERTEX
+    SHADERS ${CMAKE_CURRENT_LIST_DIR}/shaders/color/vs_color.sc
+    VARYING_DEF ${CMAKE_CURRENT_LIST_DIR}/shaders/color/varying.def.sc
+    INCLUDE_DIRS ${BGFX_DIR}/src
+    OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/src/shaders
+    AS_HEADERS
+)
+bgfx_compile_shaders(
+    TYPE FRAGMENT
+    SHADERS ${CMAKE_CURRENT_LIST_DIR}/shaders/color/fs_color.sc
+    VARYING_DEF ${CMAKE_CURRENT_LIST_DIR}/shaders/color/varying.def.sc
+    INCLUDE_DIRS ${BGFX_DIR}/src
+    OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/src/shaders
     AS_HEADERS
 )
 
@@ -57,5 +79,6 @@ target_link_libraries(glimmerite PUBLIC
     bx
     bimg_decode
     glaze::glaze
+    earcut_hpp
 )
 target_link_libraries(helloworld PRIVATE glimmerite SDL3::SDL3 bgfx bx bimg_decode)
