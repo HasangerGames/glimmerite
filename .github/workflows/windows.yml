@@ -1,0 +1,69 @@
+name: Windows
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        c_compiler: [clang64]
+        include:
+          - os: windows-latest
+            c_compiler: clang64
+            cpp_compiler: clang64
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{matrix.c_compiler}}
+          update: true
+          install: >-
+            git
+            make
+          # TODO: use pacboy SDL3 when new enough SDL3 releases
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            ninja:p
+            ccache:p
+
+      - uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2.18
+        with:
+          create-symlink: false
+          key: ${{ runner.os }}-${{ runner.arch }}-ccache
+
+      - name: Configure CMake
+        run: >
+          cmake -B build -G "Ninja Multi-Config"
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DBUILD_TESTING=ON
+
+      - name: Build (Debug)
+        run: cmake --build build --config Debug
+
+      - name: Build (Release)
+        run: cmake --build build --config Release
+
+      - name: Run Tests (Debug)
+        working-directory: build
+        run: ctest --build-config Debug
+
+      - name: Run Tests (Release)
+        working-directory: build
+        run: ctest --build-config Release
