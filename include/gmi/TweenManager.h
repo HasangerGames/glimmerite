@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
-#include <memory>
 #include <vector>
 
 #include "math/Easing.h"
@@ -32,6 +32,7 @@ struct Tween {
 
 class TweenManager {
     std::vector<Tween> m_tweens;
+
 public:
     void add(const TweenOptions& opts);
 

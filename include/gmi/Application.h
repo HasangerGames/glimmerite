@@ -1,16 +1,18 @@
 #pragma once
+#include <chrono>
 #include <functional>
 #include <string>
 
-#include "Renderer.h"
-#include "Container.h"
-#include "math/Size.h"
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_video.h"
-#include "SDL3/SDL_init.h"
 #include "Color.h"
+#include "Container.h"
+#include "Renderer.h"
+#include "SDL3/SDL_events.h"
+#include "SDL3/SDL_init.h"
+#include "SDL3/SDL_video.h"
 #include "SoundManager.h"
 #include "TweenManager.h"
+#include "gmi/TextureManager.h"
+#include "math/Size.h"
 
 namespace gmi {
 
@@ -56,6 +58,7 @@ class Application {
     TweenManager m_tweenManager;
     Renderer m_renderer;
     Container m_stage;
+
 public:
     /**
      * Creates a new Application.
@@ -129,7 +132,7 @@ public:
     SDL_AppResult iterate();
 
     /** This method is called internally when an event is received and should never be called manually. */
-    SDL_AppResult processEvent(SDL_Event *event);
+    SDL_AppResult processEvent(SDL_Event* event);
 
     /** This method is called internally when the program terminates and should never be called manually. */
     void shutdown(SDL_AppResult result) const;

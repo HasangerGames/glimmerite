@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "Renderer.h"
-#include "gmi.h"
 #include "math/Affine.h"
 #include "math/Easing.h"
 #include "math/Transform.h"
@@ -37,12 +36,13 @@ protected:
     bool m_visible = true;
 
     virtual void updateAffine();
+
 public:
     Container(Application* parentApp, Container* parent) :
-        m_parentApp(parentApp), m_parent(parent) {}
+        m_parentApp(parentApp), m_parent(parent) { }
 
     Container(Application* parentApp, Container* parent, const math::Transform& transform) :
-        m_parentApp(parentApp), m_parent(parent), m_transform(transform) {}
+        m_parentApp(parentApp), m_parent(parent), m_transform(transform) { }
 
     virtual ~Container();
 

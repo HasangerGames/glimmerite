@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "gmi/Application.h"
+#include "gmi/gmi.h"
 #include "gmi/math/Affine.h"
 
 namespace gmi {
@@ -12,7 +13,9 @@ Container::~Container() = default;
 void Container::removeChild(Container* child) {
     auto it = std::ranges::find_if(
         m_children,
-        [child](const std::unique_ptr<Container>& m_child) { return m_child.get() == child; }
+        [child](const std::unique_ptr<Container>& m_child) {
+            return m_child.get() == child;
+        }
     );
     if (it != m_children.end()) {
         m_children.erase(it);
@@ -23,7 +26,9 @@ void Container::removeChild(Container* child) {
 void Container::sortChildren() {
     std::ranges::sort(
         m_children,
-        [](const std::unique_ptr<Container>& a, const std::unique_ptr<Container>& b) { return a->m_zIndex < b->m_zIndex; }
+        [](const std::unique_ptr<Container>& a, const std::unique_ptr<Container>& b) {
+            return a->m_zIndex < b->m_zIndex;
+        }
     );
 }
 
@@ -54,7 +59,7 @@ void Container::setPivot(const math::Vec2& pivot) {
 
 void Container::updateAffine() {
     const math::Affine affine = math::Affine::fromTransform(m_transform);
-    if (m_parent) {
+    if (m_parent != nullptr) {
         m_affine = m_parent->m_affine * affine;
     } else {
         m_affine = affine;
@@ -68,30 +73,28 @@ void Container::updateAffine() {
 void Container::animate(const AnimateOptions<math::Vec2>& opts) {
     math::Vec2* prop;
     switch (opts.prop) {
-        case math::TransformProps::Position:
-            prop = &m_transform.position;
-            break;
-        case math::TransformProps::Scale:
-            prop = &m_transform.scale;
-            break;
-        case math::TransformProps::Pivot:
-            prop = &m_transform.pivot;
-            break;
-        default:
-            throw GmiException("Attempted to animate a non-Vec2 property to a Vec2 target");
+    case math::TransformProps::Position:
+        prop = &m_transform.position;
+        break;
+    case math::TransformProps::Scale:
+        prop = &m_transform.scale;
+        break;
+    case math::TransformProps::Pivot:
+        prop = &m_transform.pivot;
+        break;
+    default:
+        throw GmiException("Attempted to animate a non-Vec2 property to a Vec2 target");
     }
     m_parentApp->tween().add({
-        .values = {
-            {&prop->x, opts.target.x},
-            {&prop->y, opts.target.y}
-        },
+        .values = {{&prop->x, opts.target.x}, {&prop->y, opts.target.y}},
         .duration = opts.duration,
         .ease = math::Easing::cubicOut,
         .yoyo = true,
-        .onUpdate = [this] { m_transformDirty = true; }
+        .onUpdate = [this] {
+            m_transformDirty = true;
+        },
     });
 }
-
 
 void Container::render(Renderer& renderer) {
     if (m_transformDirty) {

@@ -3,11 +3,11 @@
 using namespace gmi;
 
 Application* gmiMain() {
-    const auto app = new Application({
+    auto* const app = new Application({
         .width = 960,
         .height = 540,
         .title = "Hello World!",
-        .backgroundColor = Color::fromRgb(128, 128, 255)
+        .backgroundColor = Color::fromRgb(128, 128, 255),
     });
     return app;
 }

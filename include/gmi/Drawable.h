@@ -1,6 +1,8 @@
 #pragma once
+
+#include "bgfx/bgfx.h"
 #include "math/Vertex.h"
-#include "gmi/TextureManager.h"
+
 #include <vector>
 
 namespace gmi {

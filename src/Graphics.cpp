@@ -17,11 +17,12 @@ Graphics& Graphics::fillRect(const math::Rect& rect, Color color) {
     auto [x, y, w, h] = rect;
     uint32_t colorNum = colorToNumber(color);
     vertices.reserve(numVertices + 4);
+    // clang-format off
     vertices.emplace_back(x,     y,     0, 1, colorNum); // Top left
     vertices.emplace_back(x + w, y,     1, 1, colorNum); // Top right
     vertices.emplace_back(x + w, y + h, 1, 0, colorNum); // Bottom right
     vertices.emplace_back(x,     y + h, 0, 0, colorNum); // Bottom left
-
+    // clang-format on
     return *this;
 }
 

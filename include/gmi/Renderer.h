@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "Drawable.h"
 #include "Color.h"
+#include "Drawable.h"
 #include "bgfx/bgfx.h"
 
 namespace gmi {
@@ -15,7 +15,7 @@ class Container;
  */
 class Renderer {
     bool m_initialized = false;
-    const Application *m_parentApp;
+    const Application* m_parentApp;
     uint32_t m_width, m_height;
     bool m_vsync;
     float m_viewMatrix[16];
@@ -31,6 +31,7 @@ class Renderer {
     std::vector<uint16_t> m_batchIndices;
     bgfx::TextureHandle m_batchTexture = BGFX_INVALID_HANDLE;
     void submitBatch();
+
 public:
     Renderer() = default;
     virtual ~Renderer() = default;
@@ -38,7 +39,7 @@ public:
     void init(const Application& parentApp, uint32_t width, uint32_t height, bool vsync, bgfx::RendererType::Enum rendererType);
 
     /** @return The type of renderer being used. */
-    [[nodiscard]] bgfx::RendererType::Enum getType();
+    [[nodiscard]] static bgfx::RendererType::Enum getType();
 
     /** Controls VSync. See @ref Application for more info. */
     void setVsync(bool vsync);

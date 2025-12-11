@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
 #include <numbers>
 
 namespace gmi::math {
@@ -40,17 +42,6 @@ inline bool nearlyZero(float n, float epsilon = EPSILON) {
  */
 inline float lerp(float start, float end, float interpFactor) {
     return start * (1 - interpFactor) + end * interpFactor;
-}
-
-/**
- * Clamps a number to specified bounds.
- * @param value The number to clamp
- * @param min The minimum value the number can be
- * @param max The maximum value the number can be
- * @returns The number, clamped to the interval `[min, max]`
- */
-inline float clamp(float value, float min, float max) {
-    return value < max ? value > min ? value : min : max;
 }
 
 /**

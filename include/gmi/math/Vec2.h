@@ -1,8 +1,7 @@
 #pragma once
+#include "gmi/math/math.h"
 #include <cmath>
 #include <ostream>
-
-#include "math.h"
 
 namespace gmi::math {
 
@@ -22,8 +21,8 @@ struct Vec2 {
     static Vec2 fromAny(T x, T y);
 };
 
-template <typename T>
-Vec2 Vec2::fromAny(T x, T y) { return { static_cast<float>(x), static_cast<float>(y) }; }
+template<typename T>
+Vec2 Vec2::fromAny(T x, T y) { return {static_cast<float>(x), static_cast<float>(y)}; }
 
 inline std::ostream& operator<<(std::ostream& stream, const Vec2& a) {
     stream << "Vec2{" << a.x << ", " << a.y << "}";
@@ -43,19 +42,19 @@ inline bool operator!=(const Vec2& a, const Vec2& b) {
 }
 
 inline Vec2 operator+(const Vec2& a, const Vec2& b) {
-    return { a.x + b.x, a.y + b.y };
+    return {a.x + b.x, a.y + b.y};
 }
 
 inline Vec2 operator-(const Vec2& a, const Vec2& b) {
-    return { a.x - b.x, a.y - b.y };
+    return {a.x - b.x, a.y - b.y};
 }
 
 inline Vec2 operator*(const Vec2& a, const Vec2& b) {
-    return { a.x * b.x, a.y * b.y };
+    return {a.x * b.x, a.y * b.y};
 }
 
 inline Vec2 operator/(const Vec2& a, const Vec2& b) {
-    return { a.x / b.x, a.y / b.y };
+    return {a.x / b.x, a.y / b.y};
 }
 
 inline Vec2& operator+=(Vec2& a, const Vec2& b) {
@@ -83,31 +82,31 @@ inline Vec2& operator/=(Vec2& a, const Vec2& b) {
 }
 
 inline Vec2 operator+(const Vec2& a, float n) {
-    return { a.x + n, a.y + n };
+    return {a.x + n, a.y + n};
 }
 inline Vec2 operator+(float n, const Vec2& a) {
-    return { a.x + n, a.y + n };
+    return {a.x + n, a.y + n};
 }
 
 inline Vec2 operator-(const Vec2& a, float n) {
-    return { a.x - n, a.y - n };
+    return {a.x - n, a.y - n};
 }
 inline Vec2 operator-(float n, const Vec2& a) {
-    return { a.x - n, a.y - n };
+    return {a.x - n, a.y - n};
 }
 
 inline Vec2 operator*(const Vec2& a, float n) {
-    return { a.x * n, a.y * n };
+    return {a.x * n, a.y * n};
 }
 inline Vec2 operator*(float n, const Vec2& a) {
-    return { a.x * n, a.y * n };
+    return {a.x * n, a.y * n};
 }
 
 inline Vec2 operator/(const Vec2& a, float n) {
-    return { a.x / n, a.y / n };
+    return {a.x / n, a.y / n};
 }
 inline Vec2 operator/(float n, const Vec2& a) {
-    return { a.x / n, a.y / n };
+    return {a.x / n, a.y / n};
 }
 
 inline Vec2& operator+=(Vec2& a, float n) {
@@ -174,8 +173,8 @@ inline float lengthSquared(const Vec2& v) {
 inline Vec2 normalize(const Vec2& v) {
     float len = length(v);
     return nearlyEqual(len, 0)
-        ? Vec2{ v.x / len, v.y / len }
-        : Vec2{ v.x, v.y };
+        ? Vec2{v.x / len, v.y / len}
+        : Vec2{v.x, v.y};
 }
 
 /**
@@ -184,7 +183,7 @@ inline Vec2 normalize(const Vec2& v) {
  * @returns A vector whose components are -1 multiplied by the corresponding component in the original vector
  */
 inline Vec2 invert(const Vec2& v) {
-    return { -v.x, -v.y };
+    return {-v.x, -v.y};
 }
 
 /**
@@ -196,7 +195,7 @@ inline Vec2 invert(const Vec2& v) {
 inline Vec2 rotate(const Vec2& v, float angle) {
     float c = std::cos(angle);
     float s = std::sin(angle);
-    return { v.x * c - v.y * s, v.x * s + v.y * c };
+    return {v.x * c - v.y * s, v.x * s + v.y * c};
 }
 
 //
