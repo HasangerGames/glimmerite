@@ -132,7 +132,7 @@ public:
     SDL_AppResult processEvent(SDL_Event *event);
 
     /** This method is called internally when the program terminates and should never be called manually. */
-    void shutdown(SDL_AppResult result);
+    void shutdown(SDL_AppResult result) const;
 };
 
 }

@@ -25,38 +25,39 @@ class Renderer;
 
 class Container {
 protected:
-    Application* m_parentApp = nullptr;
-
-    Container* m_parent = nullptr;
+    Application* m_parentApp;
+    Container* m_parent;
     std::vector<std::unique_ptr<Container>> m_children;
 
     math::Affine m_affine;
     math::Transform m_transform;
     bool m_transformDirty = true;
+
     int m_zIndex = 0;
     bool m_visible = true;
 
     virtual void updateAffine();
 public:
-    Container() = default;
-    explicit Container(Application* app) : m_parentApp(app) {}
-    explicit Container(Application* app, const math::Transform& transform) : m_parentApp(app), m_transform(transform) {}
+    Container(Application* parentApp, Container* parent) :
+        m_parentApp(parentApp), m_parent(parent) {}
+
+    Container(Application* parentApp, Container* parent, const math::Transform& transform) :
+        m_parentApp(parentApp), m_parent(parent), m_transform(transform) {}
+
     virtual ~Container();
 
-    /**
-     * Adds a child to this Container. If the child has an existing parent,
-     * it will be removed from that parent before it is added to this one.
-     * @param child The child to add
-     */
-    template<typename T>
-    T* addChild(std::unique_ptr<T> child);
+    /** @return A pointer to this Container's parent, or `nullptr` if it does not have a parent. */
+    [[nodiscard]] Container* getParent() const { return m_parent; }
+
+    /** @return A const reference to a std::vector containing this Container's children. */
+    [[nodiscard]] const std::vector<std::unique_ptr<Container>>& getChildren() const { return m_children; }
 
     /**
      * Creates a child and adds it to this Container.
      * @tparam T The type of Container to create
      * @tparam Args The Container's constructor arguments
      * @param args The arguments to pass to the Container's constructor
-     * @return
+     * @return A pointer to the newly created Container
      */
     template<typename T, typename... Args>
     T* createChild(Args&&... args);
@@ -106,9 +107,6 @@ public:
 
     void animate(const AnimateOptions<math::Vec2>& opts);
 
-    /** @return A pointer to this Container's parent. If this Container does not have a parent, returns nullptr. */
-    [[nodiscard]] Container* getParent() const { return m_parent; }
-
     /**
      * Renders the contents of this Container using the given @ref Renderer.
      * @param renderer The renderer to use
@@ -116,28 +114,10 @@ public:
     virtual void render(Renderer& renderer);
 };
 
-template<typename T>
-T* Container::addChild(std::unique_ptr<T> child) {
-    Container* childPtr = child.get();
-    if (childPtr == this) {
-        throw GmiException("Container cannot be its own child");
-    }
-
-    if (child->m_parent) {
-        child->m_parent->removeChild(childPtr);
-    }
-    child->m_parent = this;
-    child->m_transformDirty = true;
-
-    m_children.push_back(std::move(child));
-    return m_children.back().get();
-}
-
 template<typename T, typename... Args>
 T* Container::createChild(Args&&... args) {
-    m_children.push_back(std::make_unique<T>(m_parentApp, std::forward<Args>(args)...));
-    auto childPtr{static_cast<T*>(m_children.back().get())};
-    childPtr->m_parent = this;
+    auto childPtr = new T(m_parentApp, this, std::forward<Args>(args)...);
+    m_children.emplace_back(childPtr);
     return childPtr;
 }
 

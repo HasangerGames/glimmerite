@@ -35,7 +35,7 @@ using namespace std::chrono;
 
 namespace gmi {
 
-Application::Application(const ApplicationConfig& config) : m_renderer(), m_stage(this) {
+Application::Application(const ApplicationConfig& config) : m_renderer(), m_stage(this, nullptr) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
@@ -107,7 +107,7 @@ SDL_AppResult Application::iterate() {
     return SDL_APP_CONTINUE;
 }
 
-void Application::shutdown(SDL_AppResult result) {
+void Application::shutdown(SDL_AppResult result) const {
     m_textureManager.destroyAll();
     m_renderer.shutdown();
 }
