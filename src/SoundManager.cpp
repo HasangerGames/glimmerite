@@ -1,7 +1,7 @@
 #include "gmi/SoundManager.h"
 
-#include "gmi/gmi.h"
 #include "SDL3_mixer/SDL_mixer.h"
+#include "gmi/gmi.h"
 
 namespace gmi {
 
@@ -20,16 +20,15 @@ void SoundManager::init() {
     }
 
     m_mixer = MIX_CreateMixerDevice(device, nullptr);
-    if (!m_mixer) {
+    if (m_mixer == nullptr) {
         throw GmiException(std::string("Unable to initialize audio mixer: ") + SDL_GetError());
     }
 
     m_initialized = true;
 }
 
-
-void SoundManager::load(const std::string &name, const std::string &filePath) {
-    if (!((m_sounds[name] = MIX_LoadAudio(m_mixer, filePath.c_str(), true)))) {
+void SoundManager::load(const std::string& name, const std::string& filePath) {
+    if (((m_sounds[name] = MIX_LoadAudio(m_mixer, filePath.c_str(), true))) == nullptr) {
         throw GmiException("Error loading sound '" + name + "': " + SDL_GetError());
     }
 }

@@ -16,10 +16,7 @@ void Sprite::updateAffine() {
 
     auto& [handle, textureSize, frame] = m_texture;
 
-    math::Affine affineScaled = m_affine * math::Affine::scaleAbout(
-        m_transform.pivot,
-        math::Vec2::fromAny(frame.w, frame.h)
-    );
+    math::Affine affineScaled = m_affine * math::Affine::scaleAbout(m_transform.pivot, math::Vec2::fromAny(frame.w, frame.h));
 
     auto tw = static_cast<float>(textureSize.w);
     auto th = static_cast<float>(textureSize.h);
@@ -28,22 +25,24 @@ void Sprite::updateAffine() {
     auto fw = static_cast<float>(frame.w);
     auto fh = static_cast<float>(frame.h);
 
-    float lx = fx / tw;        // left X
+    float lx = fx / tw; // left X
     float rx = (fx + fw) / tw; // right X
-    float ty = fy / th;        // top Y
+    float ty = fy / th; // top Y
     float by = (fy + fh) / th; // bottom Y
 
     auto [a, b, c, d, x, y, color] = affineScaled;
     uint32_t finalColor = colorToNumber(color);
 
     m_drawable = {
+        // clang-format off
         .vertices = {
             {c + x,     d + y,     lx, by, finalColor}, // Top left
             {a + c + x, b + d + y, rx, by, finalColor}, // Top right
             {a + x,     b + y,     rx, ty, finalColor}, // Bottom right
             {x,         y,         lx, ty, finalColor}, // Bottom left
         },
-        .indices = { 0, 1, 2, 0, 2, 3 },
+        // clang-format on
+        .indices = {0, 1, 2, 0, 2, 3},
         .texture = handle
     };
 }

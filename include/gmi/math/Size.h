@@ -1,9 +1,15 @@
 #pragma once
 
+#include <cstdint>
+
 namespace gmi::math {
 
-struct Size { int width = 0, height = 0; };
+struct Size {
+    int width = 0, height = 0;
+};
 
-struct UintSize { uint32_t w, h; };
+struct UintSize {
+    uint32_t w, h;
+};
 
 }

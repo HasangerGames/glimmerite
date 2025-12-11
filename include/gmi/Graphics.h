@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Container.h"
+#include "gmi/math/Rect.h"
 #include "mapbox/earcut.hpp"
 
 namespace gmi {
@@ -11,8 +13,9 @@ struct StrokeStyle {
 
 class Graphics : public Container {
     Drawable m_drawable;
+
 public:
-    Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) {}
+    Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) { }
 
     Graphics& fillRect(const math::Rect& rect, Color color);
 
@@ -26,13 +29,13 @@ public:
 // Makes earcut understand Vec2
 namespace mapbox::util {
 
-template <>
+template<>
 struct nth<0, gmi::math::Vec2> {
     static auto get(const gmi::math::Vec2& t) {
         return t.x;
     }
 };
-template <>
+template<>
 struct nth<1, gmi::math::Vec2> {
     static auto get(const gmi::math::Vec2& t) {
         return t.y;

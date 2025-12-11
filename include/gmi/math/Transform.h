@@ -12,7 +12,7 @@ struct Transform {
     Color color;
 };
 
-enum class TransformProps {
+enum class TransformProps : uint8_t {
     Position,
     Rotation,
     Scale,

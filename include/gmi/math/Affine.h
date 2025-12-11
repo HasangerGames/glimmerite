@@ -69,7 +69,9 @@ struct Affine {
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Affine& m) {
-    stream << "Affine" << std::endl << "|" << m.a << " " << m.c << " " << m.x << "|" << std::endl << "|" << m.b << " " << m.d << " " << m.y << "|" << std::endl;
+    stream << "Affine" << '\n'
+           << "|" << m.a << " " << m.c << " " << m.x << "|" << '\n'
+           << "|" << m.b << " " << m.d << " " << m.y << "|" << '\n';
     return stream;
 }
 

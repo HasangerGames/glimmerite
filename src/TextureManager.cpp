@@ -1,15 +1,14 @@
 #include "gmi/TextureManager.h"
 
+#include <filesystem>
 #include <fstream>
+#include <glaze/core/context.hpp>
+#include <glaze/json/read.hpp>
 #include <iostream>
 
 #include "bimg/decode.h"
-#include "bx/allocator.h"
 #include "gmi/gmi.h"
 #include "gmi/math/Rect.h"
-
-#include "glaze/glaze.hpp"
-#include "gmi/Sprite.h"
 
 namespace gmi {
 
@@ -59,7 +58,7 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
             .x = 0,
             .y = 0,
             .w = width,
-            .h = height
+            .h = height,
         }
     };
 }
@@ -107,12 +106,12 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
         m_textures[subName] = {
             .handle = texture.handle,
             .size = texture.size,
-            .frame = frame.frame
+            .frame = frame.frame,
         };
     }
 }
 
-void TextureManager::loadSpritesheet(const std::string &filePath) {
+void TextureManager::loadSpritesheet(const std::string& filePath) {
     loadSpritesheet(std::filesystem::path(filePath).stem(), filePath);
 }
 

@@ -32,6 +32,8 @@ void Renderer::init(
     init.resolution.height = height;
     init.resolution.reset = vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE;
     const SDL_PropertiesID props = SDL_GetWindowProperties(parentApp.getWindow());
+
+    // NOLINTBEGIN(performance-no-int-to-ptr)
 #if defined(SDL_PLATFORM_WIN32)
     init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
 #elif defined(SDL_PLATFORM_MACOS)
@@ -41,6 +43,7 @@ void Renderer::init(
         init.platformData.nwh = reinterpret_cast<void*>(SDL_GetNumberProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0));
         init.platformData.ndt = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
     } else if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0) {
+        init.platformData.type = bgfx::NativeWindowHandleType::Wayland;
         init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, nullptr);
         init.platformData.ndt = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, nullptr);
     }
@@ -52,10 +55,12 @@ void Renderer::init(
 #elif defined(EMSCRIPTEN)
     init.platformData.nwh = reinterpret_cast<void*>("#canvas");
 #endif
+    // NOLINTEND(performance-no-int-to-ptr)
+
     bgfx::init(init);
 
-    static constexpr bx::Vec3 eye{ 0.0f, 0.0f, -1.0f };
-    static constexpr bx::Vec3 at { 0.0f, 0.0f, 0.0f };
+    static constexpr bx::Vec3 eye{0.0f, 0.0f, -1.0f};
+    static constexpr bx::Vec3 at{0.0f, 0.0f, 0.0f};
     bx::mtxLookAt(m_viewMatrix, eye, at);
     resize(width, height);
 
@@ -123,7 +128,7 @@ void Renderer::setClearColor(const Color& color) {
 }
 
 void Renderer::queueDrawable(const Drawable& drawable) {
-    auto& [vertices, indices, texture] = drawable;
+    const auto& [vertices, indices, texture] = drawable;
 
     if (texture.idx != m_batchTexture.idx) {
         submitBatch();
@@ -139,7 +144,8 @@ void Renderer::queueDrawable(const Drawable& drawable) {
 }
 
 void Renderer::submitBatch() {
-    if (m_batchVertices.empty()) return;
+    if (m_batchVertices.empty())
+        return;
 
     static constexpr size_t VERT_SIZE = sizeof(math::Vertex);
     static constexpr size_t IND_SIZE = sizeof(uint16_t);

@@ -20,6 +20,7 @@ class TextureManager {
     bx::DefaultAllocator m_allocator;
     std::vector<bgfx::TextureHandle> m_handles;
     std::unordered_map<std::string, Texture> m_textures;
+
 public:
     /**
      * Loads a @ref Texture from disk.

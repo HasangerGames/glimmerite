@@ -12,7 +12,7 @@ using namespace gmi;
 
 Application* gmiMain();
 
-SDL_AppResult SDL_AppInit(void** appstate, int argc, char *argv[]) {
+SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char* /*argv*/[]) {
     *appstate = gmiMain();
     return SDL_APP_CONTINUE;
 }
@@ -26,7 +26,7 @@ SDL_AppResult SDL_AppIterate(void* appstate) {
 }
 
 void SDL_AppQuit(void* appstate, SDL_AppResult result) {
-    auto app = static_cast<Application*>(appstate);
+    auto* app = static_cast<Application*>(appstate);
     app->shutdown(result);
     delete app;
 }
@@ -35,18 +35,18 @@ using namespace std::chrono;
 
 namespace gmi {
 
-Application::Application(const ApplicationConfig& config) : m_renderer(), m_stage(this, nullptr) {
+Application::Application(const ApplicationConfig& config) : m_stage(this, nullptr) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
 
     m_window = SDL_CreateWindow(config.title.c_str(), config.width, config.height, SDL_WINDOW_RESIZABLE);
-    if (!m_window) {
+    if (m_window == nullptr) {
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
 
     m_renderer.init(*this, config.width, config.height, config.vsync, config.renderer);
-    m_renderer.setClearColor(config.backgroundColor);
+    gmi::Renderer::setClearColor(config.backgroundColor);
 
     m_soundManager.init();
 }
@@ -92,7 +92,8 @@ SDL_AppResult Application::iterate() {
     m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
     m_lastFrame = frameStart;
 
-    for (const auto& ticker : m_tickers) ticker();
+    for (const auto& ticker : m_tickers)
+        ticker();
     m_tweenManager.update();
     m_renderer.render(m_stage);
 
@@ -107,7 +108,7 @@ SDL_AppResult Application::iterate() {
     return SDL_APP_CONTINUE;
 }
 
-void Application::shutdown(SDL_AppResult result) const {
+void Application::shutdown(SDL_AppResult /*result*/) const {
     m_textureManager.destroyAll();
     m_renderer.shutdown();
 }
