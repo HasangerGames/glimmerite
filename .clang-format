@@ -1,0 +1,79 @@
+---
+---
+# SPDX-FileCopyrightText: 2019 Christoph Cullmann <cullmann@kde.org>
+# SPDX-FileCopyrightText: 2019 Gernot Gebhard <gebhard@absint.com>
+#
+# SPDX-License-Identifier: MIT
+
+# I like KDE clang format defaults so i just copied it :)
+# did modify some stuff tho
+---
+Language: JavaScript
+DisableFormat: true
+---
+# Style for C++
+Language: Cpp
+Standard: c++20
+
+# base is WebKit coding style: https://webkit.org/code-style-guidelines/
+# below are only things set that diverge from this style!
+BasedOnStyle: WebKit
+
+# 4 spaces indent
+TabWidth: 4
+
+# No line limit
+ColumnLimit: 0
+
+# sort includes inside line separated groups
+SortIncludes: true
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterClass: false
+    AfterControlStatement: false
+    AfterEnum: false
+    AfterFunction: false
+    AfterNamespace: false
+    AfterObjCDeclaration: false
+    AfterStruct: false
+    AfterUnion: false
+    BeforeCatch: false
+    BeforeElse: false
+    IndentBraces: false
+
+# CrlInstruction* a;
+PointerAlignment: Left
+
+# always break after an open bracket
+AlignAfterOpenBracket: BlockIndent
+
+# don't move all parameters to new line
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# In case we have an if statement with multiple lines the operator should be at the beginning of the line
+# but we do not want to break assignments
+BreakBeforeBinaryOperators: NonAssignment
+
+# format C++11 braced lists like function calls
+Cpp11BracedListStyle: true
+
+# do not put a space before C++11 braced lists
+SpaceBeforeCpp11BracedList: false
+
+# no namespace indentation to keep indent level low
+NamespaceIndentation: None
+
+# we use template< without space.
+SpaceAfterTemplateKeyword: false
+
+# Always break after template declaration
+AlwaysBreakTemplateDeclarations: true
+
+# keep lambda formatting multi-line if not empty
+AllowShortLambdasOnASingleLine: Empty
+
+# We do not want clang-format to put all arguments on a new line
+AllowAllArgumentsOnNextLine: false
+
+BreakConstructorInitializers: AfterColon
