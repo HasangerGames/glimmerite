@@ -43,6 +43,7 @@ void Sprite::updateAffine() {
             {x,         y,         lx, ty, finalColor}, // Bottom left
             {a + x,     b + y,     rx, ty, finalColor}, // Bottom right
         },
+        .indices = { 0, 1, 2, 0, 2, 3 },
         .texture = &handle
     };
 }

@@ -77,7 +77,7 @@ void Renderer::init(
     m_initialized = true;
 }
 
-bgfx::RendererType::Enum Renderer::getType() { // TODO Move to Application::getRendererType()
+bgfx::RendererType::Enum Renderer::getType() {
     return bgfx::getRendererType();
 }
 
@@ -117,46 +117,37 @@ void Renderer::setClearColor(const Color& color) {
 }
 
 void Renderer::queueDrawable(const Drawable& drawable) {
-    if (drawable.texture != m_batchTexture) {
-        if (!m_batchVertices.empty()) {
-            submitBatch();
-        }
-        m_batchTexture = drawable.texture;
+    auto& [vertices, indices, texture] = drawable;
+
+    if (texture != m_batchTexture) {
+        submitBatch();
+        m_batchTexture = texture;
     }
 
-    m_batchVertices.insert(
-        m_batchVertices.end(),
-        std::make_move_iterator(drawable.vertices.begin()),
-        std::make_move_iterator(drawable.vertices.end())
-    );
+    size_t numVertices = m_batchVertices.size();
+    for (uint16_t index : indices) {
+        m_batchIndices.push_back(numVertices + index);
+    }
+
+    m_batchVertices.insert(m_batchVertices.end(), vertices.begin(), vertices.end());
 }
 
 void Renderer::submitBatch() {
+    if (m_batchVertices.empty()) return;
+
     static constexpr size_t VERT_SIZE = sizeof(math::Vertex);
+    static constexpr size_t IND_SIZE = sizeof(uint16_t);
 
+    bgfx::TransientVertexBuffer vertexBuffer{};
     size_t numVertices = m_batchVertices.size();
-    size_t numQuads = numVertices / 4;
-
-    // Create vertex buffer
-    bgfx::TransientVertexBuffer vertexBuffer;
     bgfx::allocTransientVertexBuffer(&vertexBuffer, numVertices, m_vertexLayout);
     std::memcpy(vertexBuffer.data, m_batchVertices.data(), numVertices * VERT_SIZE);
     bgfx::setVertexBuffer(0, &vertexBuffer);
 
-    // Create index buffer
-    bgfx::TransientIndexBuffer indexBuffer;
-    bgfx::allocTransientIndexBuffer(&indexBuffer, numQuads * 6);
-    auto indices = std::bit_cast<uint16_t*>(indexBuffer.data);
-    uint16_t idx = -1;
-    for (uint16_t i = 0; i < numQuads; i++) {
-        uint16_t base = i * 4;
-        indices[++idx] = base + 0;
-        indices[++idx] = base + 1;
-        indices[++idx] = base + 2;
-        indices[++idx] = base + 0;
-        indices[++idx] = base + 2;
-        indices[++idx] = base + 3;
-    }
+    bgfx::TransientIndexBuffer indexBuffer{};
+    size_t numIndices = m_batchIndices.size();
+    bgfx::allocTransientIndexBuffer(&indexBuffer, numIndices);
+    std::memcpy(indexBuffer.data, m_batchIndices.data(), numIndices * IND_SIZE);
     bgfx::setIndexBuffer(&indexBuffer);
 
     bgfx::setTexture(0, m_sampler, *m_batchTexture);
@@ -166,6 +157,7 @@ void Renderer::submitBatch() {
     bgfx::submit(0, m_spriteProgram);
 
     m_batchVertices.clear();
+    m_batchIndices.clear();
     m_batchTexture = nullptr;
 }
 

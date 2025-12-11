@@ -14,6 +14,7 @@ class Container;
  * The Renderer is an API which handles communication between the Application and bgfx.
  */
 class Renderer {
+    bool m_initialized = false;
     const Application *m_parentApp;
     uint32_t m_width, m_height;
     bool m_vsync;
@@ -22,11 +23,11 @@ class Renderer {
     bgfx::ProgramHandle m_spriteProgram;
     bgfx::UniformHandle m_sampler;
     bgfx::VertexLayout m_vertexLayout;
-    bool m_initialized = false;
 
     void reset() const;
 
     std::vector<math::Vertex> m_batchVertices;
+    std::vector<uint16_t> m_batchIndices;
     bgfx::TextureHandle* m_batchTexture = nullptr;
     void submitBatch();
 public:
