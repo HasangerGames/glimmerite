@@ -64,7 +64,7 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
 }
 
 void TextureManager::load(const std::string& filePath) {
-    load(std::filesystem::path(filePath).stem(), filePath);
+    load(std::filesystem::path(filePath).stem().string(), filePath);
 }
 
 struct SpritesheetFrame {
@@ -98,7 +98,7 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
         throw GmiException("Failed to parse spritesheet '" + name + "': " + glz::format_error(err, sheetData));
     }
 
-    std::string sheetPath = std::filesystem::path{filePath}.parent_path() / sheet.meta.image;
+    std::string sheetPath = (std::filesystem::path{filePath}.parent_path() / sheet.meta.image).string();
     load(name, sheetPath);
     Texture texture = m_textures[name];
 
@@ -112,7 +112,7 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
 }
 
 void TextureManager::loadSpritesheet(const std::string& filePath) {
-    loadSpritesheet(std::filesystem::path(filePath).stem(), filePath);
+    loadSpritesheet(std::filesystem::path(filePath).string(), filePath);
 }
 
 Texture& TextureManager::get(const std::string& name) {

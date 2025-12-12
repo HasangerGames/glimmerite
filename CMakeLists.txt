@@ -85,7 +85,7 @@ bgfx_compile_shaders(
 )
 
 
-add_library(glimmerite
+add_library(glimmerite STATIC
     src/Application.cpp
     src/Container.cpp
     src/Graphics.cpp
@@ -95,9 +95,11 @@ add_library(glimmerite
     src/TextureManager.cpp
     src/TweenManager.cpp
     src/gmi.cpp
+
     shaders/sprite/varying.def.sc
     shaders/sprite/fs_sprite.sc
     shaders/sprite/vs_sprite.sc
+
     shaders/color/varying.def.sc
     shaders/color/fs_color.sc
     shaders/color/vs_color.sc
