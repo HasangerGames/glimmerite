@@ -60,7 +60,7 @@ public:
      * @return A pointer to the newly created Container
      */
     template<typename T, typename... Args>
-    T* createChild(Args&&... args);
+    T& createChild(Args&&... args);
 
     /**
      * Removes a child from this Container.
@@ -115,10 +115,10 @@ public:
 };
 
 template<typename T, typename... Args>
-T* Container::createChild(Args&&... args) {
+T& Container::createChild(Args&&... args) {
     auto childPtr = new T(m_parentApp, this, std::forward<Args>(args)...);
     m_children.emplace_back(childPtr);
-    return childPtr;
+    return *childPtr;
 }
 
 }

@@ -3,7 +3,7 @@
 using namespace gmi;
 
 Application* gmiMain() {
-    auto* const app = new Application({
+    auto* app = new Application({
         .width = 960,
         .height = 540,
         .title = "Hello World!",

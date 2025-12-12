@@ -6,9 +6,26 @@
 
 namespace gmi {
 
+enum class LineCap : uint8_t {
+    Butt,
+    Round,
+    Square
+};
+
+enum class LineJoin : uint8_t {
+    Miter,
+    Round,
+    Bevel
+};
+
 struct StrokeStyle {
-    uint16_t width;
+    float width = 1;
     Color color = {1.0f, 1.0f, 1.0f, 1.0f};
+    LineCap cap = LineCap::Square;
+    LineJoin join = LineJoin::Miter;
+    float alignment = 0.5f;
+    bool closedShape = false;
+    uint8_t miterLimit = 10;
 };
 
 class Graphics : public Container {
@@ -17,7 +34,11 @@ class Graphics : public Container {
 public:
     Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) { }
 
+    Graphics& drawLine(std::vector<math::Vec2> points, const StrokeStyle& style);
+
     Graphics& fillRect(const math::Rect& rect, Color color);
+
+    Graphics& fillCircle(math::Vec2 position, float rx, float ry, Color color);
 
     Graphics& fillPoly(const std::vector<math::Vec2>& points, Color color);
 
