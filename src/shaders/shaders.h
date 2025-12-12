@@ -32,11 +32,11 @@ static constexpr uint8_t vs_color_dx11[0] = {};
 #endif //  defined(_WIN32)
 
 #if __APPLE__
-#include <mtl/fs_sprite.sc.bin.h>
-#include <mtl/vs_sprite.sc.bin.h>
+#include <metal/fs_sprite.sc.bin.h>
+#include <metal/vs_sprite.sc.bin.h>
 
-#include <mtl/fs_color.sc.bin.h>
-#include <mtl/vs_color.sc.bin.h>
+#include <metal/fs_color.sc.bin.h>
+#include <metal/vs_color.sc.bin.h>
 #endif // __APPLE__
 
 namespace gmi::internal {
