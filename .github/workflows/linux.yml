@@ -14,14 +14,15 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        c_compiler: [gcc, clang]
+        c_compiler: [gcc]
         include:
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
+          # TODO: enable clang when 26.04 releases
+          # - os: ubuntu-latest
+          #   c_compiler: clang
+          #   cpp_compiler: clang++
 
     steps:
       - uses: actions/checkout@v6
