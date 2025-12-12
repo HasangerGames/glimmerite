@@ -32,15 +32,13 @@ void Renderer::init(
     init.resolution.height = height;
     init.resolution.reset = vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE;
     const SDL_PropertiesID props = SDL_GetWindowProperties(parentApp.getWindow());
-
-    // NOLINTBEGIN(performance-no-int-to-ptr)
 #if defined(SDL_PLATFORM_WIN32)
-    init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
 #elif defined(SDL_PLATFORM_MACOS)
-    init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, NULL);
+    init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
 #elif defined(SDL_PLATFORM_LINUX)
     if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "x11") == 0) {
-        init.platformData.nwh = reinterpret_cast<void*>(SDL_GetNumberProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0));
+        init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
         init.platformData.ndt = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
     } else if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0) {
         init.platformData.type = bgfx::NativeWindowHandleType::Wayland;
@@ -55,8 +53,6 @@ void Renderer::init(
 #elif defined(EMSCRIPTEN)
     init.platformData.nwh = reinterpret_cast<void*>("#canvas");
 #endif
-    // NOLINTEND(performance-no-int-to-ptr)
-
     bgfx::init(init);
 
     static constexpr bx::Vec3 eye{0.0f, 0.0f, -1.0f};
