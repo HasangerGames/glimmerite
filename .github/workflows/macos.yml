@@ -24,6 +24,12 @@ jobs:
         with:
           submodules: "recursive"
 
+      - name: Install Dependencies
+        # TODO: use brew SDL3 when new enough SDL3 releases
+        run: |
+          brew update
+          brew install ccache glaze
+
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2.20
         with:
@@ -31,12 +37,6 @@ jobs:
           create-symlink: true
           update-package-index: false
           key: ${{ runner.os }}-${{ runner.arch }}-ccache
-
-      - name: Install Dependencies
-        # TODO: use brew SDL3 when new enough SDL3 releases
-        run: |
-          brew update
-          brew install ccache glaze
 
       - name: Configure CMake
         if: ${{ runner.os != 'linux' }}
