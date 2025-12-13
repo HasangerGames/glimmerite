@@ -45,6 +45,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2.18
         with:
+          variant: ccache
           create-symlink: false
           key: ${{ runner.os }}-${{ runner.arch }}-ccache
 
