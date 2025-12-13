@@ -36,6 +36,7 @@ jobs:
             cmake:p
             ninja:p
             ccache:p
+            glaze:p
 
       - uses: actions/checkout@v6
         with:

@@ -5,6 +5,8 @@ project(glimmerite CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(FeatureSummary)
+
 # enable testing
 if (BUILD_TESTING)
     include(CTest)
@@ -27,14 +29,14 @@ add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 
 # TODO: use system package once newer SDL3 releases
 # currently SDL3_Mixer depends on SDL3 git master
-# find_package(SDL3 QUIET CONFIG COMPONENTS SDL3-shared)
+# find_package(SDL3 CONFIG COMPONENTS SDL3-shared)
 # if (NOT SDL3_FOUND)
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 #endif()
 
 add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
-find_package(glaze QUIET CONFIG)
+find_package(glaze CONFIG)
 if (NOT glaze_FOUND)
     add_subdirectory(vendored/glaze EXCLUDE_FROM_ALL)
 endif()
@@ -123,3 +125,5 @@ option(BUILD_EXAMPLES "Build example games" ON)
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
+
+feature_summary(WHAT ALL)

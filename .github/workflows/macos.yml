@@ -30,11 +30,11 @@ jobs:
           create-symlink: true
           key: ${{ runner.os }}-${{ runner.arch }}-ccache
 
-      # TODO: use brew SDL3 when new enough SDL3 releases
-      # - name: Install Dependencies
-      #   run: |
-      #     brew update
-      #     brew install sdl3
+      - name: Install Dependencies
+        # TODO: use brew SDL3 when new enough SDL3 releases
+        run: |
+          brew update
+          brew install glaze
 
       - name: Configure CMake
         if: ${{ runner.os != 'linux' }}
