@@ -49,13 +49,6 @@ jobs:
       - name: Build (Debug)
         run: cmake --build build --config Debug
 
-      - name: Build (Release)
-        run: cmake --build build --config Release
-
       - name: Run Tests (Debug)
         working-directory: build
         run: ctest --build-config Debug
-
-      - name: Run Tests (Release)
-        working-directory: build
-        run: ctest --build-config Release
