@@ -31,6 +31,16 @@ add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 # currently SDL3_Mixer depends on SDL3 git master
 # find_package(SDL3 CONFIG COMPONENTS SDL3-shared)
 # if (NOT SDL3_FOUND)
+
+# disable SDL subsystems we don't need
+set(SDL_GPU OFF CACHE INTERNAL "" FORCE)
+set(SDL_RENDER OFF CACHE INTERNAL "" FORCE)
+set(SDL_CAMERA OFF CACHE INTERNAL "" FORCE)
+set(SDL_POWER OFF CACHE INTERNAL "" FORCE)
+set(SDL_SENSOR OFF CACHE INTERNAL "" FORCE)
+set(SDL_DIALOG OFF CACHE INTERNAL "" FORCE)
+set(SDL_TRAY OFF CACHE INTERNAL "" FORCE)
+
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 #endif()
 
