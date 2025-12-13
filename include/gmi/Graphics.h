@@ -2,7 +2,6 @@
 
 #include "Container.h"
 #include "gmi/math/Rect.h"
-#include "mapbox/earcut.hpp"
 
 namespace gmi {
 
@@ -47,20 +46,3 @@ public:
 
 }
 
-// Makes earcut understand Vec2
-namespace mapbox::util {
-
-template<>
-struct nth<0, gmi::math::Vec2> {
-    static auto get(const gmi::math::Vec2& t) {
-        return t.x;
-    }
-};
-template<>
-struct nth<1, gmi::math::Vec2> {
-    static auto get(const gmi::math::Vec2& t) {
-        return t.y;
-    }
-};
-
-}

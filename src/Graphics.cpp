@@ -1,5 +1,24 @@
 #include "gmi/Graphics.h"
 
+#include <mapbox/earcut.hpp>
+
+// Makes earcut understand Vec2
+namespace mapbox::util {
+
+template<>
+struct nth<0, gmi::math::Vec2> {
+    static auto get(const gmi::math::Vec2& t) {
+        return t.x;
+    }
+};
+template<>
+struct nth<1, gmi::math::Vec2> {
+    static auto get(const gmi::math::Vec2& t) {
+        return t.y;
+    }
+};
+}
+
 namespace gmi {
 
 float getOrientationOfPoints(const std::vector<math::Vec2>& points) {

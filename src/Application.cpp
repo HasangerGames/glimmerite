@@ -75,9 +75,7 @@ SDL_AppResult Application::processEvent(SDL_Event* event) {
     }
 
     if (event->type == SDL_EVENT_WINDOW_RESIZED) {
-        int w, h;
-        SDL_GetWindowSize(m_window, &w, &h);
-        m_renderer.resize(w, h);
+        m_renderer.resize(event->window.data1, event->window.data2);
     }
 
     if (m_eventListeners.contains(event->type)) {

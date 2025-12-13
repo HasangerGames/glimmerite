@@ -1,0 +1,66 @@
+name: Ubuntu
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        c_compiler: [gcc]
+        include:
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          # TODO: enable clang when 26.04 releases
+          # - os: ubuntu-latest
+          #   c_compiler: clang
+          #   cpp_compiler: clang++
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: "recursive"
+
+      - name: Install Dependencies
+        run: |
+          sudo apt -y update
+
+          sudo apt -y install build-essential git make \
+          pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+          libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev \
+          libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev \
+          ccache lld
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2.18
+        with:
+          create-symlink: true
+          key: ${{ runner.os }}-${{ runner.arch }}-ccache
+
+      - name: Configure CMake
+        run: >
+          LDFLAGS="-fuse-ld=lld" cmake -B build
+          -G "Ninja Multi-Config"
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DBUILD_TESTING=ON
+
+      - name: Build (Debug)
+        run: cmake --build build --config Debug
+
+      - name: Run Tests (Debug)
+        working-directory: build
+        run: ctest --build-config Debug
