@@ -27,7 +27,7 @@ struct ApplicationConfig {
     std::string title = "Glimmerite Application";
 
     /** Background color of the Application window. */
-    Color backgroundColor = Color::fromRgb(0, 0, 0);
+    Color backgroundColor = Color::Black;
 
     /**
      * The renderer/graphics API to use.
@@ -44,11 +44,13 @@ struct ApplicationConfig {
 };
 
 class Application {
-    SDL_Window* m_window;
+    bool m_initialized = false;
+
+    SDL_Window* m_window = nullptr;
 
     uint16_t m_maxFps = 0;
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
-    float m_dt;
+    float m_dt = 0.0f;
 
     std::vector<std::function<void()>> m_tickers;
     std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
@@ -58,14 +60,17 @@ class Application {
     TweenManager m_tweenManager;
     Renderer m_renderer;
     Container m_stage;
-
 public:
+    Application() = default;
+    ~Application() = default;
+
     /**
-     * Creates a new Application.
+     * Initializes this Application.
      * @param config The configuration to use
      */
-    explicit Application(const ApplicationConfig& config);
-    ~Application() = default;
+    void init(const ApplicationConfig& config);
+
+    bool isInitialized() const { return m_initialized; }
 
     /** @return The @ref TextureManager associated with the Application, used to load textures */
     [[nodiscard]] TextureManager& texture() { return m_textureManager; }

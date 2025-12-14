@@ -2,12 +2,11 @@
 
 using namespace gmi;
 
-Application* gmiMain() {
-    auto* app = new Application({
+void gmiMain(Application& app) {
+    app.init({
         .width = 960,
         .height = 540,
         .title = "Hello World!",
-        .backgroundColor = Color::fromRgb(128, 128, 255),
+        .backgroundColor = Color::rgb(128, 128, 255),
     });
-    return app;
 }

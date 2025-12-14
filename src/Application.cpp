@@ -10,10 +10,15 @@
 
 using namespace gmi;
 
-Application* gmiMain();
+void gmiMain(Application& app);
 
 SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char* /*argv*/[]) {
-    *appstate = gmiMain();
+    auto* app = new Application();
+    gmiMain(*app);
+    if (!app->isInitialized()) {
+        throw GmiException("Application must be initialized within gmiMain");
+    }
+    *appstate = app;
     return SDL_APP_CONTINUE;
 }
 
@@ -35,7 +40,11 @@ using namespace std::chrono;
 
 namespace gmi {
 
-Application::Application(const ApplicationConfig& config) : m_stage(this, nullptr) {
+void Application::init(const ApplicationConfig& config) {
+    if (m_initialized) {
+        throw GmiException("Application has already been initialized");
+    }
+
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
@@ -46,9 +55,13 @@ Application::Application(const ApplicationConfig& config) : m_stage(this, nullpt
     }
 
     m_renderer.init(*this, config.width, config.height, config.vsync, config.renderer);
-    gmi::Renderer::setClearColor(config.backgroundColor);
+    Renderer::setClearColor(config.backgroundColor);
 
     m_soundManager.init();
+
+    m_stage = Container(this, nullptr);
+
+    m_initialized = true;
 }
 
 void Application::addTicker(const std::function<void()>& ticker) {

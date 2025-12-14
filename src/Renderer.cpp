@@ -12,7 +12,7 @@
 namespace gmi {
 
 void Renderer::init(
-    const Application& parentApp,
+    Application& parentApp,
     uint32_t width,
     uint32_t height,
     bool vsync,
@@ -38,7 +38,7 @@ void Renderer::init(
     init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
 #elif defined(SDL_PLATFORM_LINUX)
     if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "x11") == 0) {
-        init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, nullptr);
+        init.platformData.nwh = reinterpret_cast<void*>(SDL_GetNumberProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0)); // NOLINT(performance-no-int-to-ptr)
         init.platformData.ndt = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr);
     } else if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0) {
         init.platformData.type = bgfx::NativeWindowHandleType::Wayland;
@@ -120,7 +120,7 @@ void Renderer::reset() const {
 }
 
 void Renderer::setClearColor(const Color& color) {
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR, colorToNumber(color));
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR, color.rgbaHex());
 }
 
 void Renderer::queueDrawable(const Drawable& drawable) {
@@ -143,7 +143,7 @@ void Renderer::submitBatch() {
     if (m_batchVertices.empty())
         return;
 
-    static constexpr size_t VERT_SIZE = sizeof(math::Vertex);
+    static constexpr size_t VERT_SIZE = sizeof(Vertex);
     static constexpr size_t IND_SIZE = sizeof(uint16_t);
 
     bgfx::TransientVertexBuffer vertexBuffer{};

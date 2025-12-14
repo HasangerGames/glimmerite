@@ -11,6 +11,7 @@ struct nth<0, gmi::math::Vec2> {
         return t.x;
     }
 };
+
 template<>
 struct nth<1, gmi::math::Vec2> {
     static auto get(const gmi::math::Vec2& t) {

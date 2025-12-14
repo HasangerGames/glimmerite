@@ -8,8 +8,6 @@
 
 namespace gmi {
 
-Container::~Container() = default;
-
 void Container::removeChild(Container* child) {
     auto it = std::ranges::find_if(
         m_children,

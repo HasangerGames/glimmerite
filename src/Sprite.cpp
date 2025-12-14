@@ -31,15 +31,14 @@ void Sprite::updateAffine() {
     float by = (fy + fh) / th; // bottom Y
 
     auto [a, b, c, d, x, y, color] = affineScaled;
-    uint32_t finalColor = colorToNumber(color);
 
     m_drawable = {
         // clang-format off
         .vertices = {
-            {c + x,     d + y,     lx, by, finalColor}, // Top left
-            {a + c + x, b + d + y, rx, by, finalColor}, // Top right
-            {a + x,     b + y,     rx, ty, finalColor}, // Bottom right
-            {x,         y,         lx, ty, finalColor}, // Bottom left
+            {c + x,     d + y,     lx, by, color}, // Top left
+            {a + c + x, b + d + y, rx, by, color}, // Top right
+            {a + x,     b + y,     rx, ty, color}, // Bottom right
+            {x,         y,         lx, ty, color}, // Bottom left
         },
         // clang-format on
         .indices = {0, 1, 2, 0, 2, 3},

@@ -24,8 +24,8 @@ class Renderer;
 
 class Container {
 protected:
-    Application* m_parentApp;
-    Container* m_parent;
+    Application* m_parentApp = nullptr;
+    Container* m_parent = nullptr;
     std::vector<std::unique_ptr<Container>> m_children;
 
     math::Affine m_affine;
@@ -38,13 +38,17 @@ protected:
     virtual void updateAffine();
 
 public:
+    Container() = default;
+
     Container(Application* parentApp, Container* parent) :
         m_parentApp(parentApp), m_parent(parent) { }
 
     Container(Application* parentApp, Container* parent, const math::Transform& transform) :
         m_parentApp(parentApp), m_parent(parent), m_transform(transform) { }
 
-    virtual ~Container();
+    Container& operator=(Container&&) = default;
+
+    virtual ~Container() = default;
 
     /** @return A pointer to this Container's parent, or `nullptr` if it does not have a parent. */
     [[nodiscard]] Container* getParent() const { return m_parent; }

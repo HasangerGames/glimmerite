@@ -8,7 +8,7 @@ namespace gmi {
 
 class SoundManager {
     bool m_initialized = false;
-    MIX_Mixer* m_mixer;
+    MIX_Mixer* m_mixer = nullptr;
     std::unordered_map<std::string, MIX_Audio*> m_sounds;
 
 public:
