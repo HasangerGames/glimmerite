@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Container.h"
-#include "gmi/math/Rect.h"
 
 namespace gmi {
 
@@ -19,7 +18,7 @@ enum class LineJoin : uint8_t {
 
 struct StrokeStyle {
     float width = 1;
-    Color color = {1.0f, 1.0f, 1.0f, 1.0f};
+    Color color = Color::White;
     LineCap cap = LineCap::Square;
     LineJoin join = LineJoin::Miter;
     float alignment = 0.5f;
@@ -35,9 +34,11 @@ public:
 
     Graphics& drawLine(std::vector<math::Vec2> points, const StrokeStyle& style);
 
-    Graphics& fillRect(const math::Rect& rect, Color color);
+    Graphics& fillRect(float x, float y, float w, float h, Color color);
 
-    Graphics& fillCircle(math::Vec2 position, float rx, float ry, Color color);
+    Graphics& fillCircle(float x, float y, float r, Color color);
+
+    Graphics& fillEllipse(float x, float y, float rx, float ry, Color color);
 
     Graphics& fillPoly(const std::vector<math::Vec2>& points, Color color);
 

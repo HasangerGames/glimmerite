@@ -17,9 +17,13 @@ struct nth<1, gmi::math::Vec2> {
         return t.y;
     }
 };
+
 }
 
 namespace gmi {
+
+// Much of this code was adapted from Pixi.js:
+// https://github.com/pixijs/pixijs/blob/dev/src/scene/graphics/shared/buildCommands/buildLine.ts
 
 float getOrientationOfPoints(const std::vector<math::Vec2>& points) {
     if (points.size() < 3) {
@@ -143,7 +147,7 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
         return *this;
     }
 
-    auto& [vertices, indices, texture] = m_drawable;
+    auto& [vertices, indices, _] = m_drawable;
 
     std::vector<math::Vec2> verts;
 
@@ -184,12 +188,9 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
 
     // perp[?](x|y) = the line normal with magnitude lineWidth.
     math::Vec2 perp = {-(v0.y - v1.y), v0.x - v1.x};
+    perp = perp / math::length(perp) * width;
+
     math::Vec2 perp1;
-
-    float dist = math::length(perp);
-
-    perp /= dist;
-    perp *= width;
 
     float ratio = alignment;
     float innerWeight = (1.0f - ratio) * 2.0f;
@@ -219,19 +220,11 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
         v1 = points[i];
         v2 = points[i + 1];
 
-        std::cout << v0 << v1 << v2 << '\n';
-
         perp = {-(v0.y - v1.y), v0.x - v1.x};
-
-        dist = math::length(perp);
-        perp /= dist;
-        perp *= width;
+        perp = perp / math::length(perp) * width;
 
         perp1 = {-(v1.y - v2.y), v1.x - v2.x};
-
-        dist = math::length(perp1);
-        perp1 /= dist;
-        perp1 *= width;
+        perp1 = perp1 / math::length(perp1) * width;
 
         // d[x|y](0|1) = the component displacement between points p(0,1|1,2)
         math::Vec2 d0 = {v1.x - v0.x, v0.y - v1.y};
@@ -358,11 +351,11 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
                 }
             } else if (style.join == LineJoin::Miter && pDist / widthSquared <= miterLimitSquared) {
                 if (clockwise) {
-                    verts.emplace_back(om); // inner miter point
-                    verts.emplace_back(om); // inner miter point
+                    verts.emplace_back(om); // outer miter point
+                    verts.emplace_back(om); // outer miter point
                 } else {
-                    verts.emplace_back(im); // outer miter point
-                    verts.emplace_back(im); // outer miter point
+                    verts.emplace_back(im); // inner miter point
+                    verts.emplace_back(im); // inner miter point
                 }
             }
             verts.emplace_back(v1 - (perp1 * innerWeight)); // second segment's inner vertex
@@ -375,10 +368,7 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
     v1 = points[numPoints - 1];
 
     perp = {-(v0.y - v1.y), v0.x - v1.x};
-
-    dist = math::length(perp);
-    perp /= dist;
-    perp *= width;
+    perp = perp / math::length(perp) * width;
 
     verts.emplace_back(v1 - (perp * innerWeight));
     verts.emplace_back(v1 + (perp * outerWeight));
@@ -397,9 +387,13 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
         }
     }
 
+    size_t totalVertices = vertices.size();
+    size_t addedVertices = verts.size();
+    vertices.reserve(totalVertices + addedVertices);
+    indices.reserve(indices.size() + addedVertices); // some are skipped so this reserves more than needed, but still helps performance
+
     static constexpr float CURVE_EPS = 0.0001;
     static constexpr float EPS2 = CURVE_EPS * CURVE_EPS;
-    size_t totalVertices = vertices.size();
     for (size_t i = 0, len = verts.size() - 2; i < len; i++) {
         v0 = verts[i];
         v1 = verts[i + 1];
@@ -415,16 +409,15 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
         indices.emplace_back(totalVertices + i + 2);
     }
 
-    uint32_t color = colorToNumber(style.color);
     for (auto [x, y] : verts) {
-        vertices.emplace_back(x, y, 0, 0, color);
+        vertices.emplace_back(x, y, 0, 0, style.color);
     }
 
     return *this;
 }
 
-Graphics& Graphics::fillRect(const math::Rect& rect, Color color) {
-    auto& [vertices, indices, texture] = m_drawable;
+Graphics& Graphics::fillRect(float x, float y, float w, float h, Color color) {
+    auto& [vertices, indices, _] = m_drawable;
 
     size_t numVertices = vertices.size();
     indices.reserve(indices.size() + 6);
@@ -435,36 +428,39 @@ Graphics& Graphics::fillRect(const math::Rect& rect, Color color) {
     indices.emplace_back(numVertices + 2);
     indices.emplace_back(numVertices + 3);
 
-    auto [x, y, w, h] = rect;
-    uint32_t colorNum = colorToNumber(color);
     vertices.reserve(numVertices + 4);
     // clang-format off
-    vertices.emplace_back(x,     y,     0, 1, colorNum); // Top left
-    vertices.emplace_back(x + w, y,     1, 1, colorNum); // Top right
-    vertices.emplace_back(x + w, y + h, 1, 0, colorNum); // Bottom right
-    vertices.emplace_back(x,     y + h, 0, 0, colorNum); // Bottom left
+    vertices.emplace_back(x,     y,     0, 1, color); // Top left
+    vertices.emplace_back(x + w, y,     1, 1, color); // Top right
+    vertices.emplace_back(x + w, y + h, 1, 0, color); // Bottom right
+    vertices.emplace_back(x,     y + h, 0, 0, color); // Bottom left
     // clang-format on
 
     return *this;
 }
 
-Graphics& Graphics::fillCircle(math::Vec2 position, float rx, float ry, Color color) {
-    auto& [vertices, indices, texture] = m_drawable;
+Graphics& Graphics::fillCircle(float x, float y, float r, Color color) {
+    return fillEllipse(x, y, r, r, color);
+}
 
-    size_t numVertices = vertices.size();
-    uint32_t colorNum = colorToNumber(color);
-    vertices.emplace_back(position.x, position.y, 0, 0, colorNum); // center vertex
+Graphics& Graphics::fillEllipse(float x, float y, float rx, float ry, Color color) {
+    auto& [vertices, indices, _] = m_drawable;
 
     // Choose a number of segments such that the maximum absolute deviation from the circle is approximately 0.029
-    float numSegments = std::ceil(2.3 * std::sqrt(rx + ry));
-    float angleInc = math::TAU / numSegments;
-    auto [x, y] = position;
+    size_t numSegments = std::ceil(2.3 * std::sqrt(rx + ry));
+    float angleInc = math::TAU / static_cast<float>(numSegments);
+
+    size_t numVertices = vertices.size();
+    vertices.reserve(numVertices + numSegments + 1);
+    indices.reserve(indices.size() + numSegments * 3);
+
+    vertices.emplace_back(x, y, 0, 0, color); // center vertex
 
     for (size_t i = 0; i <= numSegments; i++) {
-        float angle = i * angleInc;
-        vertices.emplace_back(x + rx * std::cos(angle), y + ry * std::sin(angle), 0, 0, colorNum);
+        float angle = static_cast<float>(i) * angleInc;
+        vertices.emplace_back(x + rx * std::cos(angle), y + ry * std::sin(angle), 0, 0, color);
 
-        indices.emplace_back(numVertices);
+        indices.emplace_back(numVertices); // index referring to center vertex
         indices.emplace_back(numVertices + i);
         indices.emplace_back(numVertices + i + 1);
     }
@@ -482,10 +478,9 @@ Graphics& Graphics::fillPoly(const std::vector<math::Vec2>& points, Color color)
         indices.emplace_back(numVertices + index);
     }
 
-    uint32_t colorNum = colorToNumber(color);
     vertices.reserve(numVertices + points.size());
     for (auto [x, y] : points) {
-        vertices.emplace_back(x, y, 0, 0, colorNum);
+        vertices.emplace_back(x, y, 0, 0, color);
     }
 
     return *this;

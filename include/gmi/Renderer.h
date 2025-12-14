@@ -27,7 +27,7 @@ class Renderer {
 
     void reset() const;
 
-    std::vector<math::Vertex> m_batchVertices;
+    std::vector<Vertex> m_batchVertices;
     std::vector<uint16_t> m_batchIndices;
     bgfx::TextureHandle m_batchTexture = BGFX_INVALID_HANDLE;
     void submitBatch();
