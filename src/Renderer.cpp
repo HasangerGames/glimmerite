@@ -174,7 +174,11 @@ void Renderer::submitBatch() {
 
 void Renderer::render(Container& container) {
     container.render(*this);
-    submitBatch();
+    if (!m_batchVertices.empty()) {
+        submitBatch();
+    } else {
+        bgfx::touch(0); // dummy draw call if nothing's being rendered
+    }
     bgfx::frame();
 }
 

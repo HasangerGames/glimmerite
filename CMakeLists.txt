@@ -96,7 +96,6 @@ bgfx_compile_shaders(
     AS_HEADERS
 )
 
-
 add_library(glimmerite STATIC
     src/Application.cpp
     src/Container.cpp

@@ -1,23 +1,21 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <format>
 
 namespace gmi {
 
-/**
- * Represents a color with red, green, blue, and alpha components.
- * Each component is stored as a uint8_t. Components are stored in ABGR order, allowing bgfx to use Colors directly.
- */
+/** Represents a color with red, green, blue, and alpha components. Each component is stored as a uint8_t. */
 struct Color {
-    /** The alpha component of the color. */
-    uint8_t a = 255;
-    /** The blue component of the color. */
-    uint8_t b = 255;
-    /** The green component of the color. */
-    uint8_t g = 255;
     /** The red component of the color. */
     uint8_t r = 255;
+    /** The green component of the color. */
+    uint8_t g = 255;
+    /** The blue component of the color. */
+    uint8_t b = 255;
+    /** The alpha component of the color. */
+    uint8_t a = 255;
 
     /**
      * Creates a Color given red, green, blue, and alpha as uint8_t ranging from 0-255.
@@ -93,28 +91,28 @@ inline const Color Color::Cyan    = rgb(0,   255, 255);
 inline const Color Color::Magenta = rgb(255, 0,   255);
 
 inline Color Color::rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-    return {a, b, g, r};
+    return {r, g, b, a};
 }
 
 inline Color Color::rgb(uint8_t r, uint8_t g, uint8_t b) {
-    return {255, b, g, r};
+    return {r, g, b, 255};
 }
 
 inline Color Color::rgbaFloat(float r, float g, float b, float a) {
     return {
-        static_cast<uint8_t>(a * 255),
-        static_cast<uint8_t>(b * 255),
-        static_cast<uint8_t>(g * 255),
-        static_cast<uint8_t>(r * 255),
+        static_cast<uint8_t>(std::clamp(r, 0.0f, 1.0f) * 255),
+        static_cast<uint8_t>(std::clamp(g, 0.0f, 1.0f) * 255),
+        static_cast<uint8_t>(std::clamp(b, 0.0f, 1.0f) * 255),
+        static_cast<uint8_t>(std::clamp(a, 0.0f, 1.0f) * 255),
     };
 }
 
 inline Color Color::rgbaHex(uint32_t hex) {
     return {
-        static_cast<uint8_t>(hex       & 0xff),
-        static_cast<uint8_t>(hex >> 8  & 0xff),
-        static_cast<uint8_t>(hex >> 16 & 0xff),
         static_cast<uint8_t>(hex >> 24 & 0xff),
+        static_cast<uint8_t>(hex >> 16 & 0xff),
+        static_cast<uint8_t>(hex >> 8  & 0xff),
+        static_cast<uint8_t>(hex       & 0xff),
     };
 }
 
@@ -173,19 +171,20 @@ constexpr std::ostream& operator<<(std::ostream& stream, Color c) {
 
 constexpr Color operator*(Color a, Color b) {
     return {
-        static_cast<uint8_t>(a.a * b.a / 255),
-        static_cast<uint8_t>(a.b * b.b / 255),
-        static_cast<uint8_t>(a.g * b.g / 255),
         static_cast<uint8_t>(a.r * b.r / 255),
+        static_cast<uint8_t>(a.g * b.g / 255),
+        static_cast<uint8_t>(a.b * b.b / 255),
+        static_cast<uint8_t>(a.a * b.a / 255),
     };
 }
 
 constexpr Color operator*(Color c, float s) {
+    s = std::clamp(s, 0.0f, 1.0f);
     return {
-        static_cast<uint8_t>(static_cast<float>(c.a) * s),
-        static_cast<uint8_t>(static_cast<float>(c.b) * s),
-        static_cast<uint8_t>(static_cast<float>(c.g) * s),
         static_cast<uint8_t>(static_cast<float>(c.r) * s),
+        static_cast<uint8_t>(static_cast<float>(c.g) * s),
+        static_cast<uint8_t>(static_cast<float>(c.b) * s),
+        static_cast<uint8_t>(static_cast<float>(c.a) * s),
     };
 }
 

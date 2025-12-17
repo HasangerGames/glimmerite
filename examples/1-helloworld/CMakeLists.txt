@@ -1,8 +1,5 @@
-add_executable(helloworld helloworld.cpp)
+add_executable(1-helloworld helloworld.cpp)
 
-target_link_libraries(
-    helloworld
-    PRIVATE glimmerite SDL3::SDL3 bgfx bx bimg_decode
-)
+target_link_libraries(1-helloworld PRIVATE glimmerite)
 
-install(TARGETS helloworld DESTINATION examples)
+install(TARGETS 1-helloworld DESTINATION examples)

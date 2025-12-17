@@ -38,7 +38,7 @@ void TextureManager::load(const std::string& name, const std::string& filePath) 
         image->m_numMips > 1,
         1u,
         static_cast<bgfx::TextureFormat::Enum>(image->m_format),
-        BGFX_TEXTURE_NONE,
+        BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT,
         bgfx::copy(image->m_data, image->m_size)
     );
     bimg::imageFree(image);

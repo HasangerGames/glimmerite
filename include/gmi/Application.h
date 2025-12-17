@@ -29,6 +29,9 @@ struct ApplicationConfig {
     /** Background color of the Application window. */
     Color backgroundColor = Color::Black;
 
+    /** Whether the Application window can be resized. */
+    bool resizable = true;
+
     /**
      * The renderer/graphics API to use.
      * Not all renderers are available on all platforms.
@@ -49,6 +52,7 @@ class Application {
     SDL_Window* m_window = nullptr;
 
     uint16_t m_maxFps = 0;
+    bool m_firstRun = true;
     std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
     float m_dt = 0.0f;
 
@@ -61,7 +65,7 @@ class Application {
     Renderer m_renderer;
     Container m_stage;
 public:
-    Application() = default;
+    Application() : m_stage(this, nullptr) {}
     ~Application() = default;
 
     /**
@@ -73,13 +77,13 @@ public:
     bool isInitialized() const { return m_initialized; }
 
     /** @return The @ref TextureManager associated with the Application, used to load textures */
-    [[nodiscard]] TextureManager& texture() { return m_textureManager; }
+    [[nodiscard]] TextureManager& textures() { return m_textureManager; }
 
     /** @return The @ref SoundManager associated with the Application, used to load and play sounds */
-    [[nodiscard]] SoundManager& sound() { return m_soundManager; }
+    [[nodiscard]] SoundManager& sounds() { return m_soundManager; }
 
     /** @return The @ref TweenManager associated with the Application, used to animate values */
-    [[nodiscard]] TweenManager& tween() { return m_tweenManager; }
+    [[nodiscard]] TweenManager& tweens() { return m_tweenManager; }
 
     /** @return The @ref Renderer associated with the Application */
     [[nodiscard]] Renderer& renderer() { return m_renderer; }

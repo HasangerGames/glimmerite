@@ -47,6 +47,16 @@ void TweenManager::update() {
 
                 tween->startTime = now;
                 tween->endTime = tween->startTime + opts.duration;
+            } else if (opts.infinite) {
+                for (const TweenVar& v : opts.values) {
+                    if (v.var == nullptr) {
+                        throw GmiException("Attempted to tween a value that no longer exists");
+                    }
+                    *v.var = v.startValue;
+                }
+
+                tween->startTime = now;
+                tween->endTime = tween->startTime + opts.duration;
             } else {
                 for (const TweenVar& v : opts.values) {
                     if (v.var == nullptr) {

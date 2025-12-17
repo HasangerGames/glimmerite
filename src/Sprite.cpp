@@ -4,7 +4,7 @@ namespace gmi {
 
 Sprite::Sprite(Application* parentApp, Container* parent, const std::string& textureName, const math::Transform& transform) :
     Container(parentApp, parent),
-    m_texture(parentApp->texture().get(textureName)) {
+    m_texture(parentApp->textures().get(textureName)) {
     m_transform = transform;
     m_transformDirty = true;
 }

@@ -30,7 +30,7 @@ void Container::sortChildren() {
     );
 }
 
-void Container::setPosition(const math::Vec2& position) {
+void Container::setPosition(math::Vec2 position) {
     m_transform.position = position;
     m_transformDirty = true;
 }
@@ -40,7 +40,7 @@ void Container::setRotation(float rotation) {
     m_transformDirty = true;
 }
 
-void Container::setScale(const math::Vec2& scale) {
+void Container::setScale(math::Vec2 scale) {
     m_transform.scale = scale;
     m_transformDirty = true;
 }
@@ -50,7 +50,12 @@ void Container::setScale(float scale) {
     m_transformDirty = true;
 }
 
-void Container::setPivot(const math::Vec2& pivot) {
+void Container::setTint(Color tint) {
+    m_transform.color = tint;
+    m_transformDirty = true;
+}
+
+void Container::setPivot(math::Vec2 pivot) {
     m_transform.pivot = pivot;
     m_transformDirty = true;
 }
@@ -83,11 +88,33 @@ void Container::animate(const AnimateOptions<math::Vec2>& opts) {
     default:
         throw GmiException("Attempted to animate a non-Vec2 property to a Vec2 target");
     }
-    m_parentApp->tween().add({
+    m_parentApp->tweens().add({
         .values = {{&prop->x, opts.target.x}, {&prop->y, opts.target.y}},
         .duration = opts.duration,
-        .ease = math::Easing::cubicOut,
-        .yoyo = true,
+        .ease = opts.easing,
+        .yoyo = opts.yoyo,
+        .infinite = opts.infinite,
+        .onUpdate = [this] {
+            m_transformDirty = true;
+        },
+    });
+}
+
+void Container::animate(const AnimateOptions<float>& opts) {
+    float* prop;
+    switch (opts.prop) {
+        case math::TransformProps::Rotation:
+            prop = &m_transform.rotation;
+            break;
+        default:
+            throw GmiException("Attempted to animate a non-float property to a float target");
+    }
+    m_parentApp->tweens().add({
+        .values = {{prop, opts.target}},
+        .duration = opts.duration,
+        .ease = opts.easing,
+        .yoyo = opts.yoyo,
+        .infinite = opts.infinite,
         .onUpdate = [this] {
             m_transformDirty = true;
         },

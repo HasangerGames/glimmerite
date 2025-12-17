@@ -59,8 +59,6 @@ void Application::init(const ApplicationConfig& config) {
 
     m_soundManager.init();
 
-    m_stage = Container(this, nullptr);
-
     m_initialized = true;
 }
 
@@ -100,7 +98,11 @@ SDL_AppResult Application::processEvent(SDL_Event* event) {
 
 SDL_AppResult Application::iterate() {
     time_point<steady_clock> frameStart = steady_clock::now();
-    m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
+    if (!m_firstRun) {
+        m_dt = duration<float, std::milli>(steady_clock::now() - m_lastFrame).count();
+    } else {
+        m_firstRun = false;
+    }
     m_lastFrame = frameStart;
 
     for (const auto& ticker : m_tickers)

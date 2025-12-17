@@ -116,6 +116,8 @@ inline Affine Affine::fromTransform(const Transform& t) {
     m.x = position.x + pivot.x - ((pivot.x * m.a) + (pivot.y * m.c));
     m.y = position.y + pivot.y - ((pivot.x * m.b) + (pivot.y * m.d));
 
+    m.color = t.color;
+
     return m;
 }
 

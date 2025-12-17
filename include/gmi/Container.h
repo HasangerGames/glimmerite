@@ -46,8 +46,6 @@ public:
     Container(Application* parentApp, Container* parent, const math::Transform& transform) :
         m_parentApp(parentApp), m_parent(parent), m_transform(transform) { }
 
-    Container& operator=(Container&&) = default;
-
     virtual ~Container() = default;
 
     /** @return A pointer to this Container's parent, or `nullptr` if it does not have a parent. */
@@ -64,7 +62,11 @@ public:
      * @return A pointer to the newly created Container
      */
     template<typename T, typename... Args>
-    T& createChild(Args&&... args);
+    T& createChild(Args&&... args) {
+        auto childPtr = new T(m_parentApp, this, std::forward<Args>(args)...);
+        m_children.emplace_back(childPtr);
+        return *childPtr;
+    }
 
     /**
      * Removes a child from this Container.
@@ -78,20 +80,29 @@ public:
      */
     void sortChildren();
 
+    /** @return This Container's position */
+    [[nodiscard]] math::Vec2 getPosition() const { return m_transform.position; }
+
     /** @param position The new position to set */
-    void setPosition(const math::Vec2& position);
+    void setPosition(math::Vec2 position);
+
+    /** @return This Container's rotation, in radians */
+    [[nodiscard]] float getRotation() const { return m_transform.rotation; }
 
     /** @param rotation The new rotation to set */
     void setRotation(float rotation);
 
     /** @param scale The new scale to set */
-    void setScale(const math::Vec2& scale);
+    void setScale(math::Vec2 scale);
 
     /** @param scale The new scale to set. Will be used for both x- and y-components. */
     void setScale(float scale);
 
+    /** @param tint The new tint to set */
+    void setTint(Color tint);
+
     /** @param pivot The center of rotation to set, as a normalized vector (components 0-1) */
-    void setPivot(const math::Vec2& pivot);
+    void setPivot(math::Vec2 pivot);
 
     /** @param visible Whether the Container should be visible */
     void setVisible(bool visible) { m_visible = visible; }
@@ -111,18 +122,13 @@ public:
 
     void animate(const AnimateOptions<math::Vec2>& opts);
 
+    void animate(const AnimateOptions<float>& opts);
+
     /**
      * Renders the contents of this Container using the given @ref Renderer.
      * @param renderer The renderer to use
      */
     virtual void render(Renderer& renderer);
 };
-
-template<typename T, typename... Args>
-T& Container::createChild(Args&&... args) {
-    auto childPtr = new T(m_parentApp, this, std::forward<Args>(args)...);
-    m_children.emplace_back(childPtr);
-    return *childPtr;
-}
 
 }
