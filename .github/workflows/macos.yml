@@ -3,8 +3,30 @@ name: Macos
 on:
   push:
     branches: ["main"]
+    paths:
+      - "**.cpp"
+      - "**.h"
+      - "**.sc"
+
+      - "src/**"
+      - "include/**"
+      - "shaders/**"
+
+      - "CMakeLists.txt"
+      - ".github/workflows/macos.yml"
   pull_request:
     branches: ["main"]
+    paths:
+      - "**.cpp"
+      - "**.h"
+      - "**.sc"
+
+      - "src/**"
+      - "include/**"
+      - "shaders/**"
+
+      - "CMakeLists.txt"
+      - ".github/workflows/macos.yml"
 
 jobs:
   build:

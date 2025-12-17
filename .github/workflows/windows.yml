@@ -3,8 +3,30 @@ name: Windows
 on:
   push:
     branches: ["main"]
+    paths:
+      - "**.cpp"
+      - "**.h"
+      - "**.sc"
+
+      - "src/**"
+      - "include/**"
+      - "shaders/**"
+
+      - "CMakeLists.txt"
+      - ".github/workflows/windows.yml"
   pull_request:
     branches: ["main"]
+    paths:
+      - "**.cpp"
+      - "**.h"
+      - "**.sc"
+
+      - "src/**"
+      - "include/**"
+      - "shaders/**"
+
+      - "CMakeLists.txt"
+      - ".github/workflows/windows.yml"
 
 jobs:
   build:
