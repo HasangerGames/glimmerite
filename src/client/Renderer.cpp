@@ -1,13 +1,14 @@
-#include "gmi/Renderer.h"
-
 #include <cstring>
 
 #include "bgfx/bgfx.h"
 #include "bgfx/embedded_shader.h"
 #include "bx/math.h"
-#include "gmi/Application.h"
-#include "gmi/gmi.h"
-#include "shaders/shaders.h"
+
+#include "gmi/client/Application.h"
+#include "gmi/client/Renderer.h"
+#include "gmi/client/gmi.h"
+
+#include "shaders.h"
 
 namespace gmi {
 

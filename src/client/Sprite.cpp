@@ -1,4 +1,4 @@
-#include "gmi/Sprite.h"
+#include "gmi/client/Sprite.h"
 
 namespace gmi {
 

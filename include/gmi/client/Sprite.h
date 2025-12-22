@@ -1,6 +1,6 @@
 #pragma once
-#include "Application.h"
-#include "Container.h"
+#include "gmi/client/Application.h"
+#include "gmi/client/Container.h"
 
 namespace gmi {
 

@@ -1,13 +1,15 @@
-#include "gmi/TextureManager.h"
 
 #include <filesystem>
 #include <fstream>
-#include <glaze/core/context.hpp>
-#include <glaze/json/read.hpp>
 #include <iostream>
 
+#include <glaze/core/context.hpp>
+#include <glaze/json/read.hpp>
+
 #include "bimg/decode.h"
-#include "gmi/gmi.h"
+
+#include "gmi/client/TextureManager.h"
+#include "gmi/client/gmi.h"
 #include "gmi/math/Rect.h"
 
 namespace gmi {

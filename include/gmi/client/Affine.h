@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Transform.h"
-#include "Vec2.h"
+#include "gmi/client/Transform.h"
+#include "gmi/math/Vec2.h"
 #include <iostream>
 
 namespace gmi::math {

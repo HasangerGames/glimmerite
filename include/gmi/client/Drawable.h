@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bgfx/bgfx.h"
-#include "Vertex.h"
+#include "gmi/client/Vertex.h"
 
 #include <vector>
 

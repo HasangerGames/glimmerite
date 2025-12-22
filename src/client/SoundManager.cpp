@@ -1,7 +1,7 @@
-#include "gmi/SoundManager.h"
+#include "gmi/client/SoundManager.h"
+#include "gmi/client/gmi.h"
 
 #include "SDL3_mixer/SDL_mixer.h"
-#include "gmi/gmi.h"
 
 namespace gmi {
 

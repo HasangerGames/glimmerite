@@ -1,10 +1,9 @@
-#include "gmi/Container.h"
-
 #include <algorithm>
 
-#include "gmi/Application.h"
-#include "gmi/gmi.h"
-#include "gmi/math/Affine.h"
+#include "gmi/client/Affine.h"
+#include "gmi/client/Application.h"
+#include "gmi/client/Container.h"
+#include "gmi/client/gmi.h"
 
 namespace gmi {
 
@@ -103,11 +102,11 @@ void Container::animate(const AnimateOptions<math::Vec2>& opts) {
 void Container::animate(const AnimateOptions<float>& opts) {
     float* prop;
     switch (opts.prop) {
-        case math::TransformProps::Rotation:
-            prop = &m_transform.rotation;
-            break;
-        default:
-            throw GmiException("Attempted to animate a non-float property to a float target");
+    case math::TransformProps::Rotation:
+        prop = &m_transform.rotation;
+        break;
+    default:
+        throw GmiException("Attempted to animate a non-float property to a float target");
     }
     m_parentApp->tweens().add({
         .values = {{prop, opts.target}},

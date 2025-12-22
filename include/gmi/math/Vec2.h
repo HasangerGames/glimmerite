@@ -1,4 +1,5 @@
 #pragma once
+
 #include "gmi/math/math.h"
 #include <cmath>
 #include <ostream>

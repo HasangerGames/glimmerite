@@ -2,10 +2,10 @@
 #include <memory>
 #include <vector>
 
-#include "Renderer.h"
-#include "math/Affine.h"
-#include "math/Easing.h"
-#include "math/Transform.h"
+#include "gmi/client/Renderer.h"
+
+#include "gmi/client/Affine.h"
+#include "gmi/math/Easing.h"
 
 namespace gmi {
 

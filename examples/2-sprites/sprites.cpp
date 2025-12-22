@@ -1,5 +1,5 @@
-#include "gmi/Application.h"
-#include "gmi/Sprite.h"
+#include "gmi/client/Application.h"
+#include "gmi/client/Sprite.h"
 
 using namespace gmi;
 

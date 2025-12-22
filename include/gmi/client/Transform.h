@@ -1,6 +1,9 @@
 #pragma once
-#include "Vec2.h"
-#include "gmi/Color.h"
+
+#include "gmi/client/Color.h"
+#include "gmi/math/Vec2.h"
+
+#include <iostream>
 
 namespace gmi::math {
 

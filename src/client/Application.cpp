@@ -2,11 +2,11 @@
 
 #include "SDL3/SDL_main.h"
 
-#include "gmi/Application.h"
+#include "gmi/client/Application.h"
 
 #include <thread>
 
-#include "gmi/gmi.h"
+#include "gmi/client/gmi.h"
 
 using namespace gmi;
 

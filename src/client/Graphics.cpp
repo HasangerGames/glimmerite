@@ -1,5 +1,5 @@
-#include "gmi/Graphics.h"
 
+#include "gmi/client/Graphics.h"
 #include <mapbox/earcut.hpp>
 
 // Makes earcut understand Vec2
