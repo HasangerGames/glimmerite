@@ -77,3 +77,6 @@ AllowShortLambdasOnASingleLine: Empty
 AllowAllArgumentsOnNextLine: false
 
 BreakConstructorInitializers: AfterColon
+
+# allow if (thing) doThing(); to be in a single line
+AllowShortIfStatementsOnASingleLine: true

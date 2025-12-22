@@ -29,13 +29,17 @@ void gmiMain(Application& app) {
         bool xFlip = position.x < 0 || position.x > xMax;
         bool yFlip = position.y < 0 || position.y > yMax;
 
-        if (xFlip)
-            VELOCITY.x *= -1;
-        if (yFlip)
-            VELOCITY.y *= -1;
+        if (xFlip) VELOCITY.x *= -1;
+        if (yFlip) VELOCITY.y *= -1;
 
         if (xFlip || yFlip) {
-            dvdLogo.setTint(Color::rgb(math::random(128, 255), math::random(128, 255), math::random(128, 255)));
+            dvdLogo.setTint(
+                Color::rgb(
+                    math::random(128, 255),
+                    math::random(128, 255),
+                    math::random(128, 255)
+                )
+            );
         }
         dvdLogo.setPosition(position + VELOCITY * app.getDt());
     });
