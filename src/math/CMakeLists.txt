@@ -16,3 +16,4 @@ target_sources(
         ${GMI_MATH_INCLUDE_DIR}/math.h
         ${GMI_MATH_INCLUDE_DIR}/random.h
 )
+set_target_properties(GMI_math PROPERTIES LINKER_LANGUAGE CXX)

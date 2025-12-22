@@ -94,3 +94,5 @@ target_link_libraries(GMI_client PUBLIC
     glaze::glaze
     earcut_hpp
 )
+
+set_target_properties(GMI_client PROPERTIES LINKER_LANGUAGE CXX)
