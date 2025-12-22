@@ -1,4 +1,7 @@
-add_library(GMI_math STATIC)
+add_library(GMI_math STATIC
+    Shape.cpp
+    collision.cpp
+)
 
 set(GMI_MATH_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/gmi/math/")
 
