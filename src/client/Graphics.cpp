@@ -6,15 +6,15 @@
 namespace mapbox::util {
 
 template<>
-struct nth<0, gmi::math::Vec2> {
-    static auto get(const gmi::math::Vec2& t) {
+struct nth<0, gmi::math::Vec2F> {
+    static auto get(const gmi::math::Vec2F& t) {
         return t.x;
     }
 };
 
 template<>
-struct nth<1, gmi::math::Vec2> {
-    static auto get(const gmi::math::Vec2& t) {
+struct nth<1, gmi::math::Vec2F> {
+    static auto get(const gmi::math::Vec2F& t) {
         return t.y;
     }
 };
@@ -26,14 +26,14 @@ namespace gmi {
 // Much of this code was adapted from Pixi.js:
 // https://github.com/pixijs/pixijs/blob/dev/src/scene/graphics/shared/buildCommands/buildLine.ts
 
-float getOrientationOfPoints(const std::vector<math::Vec2>& points) {
+float getOrientationOfPoints(const std::vector<math::Vec2F>& points) {
     if (points.size() < 3) {
         return 1;
     }
 
     float area = 0.0f;
-    math::Vec2 prev = points.back();
-    for (const math::Vec2& point : points) {
+    math::Vec2F prev = points.back();
+    for (const math::Vec2F& point : points) {
         area += (point.x - prev.x) * (point.y + prev.y);
         prev = point;
     }
@@ -52,18 +52,18 @@ float getOrientationOfPoints(const std::vector<math::Vec2>& points) {
  * @return Number of vertices pushed
  */
 void square(
-    math::Vec2 v,
-    math::Vec2 n,
+    math::Vec2F v,
+    math::Vec2F n,
     float innerWeight,
     float outerWeight,
     bool clockwise, // rotation for square (true at left end, false at right end)
-    std::vector<math::Vec2>& verts
+    std::vector<math::Vec2F>& verts
 ) {
-    math::Vec2 i = v - (n * innerWeight);
-    math::Vec2 o = v + (n * outerWeight);
+    math::Vec2F i = v - (n * innerWeight);
+    math::Vec2F o = v + (n * outerWeight);
 
     // Rotate nx,ny for extension vector
-    math::Vec2 e;
+    math::Vec2F e;
     if (clockwise) {
         e = {n.y, -n.x};
     } else {
@@ -71,8 +71,8 @@ void square(
     }
 
     // [i|0]x,y extended at cap
-    math::Vec2 ei = i + e;
-    math::Vec2 eo = o + e;
+    math::Vec2F ei = i + e;
+    math::Vec2F eo = o + e;
 
     // Square itself must be inserted clockwise
     verts.emplace_back(ei);
@@ -89,13 +89,13 @@ void square(
  * @return Number of vertices pushed
  */
 void round(
-    math::Vec2 c,
-    math::Vec2 s,
-    math::Vec2 e,
-    std::vector<math::Vec2>& verts,
+    math::Vec2F c,
+    math::Vec2F s,
+    math::Vec2F e,
+    std::vector<math::Vec2F>& verts,
     bool clockwise // if not cap, then clockwise is turn of joint, otherwise rotation from angle0 to angle1
 ) {
-    math::Vec2 c2p0 = s - c;
+    math::Vec2F c2p0 = s - c;
 
     float angle0 = std::atan2(c2p0.x, c2p0.y);
     float angle1 = std::atan2(e.x - c.x, e.y - c.y);
@@ -110,7 +110,7 @@ void round(
     float angleDiff = angle1 - angle0;
     float absAngleDiff = std::abs(angleDiff);
 
-    float radius = math::length(c2p0);
+    float radius = c2p0.length();
     int segCount = static_cast<int>(15 * absAngleDiff * std::sqrt(radius) / math::PI) + 1;
     float angleInc = angleDiff / static_cast<float>(segCount);
 
@@ -143,14 +143,14 @@ void round(
     }
 }
 
-Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& style) {
+Graphics& Graphics::drawLine(std::vector<math::Vec2F> points, const StrokeStyle& style) {
     if (points.empty()) {
         return *this;
     }
 
     auto& [vertices, indices, _] = m_drawable;
 
-    std::vector<math::Vec2> verts;
+    std::vector<math::Vec2F> verts;
 
     float alignment = style.alignment;
     if (alignment != 0.5f) {
@@ -160,8 +160,8 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
     }
 
     // get first and last point.. figure out the middle!
-    math::Vec2 firstPoint = points.front();
-    math::Vec2 lastPoint = points.back();
+    math::Vec2F firstPoint = points.front();
+    math::Vec2F lastPoint = points.back();
 
     // if the first point is the last point - gonna have issues :)
     if (style.closedShape) {
@@ -171,7 +171,7 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
             lastPoint = points.back();
         }
 
-        math::Vec2 midPoint = (firstPoint + lastPoint) / 2.0f;
+        math::Vec2F midPoint = (firstPoint + lastPoint) / 2.0f;
 
         points.insert(points.begin(), midPoint);
         points.emplace_back(midPoint);
@@ -183,15 +183,15 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
     uint16_t miterLimitSquared = style.miterLimit * style.miterLimit;
 
     // Line segments of interest where (x1,y1) forms the corner.
-    math::Vec2 v0 = points[0],
+    math::Vec2F v0 = points[0],
                v1 = points[1],
                v2;
 
     // perp[?](x|y) = the line normal with magnitude lineWidth.
-    math::Vec2 perp = {-(v0.y - v1.y), v0.x - v1.x};
-    perp = perp / math::length(perp) * width;
+    math::Vec2F perp = {-(v0.y - v1.y), v0.x - v1.x};
+    perp = perp / perp.length() * width;
 
-    math::Vec2 perp1;
+    math::Vec2F perp1;
 
     float ratio = alignment;
     float innerWeight = (1.0f - ratio) * 2.0f;
@@ -222,14 +222,14 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
         v2 = points[i + 1];
 
         perp = {-(v0.y - v1.y), v0.x - v1.x};
-        perp = perp / math::length(perp) * width;
+        perp = perp / perp.length() * width;
 
         perp1 = {-(v1.y - v2.y), v1.x - v2.x};
-        perp1 = perp1 / math::length(perp1) * width;
+        perp1 = perp1 / perp1.length() * width;
 
         // d[x|y](0|1) = the component displacement between points p(0,1|1,2)
-        math::Vec2 d0 = {v1.x - v0.x, v0.y - v1.y};
-        math::Vec2 d1 = {v1.x - v2.x, v2.y - v1.y};
+        math::Vec2F d0 = {v1.x - v0.x, v0.y - v1.y};
+        math::Vec2F d1 = {v1.x - v2.x, v2.y - v1.y};
 
         // +ve if internal angle < 90 degree, -ve if internal angle > 90 degree.
         float dot = (d0.x * d1.x) + (d0.y * d1.y);
@@ -265,19 +265,19 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
         // p[x|y] is the miter point. pDist is the distance between miter point and p1.
         float c1 = ((-perp.x + v0.x) * (-perp.y + v1.y)) - ((-perp.x + v1.x) * (-perp.y + v0.y));
         float c2 = ((-perp1.x + v2.x) * (-perp1.y + v1.y)) - ((-perp1.x + v1.x) * (-perp1.y + v2.y));
-        math::Vec2 p = {
+        math::Vec2F p = {
             ((d0.x * c2) - (d1.x * c1)) / cross,
             ((d1.y * c1) - (d0.y * c2)) / cross
         };
-        float pDist = math::lengthSquared(p - v1);
+        float pDist = (p - v1).lengthSqr();
 
         // Inner miter point
-        math::Vec2 im = v1 + ((p - v1) * innerWeight);
+        math::Vec2F im = v1 + ((p - v1) * innerWeight);
         // Outer miter point
-        math::Vec2 om = v1 - ((p - v1) * outerWeight);
+        math::Vec2F om = v1 - ((p - v1) * outerWeight);
 
         // Is the inside miter point too far away, creating a spike?
-        float smallerInsideSegmentSq = std::min(math::lengthSquared(d0), math::lengthSquared(d1));
+        float smallerInsideSegmentSq = std::min(d0.lengthSqr(), d1.lengthSqr());
         float insideWeight = clockwise ? innerWeight : outerWeight;
         float smallerInsideDiagonalSq = smallerInsideSegmentSq + (insideWeight * insideWeight * widthSquared);
         bool insideMiterOk = pDist <= smallerInsideDiagonalSq;
@@ -369,7 +369,7 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2> points, const StrokeStyle& 
     v1 = points[numPoints - 1];
 
     perp = {-(v0.y - v1.y), v0.x - v1.x};
-    perp = perp / math::length(perp) * width;
+    perp = perp / perp.lengthSqr() * width;
 
     verts.emplace_back(v1 - (perp * innerWeight));
     verts.emplace_back(v1 + (perp * outerWeight));
@@ -469,10 +469,10 @@ Graphics& Graphics::fillEllipse(float x, float y, float rx, float ry, Color colo
     return *this;
 }
 
-Graphics& Graphics::fillPoly(const std::vector<math::Vec2>& points, Color color) {
+Graphics& Graphics::fillPoly(const std::vector<math::Vec2F>& points, Color color) {
     auto& [vertices, indices, texture] = m_drawable;
 
-    std::vector<uint16_t> polyIndices = mapbox::earcut<uint16_t>(std::vector<std::vector<math::Vec2>>{points});
+    std::vector<uint16_t> polyIndices = mapbox::earcut<uint16_t>(std::vector<std::vector<math::Vec2F>>{points});
     size_t numVertices = vertices.size();
     indices.reserve(indices.size() + polyIndices.size());
     for (uint16_t index : polyIndices) {
