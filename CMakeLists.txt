@@ -15,47 +15,64 @@ option(BUILD_CLIENT     "Build client library"  ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-set(BGFX_DIR "${CMAKE_CURRENT_LIST_DIR}/vendored/bgfx.cmake/bgfx")
-set(BX_DIR  "${CMAKE_CURRENT_LIST_DIR}/vendored/bgfx.cmake/bx")
-set(BIMG_DIR "${CMAKE_CURRENT_LIST_DIR}/vendored/bgfx.cmake/bimg")
-# makes cmake shut up about bgfx.cmake's use of add_custom_command
-set(CMAKE_POLICY_DEFAULT_CMP0175 "OLD")
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+# libraries only used by the client
+if (BUILD_CLIENT)
+    #
+    # BGFX
+    #
+    set(BGFX_DIR    "${CMAKE_SOURCE_DIR}/vendored/bgfx.cmake/bgfx")
+    set(BX_DIR      "${CMAKE_SOURCE_DIR}/vendored/bgfx.cmake/bx")
+    set(BIMG_DIR    "${CMAKE_SOURCE_DIR}/vendored/bgfx.cmake/bimg")
+    # makes cmake shut up about bgfx.cmake's use of add_custom_command
+    set(CMAKE_POLICY_DEFAULT_CMP0175 "OLD")
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
-add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
+    #
+    # SDL3
+    #
+    add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 
-# TODO: use system package once newer SDL3 releases
-# currently SDL3_Mixer depends on SDL3 git master
-# find_package(SDL3 CONFIG COMPONENTS SDL3-shared)
-# if (NOT SDL3_FOUND)
+    # TODO: use system package once newer SDL3 releases
+    # currently SDL3_Mixer depends on SDL3 git master
+    # find_package(SDL3 CONFIG COMPONENTS SDL3-shared)
+    # if (NOT SDL3_FOUND)
 
-# disable SDL subsystems we don't need
-set(SDL_GPU     OFF CACHE INTERNAL "" FORCE)
-set(SDL_RENDER  OFF CACHE INTERNAL "" FORCE)
-set(SDL_CAMERA  OFF CACHE INTERNAL "" FORCE)
-set(SDL_POWER   OFF CACHE INTERNAL "" FORCE)
-set(SDL_SENSOR  OFF CACHE INTERNAL "" FORCE)
-set(SDL_DIALOG  OFF CACHE INTERNAL "" FORCE)
-set(SDL_TRAY    OFF CACHE INTERNAL "" FORCE)
+    # disable SDL subsystems we don't need
+    set(SDL_GPU     OFF CACHE INTERNAL "" FORCE)
+    set(SDL_RENDER  OFF CACHE INTERNAL "" FORCE)
+    set(SDL_CAMERA  OFF CACHE INTERNAL "" FORCE)
+    set(SDL_POWER   OFF CACHE INTERNAL "" FORCE)
+    set(SDL_SENSOR  OFF CACHE INTERNAL "" FORCE)
+    set(SDL_DIALOG  OFF CACHE INTERNAL "" FORCE)
+    set(SDL_TRAY    OFF CACHE INTERNAL "" FORCE)
 
-add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
-#endif()
+    add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+    #endif()
 
-add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
+    #
+    # SDL3 Mixer, TODO: use system package when SDL3 Mixer has a stable release
+    #
+    add_subdirectory(vendored/SDL_mixer EXCLUDE_FROM_ALL)
 
+    #
+    # Earcut, used for rendering polygons
+    #
+    set(EARCUT_BUILD_TESTS  OFF CACHE INTERNAL "" FORCE)
+    set(EARCUT_BUILD_BENCH  OFF CACHE INTERNAL "" FORCE)
+    set(EARCUT_BUILD_VIZ    OFF CACHE INTERNAL "" FORCE)
+
+    add_subdirectory(vendored/earcut.hpp EXCLUDE_FROM_ALL)
+endif() # BUILD_CLIENT
+
+# JSON library
 find_package(glaze CONFIG)
 if (NOT glaze_FOUND)
     add_subdirectory(vendored/glaze EXCLUDE_FROM_ALL)
 endif()
 
-set(EARCUT_BUILD_TESTS  OFF CACHE INTERNAL "" FORCE)
-set(EARCUT_BUILD_BENCH  OFF CACHE INTERNAL "" FORCE)
-set(EARCUT_BUILD_VIZ    OFF CACHE INTERNAL "" FORCE)
-add_subdirectory(vendored/earcut.hpp EXCLUDE_FROM_ALL)
-
 add_subdirectory(src)
 
-if (BUILD_EXAMPLES)
+if (BUILD_EXAMPLES AND BUILD_CLIENT)
     add_subdirectory(examples)
 endif()
 
