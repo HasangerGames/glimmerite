@@ -24,14 +24,14 @@ public:
     const Type type;
 
     [[nodiscard]] virtual std::string toString() const = 0;
-    [[nodiscard]] virtual bool pointInside(const Vec2F& point) const = 0;
+    [[nodiscard]] virtual bool pointInside(const Vec2f& point) const = 0;
 
-    [[nodiscard]] virtual Vec2F center() const = 0;
+    [[nodiscard]] virtual Vec2f center() const = 0;
 
-    virtual Shape& translate(const Vec2F& posToAdd) = 0;
+    virtual Shape& translate(const Vec2f& posToAdd) = 0;
     virtual Shape& scale(float scale) = 0;
 
-    virtual std::pair<Vec2F, Vec2F> getAABB() = 0;
+    virtual std::pair<Vec2f, Vec2f> getAABB() = 0;
 
     virtual ~Shape() = default;
 
@@ -67,32 +67,32 @@ protected:
 
 class Circle : public Shape {
 public:
-    Vec2F pos;
+    Vec2f pos;
     float rad;
 
-    Circle(Vec2F pos, float rad);
+    Circle(Vec2f pos, float rad);
 
     [[nodiscard]] std::string toString() const override;
 
-    [[nodiscard]] bool pointInside(const Vec2F& point) const override;
+    [[nodiscard]] bool pointInside(const Vec2f& point) const override;
 
-    [[nodiscard]] Vec2F center() const override;
+    [[nodiscard]] Vec2f center() const override;
 
-    Circle& translate(const Vec2F& posToAdd) override;
+    Circle& translate(const Vec2f& posToAdd) override;
 
     Circle& scale(float scale) override;
 
-    std::pair<Vec2F, Vec2F> getAABB() override;
+    std::pair<Vec2f, Vec2f> getAABB() override;
 };
 
 class Rect : public Shape {
 public:
-    Vec2F min;
-    Vec2F max;
+    Vec2f min;
+    Vec2f max;
 
-    Rect(Vec2F min, Vec2F max);
+    Rect(Vec2f min, Vec2f max);
 
-    static Rect fromDims(float width, float height, Vec2F center = {0, 0});
+    static Rect fromDims(float width, float height, Vec2f center = {0, 0});
 
     [[nodiscard]] float width() const {
         return max.x - min.x;
@@ -102,53 +102,53 @@ public:
         return max.y - min.y;
     }
 
-    [[nodiscard]] Vec2F center() const override;
+    [[nodiscard]] Vec2f center() const override;
 
-    [[nodiscard]] std::vector<Vec2F> getPoints() const;
+    [[nodiscard]] std::vector<Vec2f> getPoints() const;
 
     [[nodiscard]] std::string toString() const override;
 
-    [[nodiscard]] bool pointInside(const Vec2F& point) const override;
+    [[nodiscard]] bool pointInside(const Vec2f& point) const override;
 
-    Rect& translate(const Vec2F& posToAdd) override;
+    Rect& translate(const Vec2f& posToAdd) override;
 
     Rect& scale(float scale) override;
 
-    std::pair<Vec2F, Vec2F> getAABB() override;
+    std::pair<Vec2f, Vec2f> getAABB() override;
 };
 
 class Polygon : public Shape {
 public:
-    std::vector<Vec2F> points;
+    std::vector<Vec2f> points;
 
 private:
-    std::vector<Vec2F> m_normals;
-    Vec2F m_center;
+    std::vector<Vec2f> m_normals;
+    Vec2f m_center;
 
 public:
-    Polygon(const std::vector<Vec2F>& points);
+    Polygon(const std::vector<Vec2f>& points);
 
     void calculateNormals();
 
     void calculateCenter();
 
-    [[nodiscard]] Vec2F center() const override;
+    [[nodiscard]] Vec2f center() const override;
 
-    [[nodiscard]] const std::vector<Vec2F>& normals() const {
+    [[nodiscard]] const std::vector<Vec2f>& normals() const {
         return m_normals;
     };
 
     [[nodiscard]] std::string toString() const override;
 
-    [[nodiscard]] bool pointInside(const Vec2F& point) const override;
+    [[nodiscard]] bool pointInside(const Vec2f& point) const override;
 
-    Polygon& translate(const Vec2F& posToAdd) override;
+    Polygon& translate(const Vec2f& posToAdd) override;
 
     Polygon& rotate(float rotation);
 
     Polygon& scale(float scale) override;
 
-    std::pair<Vec2F, Vec2F> getAABB() override;
+    std::pair<Vec2f, Vec2f> getAABB() override;
 };
 
 }

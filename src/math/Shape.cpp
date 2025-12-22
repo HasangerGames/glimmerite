@@ -104,7 +104,7 @@ bool Shape::getCollision(const Shape& other, CollRes* res) const {
     return fns.check(*this, other, res);
 }
 
-Circle::Circle(Vec2F pos, float rad) :
+Circle::Circle(Vec2f pos, float rad) :
     Shape(CIRCLE),
     pos(pos),
     rad(rad) {
@@ -115,15 +115,15 @@ std::string Circle::toString() const {
     return std::format("Circle (X: {0:.4f}, Y: {1:.4f}, Rad: {2:.4f})", pos.x, pos.y, rad);
 }
 
-bool Circle::pointInside(const Vec2F& point) const {
+bool Circle::pointInside(const Vec2f& point) const {
     return PointCircle(point, pos, rad);
 }
 
-Vec2F Circle::center() const {
+Vec2f Circle::center() const {
     return pos;
 }
 
-Circle& Circle::translate(const Vec2F& posToAdd) {
+Circle& Circle::translate(const Vec2f& posToAdd) {
     pos += posToAdd;
     return *this;
 }
@@ -133,7 +133,7 @@ Circle& Circle::scale(const float scale) {
     return *this;
 }
 
-std::pair<Vec2F, Vec2F> Circle::getAABB() {
+std::pair<Vec2f, Vec2f> Circle::getAABB() {
     return {
         {
             pos.x - rad,
@@ -146,7 +146,7 @@ std::pair<Vec2F, Vec2F> Circle::getAABB() {
     };
 };
 
-Rect::Rect(Vec2F min, Vec2F max) :
+Rect::Rect(Vec2f min, Vec2f max) :
     Shape(RECT),
     min(min),
     max(max) {
@@ -155,14 +155,14 @@ Rect::Rect(Vec2F min, Vec2F max) :
     assert(min.y < max.y);
 }
 
-Rect Rect::fromDims(float width, float height, Vec2F center) {
-    Vec2F size{width / 2, height / 2};
+Rect Rect::fromDims(float width, float height, Vec2f center) {
+    Vec2f size{width / 2, height / 2};
 
     return Rect{center - size, center + size};
 }
 
 Rect& Rect::scale(const float scale) {
-    Vec2F center = this->center();
+    Vec2f center = this->center();
 
     min = (min - center) * scale + center;
     max = (max - center) * scale + center;
@@ -170,18 +170,18 @@ Rect& Rect::scale(const float scale) {
     return *this;
 }
 
-std::pair<Vec2F, Vec2F> Rect::getAABB() {
+std::pair<Vec2f, Vec2f> Rect::getAABB() {
     return {min, max};
 };
 
-Rect& Rect::translate(const Vec2F& posToAdd) {
+Rect& Rect::translate(const Vec2f& posToAdd) {
     min += posToAdd;
     max += posToAdd;
 
     return *this;
 }
 
-bool Rect::pointInside(const Vec2F& point) const {
+bool Rect::pointInside(const Vec2f& point) const {
     return PointRect(point, min, max);
 }
 
@@ -189,7 +189,7 @@ std::string Rect::toString() const {
     return std::format("Rect(Min ({}) Max ({}))", min.toString(), max.toString());
 }
 
-std::vector<Vec2F> Rect::getPoints() const {
+std::vector<Vec2f> Rect::getPoints() const {
     return {
         min,
         {min.x, max.y},
@@ -198,11 +198,11 @@ std::vector<Vec2F> Rect::getPoints() const {
     };
 }
 
-Vec2F Rect::center() const {
+Vec2f Rect::center() const {
     return min + ((max - min) / 2);
 }
 
-Polygon::Polygon(const std::vector<Vec2F>& points) :
+Polygon::Polygon(const std::vector<Vec2f>& points) :
     Shape(POLYGON),
     points(points),
     m_normals(points.size()) {
@@ -214,9 +214,9 @@ Polygon::Polygon(const std::vector<Vec2F>& points) :
 
 Polygon& Polygon::scale(const float scale) {
     for (auto& pt : points) {
-        Vec2F toCenter = m_center - pt;
+        Vec2f toCenter = m_center - pt;
         float length = toCenter.length();
-        const Vec2F& dir = toCenter.normalize(length);
+        const Vec2f& dir = toCenter.normalize(length);
 
         pt = m_center - (dir * (length * scale));
     }
@@ -224,7 +224,7 @@ Polygon& Polygon::scale(const float scale) {
     return *this;
 }
 
-Polygon& Polygon::translate(const Vec2F& posToAdd) {
+Polygon& Polygon::translate(const Vec2f& posToAdd) {
     for (auto& point : points) {
         point += posToAdd;
     }
@@ -233,12 +233,12 @@ Polygon& Polygon::translate(const Vec2F& posToAdd) {
     return *this;
 }
 
-std::pair<Vec2F, Vec2F> Polygon::getAABB() {
-    Vec2F min{FLT_MAX, FLT_MAX};
-    Vec2F max{-FLT_MAX, -FLT_MAX};
-    for (Vec2F& pt : points) {
-        min = Vec2F::min(pt, min);
-        max = Vec2F::max(pt, max);
+std::pair<Vec2f, Vec2f> Polygon::getAABB() {
+    Vec2f min{FLT_MAX, FLT_MAX};
+    Vec2f max{-FLT_MAX, -FLT_MAX};
+    for (Vec2f& pt : points) {
+        min = Vec2f::min(pt, min);
+        max = Vec2f::max(pt, max);
     }
     return {min, max};
 };
@@ -247,7 +247,7 @@ Polygon& Polygon::rotate(float rotation) {
     for (auto& point : points) {
         float dist = point.distanceTo(m_center);
 
-        Vec2F dir = (point - m_center).normalize().rotate(rotation).normalize();
+        Vec2f dir = (point - m_center).normalize().rotate(rotation).normalize();
 
         point = m_center - (dir * dist);
     }
@@ -258,7 +258,7 @@ Polygon& Polygon::rotate(float rotation) {
     return *this;
 };
 
-bool Polygon::pointInside(const Vec2F& point) const {
+bool Polygon::pointInside(const Vec2f& point) const {
     return PointPolygon(point, points);
 }
 
@@ -276,7 +276,7 @@ std::string Polygon::toString() const {
     return out;
 }
 
-Vec2F Polygon::center() const {
+Vec2f Polygon::center() const {
     return m_center;
 }
 
@@ -290,9 +290,9 @@ void Polygon::calculateCenter() {
 
 void Polygon::calculateNormals() {
     for (size_t i = 0; i < points.size(); i++) {
-        const Vec2F& pointA = points[i];
-        const Vec2F& pointB = points[(i + 1) % points.size()];
-        Vec2F edge = pointB - pointA;
+        const Vec2f& pointA = points[i];
+        const Vec2f& pointB = points[(i + 1) % points.size()];
+        Vec2f edge = pointB - pointA;
 
         m_normals[i] = edge.perp().normalize();
     }

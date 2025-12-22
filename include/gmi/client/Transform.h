@@ -8,10 +8,10 @@
 namespace gmi::math {
 
 struct Transform {
-    Vec2F position;
+    Vec2f position;
     float rotation = 0;
-    Vec2F scale = {1, 1};
-    Vec2F pivot = {0.5f, 0.5f};
+    Vec2f scale = {1, 1};
+    Vec2f pivot = {0.5f, 0.5f};
     Color color;
 };
 

@@ -29,7 +29,7 @@ void Container::sortChildren() {
     );
 }
 
-void Container::setPosition(math::Vec2F position) {
+void Container::setPosition(math::Vec2f position) {
     m_transform.position = position;
     m_transformDirty = true;
 }
@@ -39,7 +39,7 @@ void Container::setRotation(float rotation) {
     m_transformDirty = true;
 }
 
-void Container::setScale(math::Vec2F scale) {
+void Container::setScale(math::Vec2f scale) {
     m_transform.scale = scale;
     m_transformDirty = true;
 }
@@ -54,7 +54,7 @@ void Container::setTint(Color tint) {
     m_transformDirty = true;
 }
 
-void Container::setPivot(math::Vec2F pivot) {
+void Container::setPivot(math::Vec2f pivot) {
     m_transform.pivot = pivot;
     m_transformDirty = true;
 }
@@ -72,8 +72,8 @@ void Container::updateAffine() {
     }
 }
 
-void Container::animate(const AnimateOptions<math::Vec2F>& opts) {
-    math::Vec2F* prop;
+void Container::animate(const AnimateOptions<math::Vec2f>& opts) {
+    math::Vec2f* prop;
     switch (opts.prop) {
     case math::TransformProps::Position:
         prop = &m_transform.position;
@@ -85,7 +85,7 @@ void Container::animate(const AnimateOptions<math::Vec2F>& opts) {
         prop = &m_transform.pivot;
         break;
     default:
-        throw GmiException("Attempted to animate a non-Vec2F property to a Vec2F target");
+        throw GmiException("Attempted to animate a non-Vec2f property to a Vec2f target");
     }
     m_parentApp->tweens().add({
         .values = {{&prop->x, opts.target.x}, {&prop->y, opts.target.y}},

@@ -32,7 +32,7 @@ class Graphics : public Container {
 public:
     Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) { }
 
-    Graphics& drawLine(std::vector<math::Vec2F> points, const StrokeStyle& style);
+    Graphics& drawLine(std::vector<math::Vec2f> points, const StrokeStyle& style);
 
     Graphics& fillRect(float x, float y, float w, float h, Color color);
 
@@ -40,7 +40,7 @@ public:
 
     Graphics& fillEllipse(float x, float y, float rx, float ry, Color color);
 
-    Graphics& fillPoly(const std::vector<math::Vec2F>& points, Color color);
+    Graphics& fillPoly(const std::vector<math::Vec2f>& points, Color color);
 
     void render(Renderer& renderer) override;
 };

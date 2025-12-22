@@ -3,27 +3,24 @@
 #include <cmath>
 #include <cstdint>
 #include <format>
-#include <ostream>
 #include <string>
 #include <type_traits>
 
-#define VEC2_EPSILON 0.001F
+#define VEC2_EPSILON 0.001f
 
 namespace gmi::math {
+
 template<typename VecT>
 class Vec2 {
 public:
     VecT x;
     VecT y;
 
-    Vec2() : x(0), y(0) {
-    }
+    Vec2() : x(0), y(0) { }
 
-    Vec2(VecT xAndY) : x(xAndY), y(xAndY) {
-    }
+    Vec2(VecT xAndY) : x(xAndY), y(xAndY) { }
 
-    Vec2(VecT xPos, VecT yPos) : x(xPos), y(yPos) {
-    }
+    Vec2(VecT xPos, VecT yPos) : x(xPos), y(yPos) { }
 
     [[nodiscard]] static Vec2 left() {
         return {-1, 0};
@@ -54,7 +51,7 @@ public:
         requires(std::is_floating_point_v<VecT>)
     {
         return std::isfinite(x) && std::isfinite(y);
-    };
+    }
 
     Vec2& rotate(float rad) {
         const VecT cosr = std::cos(rad);
@@ -226,20 +223,21 @@ public:
         requires(std::is_floating_point_v<VecT>)
     {
         return std::format("X: {0:.4f}, Y: {1:.4f}", x, y);
-    };
+    }
 
     [[nodiscard]] std::string toString() const
         requires(std::is_integral_v<VecT>)
     {
         return std::format("X:    {}, Y:    {}", x, y);
-    };
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const Vec2& vec) {
         os << vec.toString();
         return os;
-    };
+    }
 };
 
-using Vec2F = Vec2<float>;
-using Vec2U = Vec2<uint32_t>;
+using Vec2f = Vec2<float>;
+using Vec2u = Vec2<uint32_t>;
+
 }

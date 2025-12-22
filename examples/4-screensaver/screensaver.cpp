@@ -5,7 +5,7 @@
 using namespace gmi;
 
 float SPEED = 0.5f;
-math::Vec2F VELOCITY = {SPEED, SPEED};
+math::Vec2f VELOCITY = {SPEED, SPEED};
 
 void gmiMain(Application& app) {
     app.init({
@@ -25,7 +25,7 @@ void gmiMain(Application& app) {
     ));
     dvdLogo.setPivot({0, 0}); // Makes the math simpler
     app.addTicker([&app, &dvdLogo, xMax, yMax] {
-        math::Vec2F position = dvdLogo.getPosition();
+        math::Vec2f position = dvdLogo.getPosition();
         bool xFlip = position.x < 0 || position.x > xMax;
         bool yFlip = position.y < 0 || position.y > yMax;
 

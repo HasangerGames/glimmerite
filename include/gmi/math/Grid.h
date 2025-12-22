@@ -45,17 +45,17 @@ public:
         return m_maxEntityID;
     }
 
-    void insertEntity(EntityID_T entityID, Vec2F min, Vec2F max);
+    void insertEntity(EntityID_T entityID, Vec2f min, Vec2f max);
 
     void removeEntity(EntityID_T entityID);
 
-    const std::vector<EntityID_T>& queryAABB(Vec2F min, Vec2F max) const;
+    const std::vector<EntityID_T>& queryAABB(Vec2f min, Vec2f max) const;
 
-    const std::vector<EntityID_T>& queryPosition(Vec2F pos) const;
+    const std::vector<EntityID_T>& queryPosition(Vec2f pos) const;
 
     const std::vector<EntityID_T>& queryEntity(EntityID_T entityID) const;
 
-    const std::vector<EntityID_T>& queryLine(Vec2F lineStart, Vec2F lineEnd) const;
+    const std::vector<EntityID_T>& queryLine(Vec2f lineStart, Vec2f lineEnd) const;
 
 private:
     struct Cell {
@@ -71,7 +71,7 @@ private:
     };
 
     using GridAABB = AABB<GridPos>;
-    using WorldAABB = AABB<Vec2F>;
+    using WorldAABB = AABB<Vec2f>;
 
     struct EntityGridData {
         bool valid = false;
@@ -79,7 +79,7 @@ private:
         GridAABB bounds;
     };
 
-    GridPos roundToGrid(Vec2F pos) const {
+    GridPos roundToGrid(Vec2f pos) const {
         return {
             (GridSize_T)std::clamp((int)(pos.x / m_cellSize), 0, (int)m_gridSize - 1),
             (GridSize_T)std::clamp((int)(pos.y / m_cellSize), 0, (int)m_gridSize - 1),
@@ -179,7 +179,7 @@ inline Grid<GridSize_T, EntityID_T>::~Grid() {
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline void Grid<GridSize_T, EntityID_T>::insertEntity(EntityID_T entityID, Vec2F min, Vec2F max) {
+inline void Grid<GridSize_T, EntityID_T>::insertEntity(EntityID_T entityID, Vec2f min, Vec2f max) {
     EntityGridData& entity = getEntityData(entityID);
 
     GridAABB localBounds = {
@@ -265,7 +265,7 @@ inline void Grid<GridSize_T, EntityID_T>::removeEntity(EntityID_T entityID) {
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryAABB(Vec2F min, Vec2F max) const {
+inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryAABB(Vec2f min, Vec2f max) const {
     GridAABB bounds = {
         .min = roundToGrid(min),
         .max = roundToGrid(max),
@@ -276,7 +276,7 @@ inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryAABB(Ve
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryPosition(Vec2F pos) const {
+inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryPosition(Vec2f pos) const {
     GridPos gridPos = roundToGrid(pos);
     return cellAt(gridPos.x, gridPos.y).items;
 }
@@ -291,8 +291,8 @@ inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryEntity(
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryLine(Vec2F lineStart, Vec2F lineEnd) const {
-    Vec2F diff = lineEnd - lineStart;
+inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryLine(Vec2f lineStart, Vec2f lineEnd) const {
+    Vec2f diff = lineEnd - lineStart;
 
     int gridDirX = lineEnd.x >= lineStart.x ? 1 : -1;
     int gridDirY = lineEnd.y >= lineStart.y ? 1 : -1;

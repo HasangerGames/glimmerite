@@ -16,7 +16,7 @@ struct CollRes {
     /**
      * The direction to move the shapes so they separate
      */
-    Vec2F normal;
+    Vec2f normal;
     /**
      * How much the shapes are colliding
      */
@@ -24,73 +24,73 @@ struct CollRes {
 };
 
 bool CircleCircle(
-    const Vec2F& posA,
+    const Vec2f& posA,
     float radA,
 
-    const Vec2F& posB,
+    const Vec2f& posB,
     float radB,
 
     CollRes* res
 );
 
 bool CircleRect(
-    const Vec2F& circlePos,
+    const Vec2f& circlePos,
     float circleRad,
 
-    const Vec2F& rectMin,
-    const Vec2F& rectMax,
+    const Vec2f& rectMin,
+    const Vec2f& rectMax,
 
     CollRes* res
 );
 
 bool CirclePolygon(
-    const Vec2F& circlePos,
+    const Vec2f& circlePos,
     float circleRad,
 
-    const std::vector<Vec2F>& polyPoints,
-    const std::vector<Vec2F>& polyNormals,
-    const Vec2F& polyCenter,
+    const std::vector<Vec2f>& polyPoints,
+    const std::vector<Vec2f>& polyNormals,
+    const Vec2f& polyCenter,
 
     CollRes* res
 );
 
 bool RectRect(
-    const Vec2F& rectAMin,
-    const Vec2F& rectAMax,
+    const Vec2f& rectAMin,
+    const Vec2f& rectAMax,
 
-    const Vec2F& rectBMin,
-    const Vec2F& rectBMax,
+    const Vec2f& rectBMin,
+    const Vec2f& rectBMax,
 
     CollRes* res
 );
 
 bool RectPolygon(
-    const Vec2F& rectMin,
-    const Vec2F& rectMax,
+    const Vec2f& rectMin,
+    const Vec2f& rectMax,
 
-    const std::vector<Vec2F>& polyPoints,
-    const std::vector<Vec2F>& polyNormals,
-    const Vec2F& polyCenter,
+    const std::vector<Vec2f>& polyPoints,
+    const std::vector<Vec2f>& polyNormals,
+    const Vec2f& polyCenter,
 
     CollRes* res
 );
 
 bool PolygonPolygon(
-    const std::vector<Vec2F>& pointsA,
-    const std::vector<Vec2F>& normalsA,
-    const Vec2F& centerA,
+    const std::vector<Vec2f>& pointsA,
+    const std::vector<Vec2f>& normalsA,
+    const Vec2f& centerA,
 
-    const std::vector<Vec2F>& pointsB,
-    const std::vector<Vec2F>& normalsB,
-    const Vec2F& centerB,
+    const std::vector<Vec2f>& pointsB,
+    const std::vector<Vec2f>& normalsB,
+    const Vec2f& centerB,
 
     CollRes* res
 );
 
-bool PointCircle(const Vec2F& point, const Vec2F& circlePos, float circleRad);
+bool PointCircle(const Vec2f& point, const Vec2f& circlePos, float circleRad);
 
-bool PointRect(const Vec2F& point, const Vec2F& rectMin, const Vec2F& rectMax);
+bool PointRect(const Vec2f& point, const Vec2f& rectMin, const Vec2f& rectMax);
 
-bool PointPolygon(const Vec2F& point, const std::vector<Vec2F>& points);
+bool PointPolygon(const Vec2f& point, const std::vector<Vec2f>& points);
 
 };
