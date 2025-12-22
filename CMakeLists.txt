@@ -7,12 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FeatureSummary)
 
-# enable testing
-if (BUILD_TESTING)
-    include(CTest)
-    enable_testing()
-endif()
-
 option(BUILD_EXAMPLES   "Build example games"   ON)
 option(BUILD_CLIENT     "Build client library"  ON)
 
@@ -63,6 +57,12 @@ add_subdirectory(src)
 
 if (BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if (BUILD_TESTING)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
 
 feature_summary(WHAT ALL)

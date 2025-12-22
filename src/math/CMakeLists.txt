@@ -13,9 +13,12 @@ target_sources(
     BASE_DIRS "${CMAKE_SOURCE_DIR}/include/"
     FILES
         ${GMI_MATH_INCLUDE_DIR}/Easing.h
+        ${GMI_MATH_INCLUDE_DIR}/Grid.h
         ${GMI_MATH_INCLUDE_DIR}/Rect.h
+        ${GMI_MATH_INCLUDE_DIR}/Shape.h
         ${GMI_MATH_INCLUDE_DIR}/Size.h
         ${GMI_MATH_INCLUDE_DIR}/Vec2.h
+        ${GMI_MATH_INCLUDE_DIR}/collision.h
         ${GMI_MATH_INCLUDE_DIR}/math.h
         ${GMI_MATH_INCLUDE_DIR}/random.h
 )
