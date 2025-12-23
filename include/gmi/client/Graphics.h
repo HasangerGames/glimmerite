@@ -32,6 +32,8 @@ class Graphics : public Container {
 public:
     Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) { }
 
+    Graphics& clear();
+
     Graphics& drawLine(std::vector<math::Vec2f> points, const StrokeStyle& style);
 
     Graphics& fillRect(float x, float y, float w, float h, Color color);

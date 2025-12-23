@@ -142,6 +142,12 @@ void round(
     }
 }
 
+Graphics& Graphics::clear() {
+    m_drawable.vertices.clear();
+    m_drawable.indices.clear();
+    return *this;
+}
+
 Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle& style) {
     if (points.empty()) {
         return *this;
