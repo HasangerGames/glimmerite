@@ -11,6 +11,7 @@
 #include <vector>
 
 namespace gmi::collision {
+
 using namespace gmi::math;
 
 template<typename GridSize_T, typename EntityID_T>
@@ -158,7 +159,7 @@ private:
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline Grid<GridSize_T, EntityID_T>::Grid(GridSize_T worldSize, GridSize_T cellSize, EntityID_T maxEntityID) :
+Grid<GridSize_T, EntityID_T>::Grid(GridSize_T worldSize, GridSize_T cellSize, EntityID_T maxEntityID) :
     m_worldSize(worldSize),
     m_cellSize(cellSize),
     m_gridSize(worldSize / cellSize),
@@ -172,14 +173,14 @@ inline Grid<GridSize_T, EntityID_T>::Grid(GridSize_T worldSize, GridSize_T cellS
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline Grid<GridSize_T, EntityID_T>::~Grid() {
+Grid<GridSize_T, EntityID_T>::~Grid() {
     delete[] m_cells;
     delete[] m_entityCache;
 }
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline void Grid<GridSize_T, EntityID_T>::insertEntity(EntityID_T entityID, Vec2f min, Vec2f max) {
+void Grid<GridSize_T, EntityID_T>::insertEntity(EntityID_T entityID, Vec2f min, Vec2f max) {
     EntityGridData& entity = getEntityData(entityID);
 
     GridAABB localBounds = {
@@ -231,7 +232,7 @@ inline void Grid<GridSize_T, EntityID_T>::insertEntity(EntityID_T entityID, Vec2
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline void Grid<GridSize_T, EntityID_T>::removeEntity(EntityID_T entityID) {
+void Grid<GridSize_T, EntityID_T>::removeEntity(EntityID_T entityID) {
     EntityGridData& entity = getEntityData(entityID);
 
     if (!entity.valid)
@@ -265,7 +266,7 @@ inline void Grid<GridSize_T, EntityID_T>::removeEntity(EntityID_T entityID) {
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryAABB(Vec2f min, Vec2f max) const {
+const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryAABB(Vec2f min, Vec2f max) const {
     GridAABB bounds = {
         .min = roundToGrid(min),
         .max = roundToGrid(max),
@@ -276,14 +277,14 @@ inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryAABB(Ve
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryPosition(Vec2f pos) const {
+const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryPosition(Vec2f pos) const {
     GridPos gridPos = roundToGrid(pos);
     return cellAt(gridPos.x, gridPos.y).items;
 }
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryEntity(EntityID_T entityID) const {
+const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryEntity(EntityID_T entityID) const {
     EntityGridData& entity = m_entityCache[entityID];
     assert(entity.valid);
     return queryGridAABB(entity.bounds);
@@ -291,7 +292,7 @@ inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryEntity(
 
 template<typename GridSize_T, typename EntityID_T>
     requires(GridC<GridSize_T, EntityID_T>)
-inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryLine(Vec2f lineStart, Vec2f lineEnd) const {
+const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryLine(Vec2f lineStart, Vec2f lineEnd) const {
     Vec2f diff = lineEnd - lineStart;
 
     int gridDirX = lineEnd.x >= lineStart.x ? 1 : -1;
@@ -300,19 +301,19 @@ inline const std::vector<EntityID_T>& Grid<GridSize_T, EntityID_T>::queryLine(Ve
     float dirX =
         std::abs(diff.x) > 0.00001
         ? (gridDirX * (int)m_cellSize) / diff.x
-        : DBL_MAX;
+        : FLT_MAX;
 
     float dirY =
         std::abs(diff.y) > 0.00001
         ? (gridDirY * (int)m_cellSize) / diff.y
-        : DBL_MAX;
+        : FLT_MAX;
 
     // cell relative
-    float relativeX = std::fmod(lineStart.x / m_cellSize, 1.F);
-    float relativeY = std::fmod(lineStart.y / m_cellSize, 1.F);
+    float relativeX = std::fmod(lineStart.x / m_cellSize, 1.0f);
+    float relativeY = std::fmod(lineStart.y / m_cellSize, 1.0f);
 
-    float x = dirX * (gridDirX > 0 ? 1.F - relativeX : relativeX);
-    float y = dirY * (gridDirY > 0 ? 1.F - relativeY : relativeY);
+    float x = dirX * (gridDirX > 0 ? 1.0f - relativeX : relativeX);
+    float y = dirY * (gridDirY > 0 ? 1.0f - relativeY : relativeY);
 
     GridPos start = roundToGrid(lineStart);
     GridPos endCell = roundToGrid(lineEnd);
