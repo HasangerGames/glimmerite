@@ -1,4 +1,5 @@
 #include "gmi/math/Shape.h"
+#include "gmi/math/math.h"
 #include <cfloat>
 
 using namespace gmi::math;
@@ -204,6 +205,26 @@ Polygon::Polygon(const std::vector<Vec2f>& points) :
 
     calculateNormals();
     calculateCenter();
+}
+
+Polygon Polygon::fromSides(size_t sides, Vec2f center, float radius) {
+    std::vector<Vec2f> points;
+    points.resize(sides);
+
+    float step = math::TAU / sides;
+
+    for (size_t i = 0; i < sides; i++) {
+        float angle = step * i;
+
+        Vec2f offset = {
+            std::cos(angle) * radius,
+            std::sin(angle) * radius
+        };
+
+        points[i] = center + offset;
+    }
+
+    return Polygon{points};
 }
 
 Polygon& Polygon::scale(const float scale) {

@@ -126,6 +126,8 @@ private:
 public:
     explicit Polygon(const std::vector<Vec2f>& points);
 
+    static Polygon fromSides(size_t sides, Vec2f center, float radius);
+
     void calculateNormals();
 
     void calculateCenter();
