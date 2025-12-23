@@ -24,11 +24,11 @@ public:
     const Type type;
 
     [[nodiscard]] virtual std::string toString() const = 0;
-    [[nodiscard]] virtual bool pointInside(const Vec2f& point) const = 0;
+    [[nodiscard]] virtual bool pointInside(Vec2f point) const = 0;
 
     [[nodiscard]] virtual Vec2f center() const = 0;
 
-    virtual Shape& translate(const Vec2f& posToAdd) = 0;
+    virtual Shape& translate(Vec2f posToAdd) = 0;
     virtual Shape& scale(float scale) = 0;
 
     virtual std::pair<Vec2f, Vec2f> getAABB() = 0;
@@ -72,11 +72,11 @@ public:
 
     [[nodiscard]] std::string toString() const override;
 
-    [[nodiscard]] bool pointInside(const Vec2f& point) const override;
+    [[nodiscard]] bool pointInside(Vec2f point) const override;
 
     [[nodiscard]] Vec2f center() const override;
 
-    Circle& translate(const Vec2f& posToAdd) override;
+    Circle& translate(Vec2f posToAdd) override;
 
     Circle& scale(float scale) override;
 
@@ -106,9 +106,9 @@ public:
 
     [[nodiscard]] std::string toString() const override;
 
-    [[nodiscard]] bool pointInside(const Vec2f& point) const override;
+    [[nodiscard]] bool pointInside(Vec2f point) const override;
 
-    Rect& translate(const Vec2f& posToAdd) override;
+    Rect& translate(Vec2f posToAdd) override;
 
     Rect& scale(float scale) override;
 
@@ -138,9 +138,9 @@ public:
 
     [[nodiscard]] std::string toString() const override;
 
-    [[nodiscard]] bool pointInside(const Vec2f& point) const override;
+    [[nodiscard]] bool pointInside(Vec2f point) const override;
 
-    Polygon& translate(const Vec2f& posToAdd) override;
+    Polygon& translate(Vec2f posToAdd) override;
 
     Polygon& rotate(float rotation);
 

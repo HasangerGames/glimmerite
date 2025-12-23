@@ -50,14 +50,14 @@ struct Affine {
      * @param translation The translation as a Vec2
      * @return The affine
      */
-    static Affine translate(const Vec2f& translation);
+    static Affine translate(Vec2f translation);
 
     /**
      * Creates an Affine that applies a scaling transformation.
      * @param scale A Vec2f representing the scale
      * @return The affine equivalent
      */
-    static Affine scale(const Vec2f& scale);
+    static Affine scale(Vec2f scale);
 
     /**
      * Creates an Affine that applies a scaling transformation about a pivot.
@@ -65,7 +65,7 @@ struct Affine {
      * @param scaleFactor A Vec2f representing the scale
      * @return The affine
      */
-    static Affine scaleAbout(const Vec2f& pivot, const Vec2f& scaleFactor);
+    static Affine scaleAbout(Vec2f pivot, Vec2f scaleFactor);
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Affine& m) {
@@ -121,21 +121,21 @@ inline Affine Affine::fromTransform(const Transform& t) {
     return m;
 }
 
-inline Affine Affine::scale(const Vec2f& scale) {
+inline Affine Affine::scale(Vec2f scale) {
     Affine m;
     m.a = scale.x;
     m.d = scale.y;
     return m;
 }
 
-inline Affine Affine::translate(const Vec2f& translation) {
+inline Affine Affine::translate(Vec2f translation) {
     Affine m;
     m.x = translation.x;
     m.y = translation.y;
     return m;
 }
 
-inline Affine Affine::scaleAbout(const Vec2f& pivot, const Vec2f& scaleFactor) {
+inline Affine Affine::scaleAbout(Vec2f pivot, Vec2f scaleFactor) {
     return translate(pivot) * scale(scaleFactor) * translate(-pivot);
 }
 
@@ -145,7 +145,7 @@ inline Affine Affine::scaleAbout(const Vec2f& pivot, const Vec2f& scaleFactor) {
  * @param pos The vector to apply it to
  * @return The transformed vector
  */
-inline Vec2f affineApply(const Affine& m, const Vec2f& pos) {
+inline Vec2f affineApply(const Affine& m, Vec2f pos) {
     auto [x, y] = pos;
     return {
         (m.a * x) + (m.c * y) + m.x,
@@ -159,7 +159,7 @@ inline Vec2f affineApply(const Affine& m, const Vec2f& pos) {
  * @param pos The vector to apply it to
  * @return The transformed vector
  */
-inline Vec2f affineApplyInverse(const Affine& m, const Vec2f& pos) {
+inline Vec2f affineApplyInverse(const Affine& m, Vec2f pos) {
     float a = m.a;
     float b = m.b;
     float c = m.c;

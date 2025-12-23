@@ -13,8 +13,8 @@ using namespace gmi::collision;
 template<typename T>
 static void projectVertices(
     const T& points,
-    const Vec2f& normal,
-    const Vec2f& center,
+    Vec2f normal,
+    Vec2f center,
 
     float* outMin,
     float* outMax
@@ -22,7 +22,7 @@ static void projectVertices(
     float min = std::numeric_limits<float>::max();
     float max = -min;
 
-    for (const Vec2f& point : points) {
+    for (Vec2f point : points) {
         float proj = normal * (center - point);
 
         min = std::min(proj, min);
@@ -34,9 +34,9 @@ static void projectVertices(
 }
 
 static void projectCircle(
-    const Vec2f& center,
+    Vec2f center,
     const float radius,
-    const Vec2f& normal,
+    Vec2f normal,
 
     float* out_min,
     float* out_max
@@ -63,10 +63,10 @@ static void projectCircle(
 namespace gmi::collision {
 
 bool circleCircle(
-    const Vec2f& posA,
+    Vec2f posA,
     const float radA,
 
-    const Vec2f& posB,
+    Vec2f posB,
     const float radB,
 
     Response* res
@@ -89,11 +89,11 @@ bool circleCircle(
 }
 
 bool circleRect(
-    const Vec2f& circlePos,
+    Vec2f circlePos,
     const float circleRad,
 
-    const Vec2f& rectMin,
-    const Vec2f& rectMax,
+    Vec2f rectMin,
+    Vec2f rectMax,
 
     Response* res
 ) {
@@ -149,11 +149,11 @@ bool circleRect(
 }
 
 bool rectRect(
-    const Vec2f& rectAMin,
-    const Vec2f& rectAMax,
+    Vec2f rectAMin,
+    Vec2f rectAMax,
 
-    const Vec2f& rectBMin,
-    const Vec2f& rectBMax,
+    Vec2f rectBMin,
+    Vec2f rectBMax,
 
     Response* res
 ) {
@@ -196,12 +196,12 @@ bool rectRect(
 }
 
 bool rectPolygon(
-    const Vec2f& rectMin,
-    const Vec2f& rectMax,
+    Vec2f rectMin,
+    Vec2f rectMax,
 
     const std::vector<Vec2f>& polyPoints,
     const std::vector<Vec2f>& polyNormals,
-    const Vec2f& polyCenter,
+    Vec2f polyCenter,
 
     Response* res
 ) {
@@ -280,12 +280,12 @@ bool rectPolygon(
 }
 
 bool circlePolygon(
-    const Vec2f& circlePos,
+    Vec2f circlePos,
     float circleRad,
 
     const std::vector<Vec2f>& polyPoints,
     const std::vector<Vec2f>& polyNormals,
-    const Vec2f& polyCenter,
+    Vec2f polyCenter,
 
     Response* res
 ) {
@@ -301,8 +301,8 @@ bool circlePolygon(
     float resDepth = std::numeric_limits<float>::max();
 
     for (size_t i = 0; i < polyPoints.size(); i++) {
-        const Vec2f& normal = polyNormals[i];
-        const Vec2f& point = polyPoints[i];
+        Vec2f normal = polyNormals[i];
+        Vec2f point = polyPoints[i];
 
         float minA, maxA, minB, maxB;
         projectVertices(polyPoints, normal, polyCenter, &minA, &maxA);
@@ -364,11 +364,11 @@ bool circlePolygon(
 bool polygonPolygon(
     const std::vector<Vec2f>& pointsA,
     const std::vector<Vec2f>& normalsA,
-    const Vec2f& centerA,
+    Vec2f centerA,
 
     const std::vector<Vec2f>& pointsB,
     const std::vector<Vec2f>& normalsB,
-    const Vec2f& centerB,
+    Vec2f centerB,
 
     Response* res
 ) {
@@ -432,15 +432,15 @@ bool polygonPolygon(
     return true;
 }
 
-bool pointCircle(const Vec2f& point, const Vec2f& circlePos, float circleRad) {
+bool pointCircle(Vec2f point, Vec2f circlePos, float circleRad) {
     return point.distanceTo(circlePos) <= circleRad;
 }
 
-bool pointRect(const Vec2f& point, const Vec2f& rectMin, const Vec2f& rectMax) {
+bool pointRect(Vec2f point, Vec2f rectMin, Vec2f rectMax) {
     return point.x > rectMin.x && point.y > rectMin.y && point.x < rectMax.x && point.y < rectMax.y;
 }
 
-bool pointPolygon(const Vec2f& point, const std::vector<Vec2f>& points) {
+bool pointPolygon(Vec2f point, const std::vector<Vec2f>& points) {
     // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
     size_t count = points.size();
     bool inside = false;

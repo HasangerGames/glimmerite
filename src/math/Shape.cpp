@@ -115,7 +115,7 @@ std::string Circle::toString() const {
     return std::format("Circle (X: {0:.4f}, Y: {1:.4f}, Rad: {2:.4f})", pos.x, pos.y, rad);
 }
 
-bool Circle::pointInside(const Vec2f& point) const {
+bool Circle::pointInside(Vec2f point) const {
     return pointCircle(point, pos, rad);
 }
 
@@ -123,7 +123,7 @@ Vec2f Circle::center() const {
     return pos;
 }
 
-Circle& Circle::translate(const Vec2f& posToAdd) {
+Circle& Circle::translate(Vec2f posToAdd) {
     pos += posToAdd;
     return *this;
 }
@@ -168,14 +168,14 @@ std::pair<Vec2f, Vec2f> Rect::getAABB() {
     return {min, max};
 };
 
-Rect& Rect::translate(const Vec2f& posToAdd) {
+Rect& Rect::translate(Vec2f posToAdd) {
     min += posToAdd;
     max += posToAdd;
 
     return *this;
 }
 
-bool Rect::pointInside(const Vec2f& point) const {
+bool Rect::pointInside(Vec2f point) const {
     return pointRect(point, min, max);
 }
 
@@ -210,7 +210,7 @@ Polygon& Polygon::scale(const float scale) {
     for (auto& pt : points) {
         Vec2f toCenter = m_center - pt;
         float length = toCenter.length();
-        const Vec2f& dir = toCenter.normalize(length);
+        Vec2f dir = toCenter.normalize(length);
 
         pt = m_center - (dir * (length * scale));
     }
@@ -218,7 +218,7 @@ Polygon& Polygon::scale(const float scale) {
     return *this;
 }
 
-Polygon& Polygon::translate(const Vec2f& posToAdd) {
+Polygon& Polygon::translate(Vec2f posToAdd) {
     for (auto& point : points) {
         point += posToAdd;
     }
@@ -252,7 +252,7 @@ Polygon& Polygon::rotate(float rotation) {
     return *this;
 };
 
-bool Polygon::pointInside(const Vec2f& point) const {
+bool Polygon::pointInside(Vec2f point) const {
     return pointPolygon(point, points);
 }
 
@@ -284,8 +284,8 @@ void Polygon::calculateCenter() {
 
 void Polygon::calculateNormals() {
     for (size_t i = 0; i < points.size(); i++) {
-        const Vec2f& pointA = points[i];
-        const Vec2f& pointB = points[(i + 1) % points.size()];
+        Vec2f pointA = points[i];
+        Vec2f pointB = points[(i + 1) % points.size()];
         Vec2f edge = pointB - pointA;
 
         m_normals[i] = edge.perp().normalize();

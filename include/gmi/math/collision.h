@@ -20,53 +20,53 @@ struct Response {
 };
 
 bool circleCircle(
-    const Vec2f& posA,
+    Vec2f posA,
     float radA,
 
-    const Vec2f& posB,
+    Vec2f posB,
     float radB,
 
     Response* res
 );
 
 bool circleRect(
-    const Vec2f& circlePos,
+    Vec2f circlePos,
     float circleRad,
 
-    const Vec2f& rectMin,
-    const Vec2f& rectMax,
+    Vec2f rectMin,
+    Vec2f rectMax,
 
     Response* res
 );
 
 bool circlePolygon(
-    const Vec2f& circlePos,
+    Vec2f circlePos,
     float circleRad,
 
     const std::vector<Vec2f>& polyPoints,
     const std::vector<Vec2f>& polyNormals,
-    const Vec2f& polyCenter,
+    Vec2f polyCenter,
 
     Response* res
 );
 
 bool rectRect(
-    const Vec2f& rectAMin,
-    const Vec2f& rectAMax,
+    Vec2f rectAMin,
+    Vec2f rectAMax,
 
-    const Vec2f& rectBMin,
-    const Vec2f& rectBMax,
+    Vec2f rectBMin,
+    Vec2f rectBMax,
 
     Response* res
 );
 
 bool rectPolygon(
-    const Vec2f& rectMin,
-    const Vec2f& rectMax,
+    Vec2f rectMin,
+    Vec2f rectMax,
 
     const std::vector<Vec2f>& polyPoints,
     const std::vector<Vec2f>& polyNormals,
-    const Vec2f& polyCenter,
+    Vec2f polyCenter,
 
     Response* res
 );
@@ -74,19 +74,19 @@ bool rectPolygon(
 bool polygonPolygon(
     const std::vector<Vec2f>& pointsA,
     const std::vector<Vec2f>& normalsA,
-    const Vec2f& centerA,
+    Vec2f centerA,
 
     const std::vector<Vec2f>& pointsB,
     const std::vector<Vec2f>& normalsB,
-    const Vec2f& centerB,
+    Vec2f centerB,
 
     Response* res
 );
 
-bool pointCircle(const Vec2f& point, const Vec2f& circlePos, float circleRad);
+bool pointCircle(Vec2f point, Vec2f circlePos, float circleRad);
 
-bool pointRect(const Vec2f& point, const Vec2f& rectMin, const Vec2f& rectMax);
+bool pointRect(Vec2f point, Vec2f rectMin, Vec2f rectMax);
 
-bool pointPolygon(const Vec2f& point, const std::vector<Vec2f>& points);
+bool pointPolygon(Vec2f point, const std::vector<Vec2f>& points);
 
 };
