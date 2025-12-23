@@ -1,5 +1,5 @@
 add_executable(3-graphics graphics.cpp)
 
-target_link_libraries(3-graphics PRIVATE GMI_client)
+target_link_libraries(3-graphics PRIVATE glimmerite::client)
 
 install(TARGETS 3-graphics DESTINATION examples)

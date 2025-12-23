@@ -1,5 +1,5 @@
 add_executable(GridTest gridTest.cpp)
-target_link_libraries(GridTest GMI_math)
+target_link_libraries(GridTest glimmerite::math)
 
 add_test(
     NAME GridTest

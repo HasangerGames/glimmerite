@@ -1,16 +1,15 @@
-add_library(GMI_math STATIC
+add_library(glimmerite_math STATIC
     Shape.cpp
     collision.cpp
 )
 
-set(GMI_MATH_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/gmi/math/")
-
+set(GMI_MATH_INCLUDE_DIR "${GMI_INCLUDE_DIR}/gmi/math")
 target_sources(
-    GMI_math
+    glimmerite_math
     PUBLIC
     FILE_SET HEADERS
     TYPE HEADERS
-    BASE_DIRS "${CMAKE_SOURCE_DIR}/include/"
+    BASE_DIRS ${GMI_INCLUDE_DIR}
     FILES
         ${GMI_MATH_INCLUDE_DIR}/Easing.h
         ${GMI_MATH_INCLUDE_DIR}/Grid.h
@@ -22,4 +21,7 @@ target_sources(
         ${GMI_MATH_INCLUDE_DIR}/math.h
         ${GMI_MATH_INCLUDE_DIR}/random.h
 )
-set_target_properties(GMI_math PROPERTIES LINKER_LANGUAGE CXX)
+
+set_target_properties(glimmerite_math PROPERTIES LINKER_LANGUAGE CXX)
+
+add_library(glimmerite::math ALIAS glimmerite_math)

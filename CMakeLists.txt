@@ -7,22 +7,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(FeatureSummary)
 
-option(BUILD_EXAMPLES   "Build example games"   ON)
-option(BUILD_CLIENT     "Build client library"  ON)
+option(BUILD_EXAMPLES "Build example games"  ON)
+option(BUILD_CLIENT   "Build client library" ON)
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
+set(GMI_DIR         "${glimmerite_SOURCE_DIR}" CACHE PATH "Root directory of Glimmerite")
+set(GMI_SRC_DIR     "${GMI_DIR}/src")
+set(GMI_INCLUDE_DIR "${GMI_DIR}/include")
+
 # libraries only used by the client
 if (BUILD_CLIENT)
     #
     # BGFX
     #
-    set(BGFX_DIR    "${CMAKE_SOURCE_DIR}/vendored/bgfx.cmake/bgfx")
-    set(BX_DIR      "${CMAKE_SOURCE_DIR}/vendored/bgfx.cmake/bx")
-    set(BIMG_DIR    "${CMAKE_SOURCE_DIR}/vendored/bgfx.cmake/bimg")
+    set(BGFX_DIR "${GMI_DIR}/vendored/bgfx.cmake/bgfx")
+    set(BX_DIR   "${GMI_DIR}/vendored/bgfx.cmake/bx")
+    set(BIMG_DIR "${GMI_DIR}/vendored/bgfx.cmake/bimg")
     # makes cmake shut up about bgfx.cmake's use of add_custom_command
     set(CMAKE_POLICY_DEFAULT_CMP0175 "OLD")
     set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
@@ -83,3 +87,12 @@ if (BUILD_TESTING)
 endif()
 
 feature_summary(WHAT ALL)
+
+add_library(glimmerite_glimmerite INTERFACE)
+add_library(glimmerite::glimmerite ALIAS glimmerite_glimmerite)
+
+target_link_libraries(glimmerite_glimmerite
+    INTERFACE
+    glimmerite::math
+    glimmerite::client
+)
