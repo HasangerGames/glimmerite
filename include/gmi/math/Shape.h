@@ -38,10 +38,10 @@ public:
     /**
      * Check collision between this and another Shape.
      *
-     * @return true if both shapes collide.
+     * @return true if both shapes collide
      *
-     * @param Other The second shape.
-     * @param res A collision response pointer, optional / can be nullptr.
+     * @param other The second shape
+     * @param res A collision response pointer, optional / can be nullptr
      *
      * @note The collision response will only be valid if this function returned true.
      * @note The collision response normal will always be relative to this instance.
@@ -50,19 +50,17 @@ public:
      * ```
      *   gmi::collision::Rect rect({10, 10}, {20, 20});
      *   gmi::collision::Circle circle({10, 15}, 1);
-     *   gmi::collision::CollRes res;
+     *   gmi::collision::Response res;
      *   if (rect.getCollision(circle, &res)) {
      *       // this will separate the circle from the rectangle
      *       circle.translate(res.normal * res.depth);
      *   }
      * ```
      */
-    [[nodiscard]] bool getCollision(const Shape& other, CollRes* res) const;
+    [[nodiscard]] bool getCollision(const Shape& other, Response* res) const;
 
 protected:
-    Shape(Type type) :
-        type(type) {
-    }
+    explicit Shape(Type type) : type(type) { }
 };
 
 class Circle : public Shape {

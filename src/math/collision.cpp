@@ -16,8 +16,8 @@ static void projectVertices(
     const Vec2f& normal,
     const Vec2f& center,
 
-    float* out_min,
-    float* out_max
+    float* outMin,
+    float* outMax
 ) {
     float min = std::numeric_limits<float>::max();
     float max = -min;
@@ -29,8 +29,8 @@ static void projectVertices(
         max = std::max(proj, max);
     }
 
-    *out_min = min;
-    *out_max = max;
+    *outMin = min;
+    *outMax = max;
 }
 
 static void projectCircle(
@@ -62,14 +62,14 @@ static void projectCircle(
 
 namespace gmi::collision {
 
-bool CircleCircle(
+bool circleCircle(
     const Vec2f& posA,
     const float radA,
 
     const Vec2f& posB,
     const float radB,
 
-    CollRes* res
+    Response* res
 ) {
     Vec2f sub = posB - posA;
 
@@ -88,14 +88,14 @@ bool CircleCircle(
     return true;
 }
 
-bool CircleRect(
+bool circleRect(
     const Vec2f& circlePos,
     const float circleRad,
 
     const Vec2f& rectMin,
     const Vec2f& rectMax,
 
-    CollRes* res
+    Response* res
 ) {
     if (
         rectMin.x <= circlePos.x && circlePos.x <= rectMax.x
@@ -127,7 +127,7 @@ bool CircleRect(
         return true;
     }
 
-    Vec2f dir{
+    Vec2f dir = {
         std::clamp(circlePos.x, rectMin.x, rectMax.x) - circlePos.x,
         std::clamp(circlePos.y, rectMin.y, rectMax.y) - circlePos.y
     };
@@ -148,14 +148,14 @@ bool CircleRect(
     return false;
 }
 
-bool RectRect(
+bool rectRect(
     const Vec2f& rectAMin,
     const Vec2f& rectAMax,
 
     const Vec2f& rectBMin,
     const Vec2f& rectBMax,
 
-    CollRes* res
+    Response* res
 ) {
     // if the caller doesn't want the intersection data
     // do a simpler check
@@ -195,7 +195,7 @@ bool RectRect(
     return true;
 }
 
-bool RectPolygon(
+bool rectPolygon(
     const Vec2f& rectMin,
     const Vec2f& rectMax,
 
@@ -203,7 +203,7 @@ bool RectPolygon(
     const std::vector<Vec2f>& polyNormals,
     const Vec2f& polyCenter,
 
-    CollRes* res
+    Response* res
 ) {
     assert(polyPoints.size() == polyNormals.size());
 
@@ -214,7 +214,7 @@ bool RectPolygon(
         {rectMax.x, rectMin.y}
     };
 
-    static const std::array<Vec2f, 4> rectNormals{
+    static const std::array rectNormals = {
         Vec2f{0, 1},
         Vec2f{-1, 0},
         Vec2f{0, -1},
@@ -279,7 +279,7 @@ bool RectPolygon(
     return true;
 }
 
-bool CirclePolygon(
+bool circlePolygon(
     const Vec2f& circlePos,
     float circleRad,
 
@@ -287,7 +287,7 @@ bool CirclePolygon(
     const std::vector<Vec2f>& polyNormals,
     const Vec2f& polyCenter,
 
-    CollRes* res
+    Response* res
 ) {
     assert(polyPoints.size() == polyNormals.size());
 
@@ -361,7 +361,7 @@ bool CirclePolygon(
     return true;
 }
 
-bool PolygonPolygon(
+bool polygonPolygon(
     const std::vector<Vec2f>& pointsA,
     const std::vector<Vec2f>& normalsA,
     const Vec2f& centerA,
@@ -370,7 +370,7 @@ bool PolygonPolygon(
     const std::vector<Vec2f>& normalsB,
     const Vec2f& centerB,
 
-    CollRes* res
+    Response* res
 ) {
     assert(pointsA.size() == normalsA.size());
     assert(pointsB.size() == normalsB.size());
@@ -432,15 +432,15 @@ bool PolygonPolygon(
     return true;
 }
 
-bool PointCircle(const Vec2f& point, const Vec2f& circlePos, float circleRad) {
+bool pointCircle(const Vec2f& point, const Vec2f& circlePos, float circleRad) {
     return point.distanceTo(circlePos) <= circleRad;
 }
 
-bool PointRect(const Vec2f& point, const Vec2f& rectMin, const Vec2f& rectMax) {
+bool pointRect(const Vec2f& point, const Vec2f& rectMin, const Vec2f& rectMax) {
     return point.x > rectMin.x && point.y > rectMin.y && point.x < rectMax.x && point.y < rectMax.y;
 }
 
-bool PointPolygon(const Vec2f& point, const std::vector<Vec2f>& points) {
+bool pointPolygon(const Vec2f& point, const std::vector<Vec2f>& points) {
     // https://wrfranklin.org/Research/Short_Notes/pnpoly.html
     size_t count = points.size();
     bool inside = false;
@@ -455,6 +455,6 @@ bool PointPolygon(const Vec2f& point, const std::vector<Vec2f>& points) {
     }
 
     return inside;
-};
+}
 
 }

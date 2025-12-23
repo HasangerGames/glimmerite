@@ -1,4 +1,3 @@
-
 #include "gmi/client/Graphics.h"
 #include <mapbox/earcut.hpp>
 

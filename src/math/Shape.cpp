@@ -4,7 +4,7 @@
 using namespace gmi::math;
 using namespace gmi::collision;
 
-using CollisionFn = bool (*)(const Shape&, const Shape&, CollRes*);
+using CollisionFn = bool (*)(const Shape&, const Shape&, Response*);
 
 struct CollisionFnData {
     CollisionFn fn;
@@ -37,7 +37,7 @@ public:
 
             const auto& a = static_cast<const Circle&>(shapeA);
             const auto& b = static_cast<const Circle&>(shapeB);
-            return CircleCircle(a.pos, a.rad, b.pos, b.rad, res);
+            return circleCircle(a.pos, a.rad, b.pos, b.rad, res);
         });
         registerFn(Shape::CIRCLE, Shape::RECT, [](const Shape& shapeA, const Shape& shapeB, auto* res) {
             assert(shapeA.type == Shape::CIRCLE);
@@ -45,7 +45,7 @@ public:
 
             const auto& a = static_cast<const Circle&>(shapeA);
             const auto& b = static_cast<const Rect&>(shapeB);
-            return CircleRect(a.pos, a.rad, b.min, b.max, res);
+            return circleRect(a.pos, a.rad, b.min, b.max, res);
         });
         registerFn(Shape::CIRCLE, Shape::POLYGON, [](const Shape& shapeA, const Shape& shapeB, auto* res) {
             assert(shapeA.type == Shape::CIRCLE);
@@ -53,7 +53,7 @@ public:
 
             const auto& a = static_cast<const Circle&>(shapeA);
             const auto& b = static_cast<const Polygon&>(shapeB);
-            return CirclePolygon(a.pos, a.rad, b.points, b.normals(), b.center(), res);
+            return circlePolygon(a.pos, a.rad, b.points, b.normals(), b.center(), res);
         });
         registerFn(Shape::RECT, Shape::RECT, [](const Shape& shapeA, const Shape& shapeB, auto* res) {
             assert(shapeA.type == Shape::RECT);
@@ -61,7 +61,7 @@ public:
 
             const auto& a = static_cast<const Rect&>(shapeA);
             const auto& b = static_cast<const Rect&>(shapeB);
-            return RectRect(a.min, a.max, b.min, b.max, res);
+            return rectRect(a.min, a.max, b.min, b.max, res);
         });
         registerFn(Shape::RECT, Shape::POLYGON, [](const Shape& shapeA, const Shape& shapeB, auto* res) {
             assert(shapeA.type == Shape::RECT);
@@ -69,7 +69,7 @@ public:
 
             const auto& a = static_cast<const Rect&>(shapeA);
             const auto& b = static_cast<const Polygon&>(shapeB);
-            return RectPolygon(a.min, a.max, b.points, b.normals(), b.center(), res);
+            return rectPolygon(a.min, a.max, b.points, b.normals(), b.center(), res);
         });
         registerFn(Shape::POLYGON, Shape::POLYGON, [](const Shape& shapeA, const Shape& shapeB, auto* res) {
             assert(shapeA.type == Shape::POLYGON);
@@ -77,11 +77,11 @@ public:
 
             const auto& a = static_cast<const Polygon&>(shapeA);
             const auto& b = static_cast<const Polygon&>(shapeB);
-            return PolygonPolygon(a.points, a.normals(), a.center(), b.points, b.normals(), b.center(), res);
+            return polygonPolygon(a.points, a.normals(), a.center(), b.points, b.normals(), b.center(), res);
         });
     };
 
-    bool check(const Shape& shapeA, const Shape& shapeB, CollRes* res) const {
+    bool check(const Shape& shapeA, const Shape& shapeB, Response* res) const {
         assert(shapeA.type < Shape::COUNT);
         assert(shapeB.type < Shape::COUNT);
 
@@ -99,7 +99,7 @@ public:
 
 namespace gmi::collision {
 
-bool Shape::getCollision(const Shape& other, CollRes* res) const {
+bool Shape::getCollision(const Shape& other, Response* res) const {
     static const CollisionFns fns;
     return fns.check(*this, other, res);
 }
@@ -116,7 +116,7 @@ std::string Circle::toString() const {
 }
 
 bool Circle::pointInside(const Vec2f& point) const {
-    return PointCircle(point, pos, rad);
+    return pointCircle(point, pos, rad);
 }
 
 Vec2f Circle::center() const {
@@ -135,14 +135,8 @@ Circle& Circle::scale(const float scale) {
 
 std::pair<Vec2f, Vec2f> Circle::getAABB() {
     return {
-        {
-            pos.x - rad,
-            pos.y - rad,
-        },
-        {
-            pos.x + rad,
-            pos.y + rad,
-        }
+        {pos.x - rad, pos.y - rad},
+        {pos.x + rad, pos.y + rad}
     };
 };
 
@@ -182,7 +176,7 @@ Rect& Rect::translate(const Vec2f& posToAdd) {
 }
 
 bool Rect::pointInside(const Vec2f& point) const {
-    return PointRect(point, min, max);
+    return pointRect(point, min, max);
 }
 
 std::string Rect::toString() const {
@@ -259,7 +253,7 @@ Polygon& Polygon::rotate(float rotation) {
 };
 
 bool Polygon::pointInside(const Vec2f& point) const {
-    return PointPolygon(point, points);
+    return pointPolygon(point, points);
 }
 
 std::string Polygon::toString() const {
@@ -297,4 +291,5 @@ void Polygon::calculateNormals() {
         m_normals[i] = edge.perp().normalize();
     }
 }
+
 }
