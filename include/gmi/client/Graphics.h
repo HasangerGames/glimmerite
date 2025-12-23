@@ -4,6 +4,11 @@
 
 namespace gmi {
 
+// avoid including the collision headers here for faster compile times :)
+namespace collision {
+class Shape;
+}
+
 enum class LineCap : uint8_t {
     Butt,
     Round,
@@ -44,8 +49,9 @@ public:
 
     Graphics& fillPoly(const std::vector<math::Vec2f>& points, Color color);
 
+    Graphics& fillShape(const collision::Shape& shape, Color color);
+
     void render(Renderer& renderer) override;
 };
 
 }
-

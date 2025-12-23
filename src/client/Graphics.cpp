@@ -1,5 +1,7 @@
 #include "gmi/client/Graphics.h"
+#include "gmi/math/Shape.h"
 #include <mapbox/earcut.hpp>
+#include <utility>
 
 // Makes earcut understand Vec2
 namespace mapbox::util {
@@ -490,6 +492,26 @@ Graphics& Graphics::fillPoly(const std::vector<math::Vec2f>& points, Color color
     }
 
     return *this;
+}
+
+Graphics& Graphics::fillShape(const collision::Shape& shape, Color color) {
+    switch (shape.type) {
+    case collision::Shape::CIRCLE: {
+        const auto& circle = static_cast<const collision::Circle&>(shape);
+        return fillCircle(circle.pos.x, circle.pos.y, circle.rad, color);
+    }
+    case collision::Shape::RECT: {
+        const auto& rect = static_cast<const collision::Rect&>(shape);
+        return fillRect(rect.min.x, rect.min.y, rect.width(), rect.height(), color);
+    }
+    case collision::Shape::POLYGON: {
+        const auto& poly = static_cast<const collision::Polygon&>(shape);
+        return fillPoly(poly.points, color);
+    }
+    default:
+        // if it ever reaches this theres probably random uninitialized memory lol
+        std::unreachable();
+    }
 }
 
 void Graphics::render(Renderer& renderer) {
