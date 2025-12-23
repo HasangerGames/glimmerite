@@ -124,7 +124,7 @@ private:
     Vec2f m_center;
 
 public:
-    Polygon(const std::vector<Vec2f>& points);
+    explicit Polygon(const std::vector<Vec2f>& points);
 
     void calculateNormals();
 

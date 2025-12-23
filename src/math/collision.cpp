@@ -35,7 +35,7 @@ static void projectVertices(
 
 static void projectCircle(
     Vec2f center,
-    const float radius,
+    float radius,
     Vec2f normal,
 
     float* out_min,
@@ -64,25 +64,27 @@ namespace gmi::collision {
 
 bool circleCircle(
     Vec2f posA,
-    const float radA,
+    float radA,
 
     Vec2f posB,
-    const float radB,
+    float radB,
 
     Response* res
 ) {
     Vec2f sub = posB - posA;
 
-    float distSqrt = sub.lengthSqr();
+    float distSqr = sub.lengthSqr();
     float rad = radA + radB;
 
-    if (distSqrt > (rad * rad)) {
+    if (distSqr > (rad * rad)) {
         return false;
     }
 
     if (res != nullptr) {
-        float dist = std::sqrt(distSqrt);
-        res->normal = dist > 0.000001 ? sub / dist : Vec2f(1, 0);
+        float dist = std::sqrt(distSqr);
+        res->normal = dist > std::numeric_limits<float>::min() // prevents division by 0
+            ? sub / dist
+            : Vec2f(1, 0);
         res->depth = rad - dist;
     }
     return true;
@@ -90,7 +92,7 @@ bool circleCircle(
 
 bool circleRect(
     Vec2f circlePos,
-    const float circleRad,
+    float circleRad,
 
     Vec2f rectMin,
     Vec2f rectMax,
@@ -352,10 +354,8 @@ bool circlePolygon(
             resNormal.invert();
         }
 
-        if (res != nullptr) {
-            res->normal = resNormal;
-            res->depth = resDepth;
-        }
+        res->normal = resNormal;
+        res->depth = resDepth;
     }
 
     return true;
@@ -424,10 +424,8 @@ bool polygonPolygon(
             resNormal.invert();
         }
 
-        if (res != nullptr) {
-            res->normal = resNormal;
-            res->depth = resDepth;
-        }
+        res->normal = resNormal;
+        res->depth = resDepth;
     }
     return true;
 }
