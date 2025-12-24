@@ -4,7 +4,7 @@
 #include <functional>
 #include <vector>
 
-#include "math/Easing.h"
+#include "gmi/math/Easing.h"
 
 namespace gmi {
 

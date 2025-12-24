@@ -1,8 +1,13 @@
 #pragma once
 
-#include "Container.h"
+#include "gmi/client/Container.h"
 
 namespace gmi {
+
+// avoid including the collision headers here for faster compile times :)
+namespace collision {
+class Shape;
+}
 
 enum class LineCap : uint8_t {
     Butt,
@@ -32,7 +37,9 @@ class Graphics : public Container {
 public:
     Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) { }
 
-    Graphics& drawLine(std::vector<math::Vec2> points, const StrokeStyle& style);
+    Graphics& clear();
+
+    Graphics& drawLine(std::vector<math::Vec2f> points, const StrokeStyle& style);
 
     Graphics& fillRect(float x, float y, float w, float h, Color color);
 
@@ -40,10 +47,11 @@ public:
 
     Graphics& fillEllipse(float x, float y, float rx, float ry, Color color);
 
-    Graphics& fillPoly(const std::vector<math::Vec2>& points, Color color);
+    Graphics& fillPoly(const std::vector<math::Vec2f>& points, Color color);
+
+    Graphics& fillShape(const collision::Shape& shape, Color color);
 
     void render(Renderer& renderer) override;
 };
 
 }
-

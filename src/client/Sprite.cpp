@@ -1,4 +1,4 @@
-#include "gmi/Sprite.h"
+#include "gmi/client/Sprite.h"
 
 namespace gmi {
 
@@ -16,7 +16,7 @@ void Sprite::updateAffine() {
 
     auto& [handle, textureSize, frame] = m_texture;
 
-    math::Affine affineScaled = m_affine * math::Affine::scaleAbout(m_transform.pivot, math::Vec2::fromAny(frame.w, frame.h));
+    math::Affine affineScaled = m_affine * math::Affine::scaleAbout(m_transform.pivot, math::Vec2f(frame.w, frame.h));
 
     auto tw = static_cast<float>(textureSize.w);
     auto th = static_cast<float>(textureSize.h);

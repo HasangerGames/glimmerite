@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gmi/Color.h"
+#include "gmi/client/Color.h"
 
 namespace gmi {
 

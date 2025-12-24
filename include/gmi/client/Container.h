@@ -2,10 +2,10 @@
 #include <memory>
 #include <vector>
 
-#include "Renderer.h"
-#include "math/Affine.h"
-#include "math/Easing.h"
-#include "math/Transform.h"
+#include "gmi/client/Renderer.h"
+
+#include "gmi/client/Affine.h"
+#include "gmi/math/Easing.h"
 
 namespace gmi {
 
@@ -81,10 +81,10 @@ public:
     void sortChildren();
 
     /** @return This Container's position */
-    [[nodiscard]] math::Vec2 getPosition() const { return m_transform.position; }
+    [[nodiscard]] math::Vec2f getPosition() const { return m_transform.position; }
 
     /** @param position The new position to set */
-    void setPosition(math::Vec2 position);
+    void setPosition(math::Vec2f position);
 
     /** @return This Container's rotation, in radians */
     [[nodiscard]] float getRotation() const { return m_transform.rotation; }
@@ -93,7 +93,7 @@ public:
     void setRotation(float rotation);
 
     /** @param scale The new scale to set */
-    void setScale(math::Vec2 scale);
+    void setScale(math::Vec2f scale);
 
     /** @param scale The new scale to set. Will be used for both x- and y-components. */
     void setScale(float scale);
@@ -102,7 +102,7 @@ public:
     void setTint(Color tint);
 
     /** @param pivot The center of rotation to set, as a normalized vector (components 0-1) */
-    void setPivot(math::Vec2 pivot);
+    void setPivot(math::Vec2f pivot);
 
     /** @param visible Whether the Container should be visible */
     void setVisible(bool visible) { m_visible = visible; }
@@ -120,7 +120,7 @@ public:
      */
     void setZIndex(int zIndex) { m_zIndex = zIndex; }
 
-    void animate(const AnimateOptions<math::Vec2>& opts);
+    void animate(const AnimateOptions<math::Vec2f>& opts);
 
     void animate(const AnimateOptions<float>& opts);
 

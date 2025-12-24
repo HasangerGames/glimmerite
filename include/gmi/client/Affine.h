@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Transform.h"
-#include "Vec2.h"
+#include "gmi/client/Transform.h"
+#include "gmi/math/Vec2.h"
 #include <iostream>
 
 namespace gmi::math {
@@ -50,22 +50,22 @@ struct Affine {
      * @param translation The translation as a Vec2
      * @return The affine
      */
-    static Affine translate(const Vec2& translation);
+    static Affine translate(Vec2f translation);
 
     /**
      * Creates an Affine that applies a scaling transformation.
-     * @param scale A Vec2 representing the scale
+     * @param scale A Vec2f representing the scale
      * @return The affine equivalent
      */
-    static Affine scale(const Vec2& scale);
+    static Affine scale(Vec2f scale);
 
     /**
      * Creates an Affine that applies a scaling transformation about a pivot.
-     * @param pivot A normalized Vec2 representing the pivot (components 0-1)
-     * @param scaleFactor A Vec2 representing the scale
+     * @param pivot A normalized Vec2f representing the pivot (components 0-1)
+     * @param scaleFactor A Vec2f representing the scale
      * @return The affine
      */
-    static Affine scaleAbout(const Vec2& pivot, const Vec2& scaleFactor);
+    static Affine scaleAbout(Vec2f pivot, Vec2f scaleFactor);
 };
 
 inline std::ostream& operator<<(std::ostream& stream, const Affine& m) {
@@ -121,22 +121,22 @@ inline Affine Affine::fromTransform(const Transform& t) {
     return m;
 }
 
-inline Affine Affine::scale(const Vec2& scale) {
+inline Affine Affine::scale(Vec2f scale) {
     Affine m;
     m.a = scale.x;
     m.d = scale.y;
     return m;
 }
 
-inline Affine Affine::translate(const Vec2& translation) {
+inline Affine Affine::translate(Vec2f translation) {
     Affine m;
     m.x = translation.x;
     m.y = translation.y;
     return m;
 }
 
-inline Affine Affine::scaleAbout(const Vec2& pivot, const Vec2& scaleFactor) {
-    return translate(pivot) * scale(scaleFactor) * translate(invert(pivot));
+inline Affine Affine::scaleAbout(Vec2f pivot, Vec2f scaleFactor) {
+    return translate(pivot) * scale(scaleFactor) * translate(-pivot);
 }
 
 /**
@@ -145,11 +145,11 @@ inline Affine Affine::scaleAbout(const Vec2& pivot, const Vec2& scaleFactor) {
  * @param pos The vector to apply it to
  * @return The transformed vector
  */
-inline Vec2 affineApply(const Affine& m, const Vec2& pos) {
+inline Vec2f affineApply(const Affine& m, Vec2f pos) {
     auto [x, y] = pos;
     return {
-        .x = (m.a * x) + (m.c * y) + m.x,
-        .y = (m.b * x) + (m.d * y) + m.y
+        (m.a * x) + (m.c * y) + m.x,
+        (m.b * x) + (m.d * y) + m.y
     };
 }
 
@@ -159,7 +159,7 @@ inline Vec2 affineApply(const Affine& m, const Vec2& pos) {
  * @param pos The vector to apply it to
  * @return The transformed vector
  */
-inline Vec2 affineApplyInverse(const Affine& m, const Vec2& pos) {
+inline Vec2f affineApplyInverse(const Affine& m, Vec2f pos) {
     float a = m.a;
     float b = m.b;
     float c = m.c;
@@ -173,8 +173,8 @@ inline Vec2 affineApplyInverse(const Affine& m, const Vec2& pos) {
     float y = pos.y;
 
     return {
-        .x = (d * id * x) + (-c * id * y) + (((ty * c) - (tx * d)) * id),
-        .y = (a * id * y) + (-b * id * x) + (((-ty * a) + (tx * b)) * id)
+        (d * id * x) + (-c * id * y) + (((ty * c) - (tx * d)) * id),
+        (a * id * y) + (-b * id * x) + (((-ty * a) + (tx * b)) * id)
     };
 }
 

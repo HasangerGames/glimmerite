@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "Color.h"
-#include "Drawable.h"
+#include "gmi/client/Color.h"
+#include "gmi/client/Drawable.h"
 #include "bgfx/bgfx.h"
 
 namespace gmi {

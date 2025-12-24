@@ -1,14 +1,17 @@
 #pragma once
-#include "Vec2.h"
-#include "gmi/Color.h"
+
+#include "gmi/client/Color.h"
+#include "gmi/math/Vec2.h"
+
+#include <iostream>
 
 namespace gmi::math {
 
 struct Transform {
-    Vec2 position;
+    Vec2f position;
     float rotation = 0;
-    Vec2 scale = {1, 1};
-    Vec2 pivot = {0.5f, 0.5f};
+    Vec2f scale = {1, 1};
+    Vec2f pivot = {0.5f, 0.5f};
     Color color;
 };
 

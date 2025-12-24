@@ -1,6 +1,6 @@
-#include "gmi/TweenManager.h"
+#include "gmi/client/TweenManager.h"
 
-#include "gmi/gmi.h"
+#include "gmi/client/gmi.h"
 
 namespace gmi {
 

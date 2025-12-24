@@ -1,4 +1,4 @@
-#include "gmi/Application.h"
+#include "gmi/client/Application.h"
 
 using namespace gmi;
 

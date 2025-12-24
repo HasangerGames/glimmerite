@@ -1,18 +1,20 @@
 #pragma once
+
 #include <chrono>
 #include <functional>
 #include <string>
 
-#include "Color.h"
-#include "Container.h"
-#include "Renderer.h"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_video.h"
-#include "SoundManager.h"
-#include "TweenManager.h"
-#include "gmi/TextureManager.h"
-#include "math/Size.h"
+
+#include "gmi/client/Color.h"
+#include "gmi/client/Container.h"
+#include "gmi/client/Renderer.h"
+#include "gmi/client/SoundManager.h"
+#include "gmi/client/TextureManager.h"
+#include "gmi/client/TweenManager.h"
+#include "gmi/math/Size.h"
 
 namespace gmi {
 
@@ -64,8 +66,9 @@ class Application {
     TweenManager m_tweenManager;
     Renderer m_renderer;
     Container m_stage;
+
 public:
-    Application() : m_stage(this, nullptr) {}
+    Application() : m_stage(this, nullptr) { }
     ~Application() = default;
 
     /**

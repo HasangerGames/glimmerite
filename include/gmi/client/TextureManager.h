@@ -1,12 +1,14 @@
 #pragma once
+
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "bgfx/bgfx.h"
 #include "bx/allocator.h"
-#include "math/Rect.h"
-#include "math/Size.h"
+
+#include "gmi/math/Rect.h"
+#include "gmi/math/Size.h"
 
 namespace gmi {
 

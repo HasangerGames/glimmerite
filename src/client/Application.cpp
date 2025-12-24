@@ -2,11 +2,11 @@
 
 #include "SDL3/SDL_main.h"
 
-#include "gmi/Application.h"
+#include "gmi/client/Application.h"
 
 #include <thread>
 
-#include "gmi/gmi.h"
+#include "gmi/client/gmi.h"
 
 using namespace gmi;
 
@@ -49,7 +49,11 @@ void Application::init(const ApplicationConfig& config) {
         throw GmiException(std::string{"Unable to initialize SDL: "} + SDL_GetError());
     }
 
-    m_window = SDL_CreateWindow(config.title.c_str(), config.width, config.height, SDL_WINDOW_RESIZABLE);
+    SDL_WindowFlags flags = 0;
+    if (config.resizable) {
+        flags |= SDL_WINDOW_RESIZABLE;
+    }
+    m_window = SDL_CreateWindow(config.title.c_str(), config.width, config.height, flags);
     if (m_window == nullptr) {
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
