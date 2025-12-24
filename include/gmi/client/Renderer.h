@@ -1,14 +1,23 @@
 #pragma once
 #include <vector>
 
-#include "gmi/client/Color.h"
-#include "gmi/client/Drawable.h"
+#include "Color.h"
+#include "Drawable.h"
 #include "bgfx/bgfx.h"
 
 namespace gmi {
 
 class Application;
+struct ApplicationConfig;
 class Container;
+
+enum class Antialiasing : uint8_t {
+    Msaa2x,
+    Msaa4x,
+    Msaa8x,
+    Msaa16x,
+    None
+};
 
 /**
  * The Renderer is an API which handles communication between the Application and bgfx.
@@ -18,6 +27,7 @@ class Renderer {
     Application* m_parentApp = nullptr;
     uint32_t m_width = 0, m_height = 0;
     bool m_vsync = true;
+    Antialiasing m_antialiasing = Antialiasing::None;
     float m_viewMatrix[16] = {};
     float m_projMatrix[16] = {};
     bgfx::ProgramHandle m_spriteProgram = BGFX_INVALID_HANDLE;
@@ -35,7 +45,7 @@ public:
     Renderer() = default;
     virtual ~Renderer() = default;
 
-    void init(Application& parentApp, uint32_t width, uint32_t height, bool vsync, bgfx::RendererType::Enum rendererType);
+    void init(Application& parentApp, const ApplicationConfig& config);
 
     /** @return The type of renderer being used. */
     [[nodiscard]] static bgfx::RendererType::Enum getType();

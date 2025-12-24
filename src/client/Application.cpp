@@ -58,8 +58,7 @@ void Application::init(const ApplicationConfig& config) {
         throw GmiException(std::string{"Unable to create window: "} + SDL_GetError());
     }
 
-    m_renderer.init(*this, config.width, config.height, config.vsync, config.renderer);
-    Renderer::setClearColor(config.backgroundColor);
+    m_renderer.init(*this, config);
 
     m_soundManager.init();
 

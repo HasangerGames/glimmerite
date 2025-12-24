@@ -18,6 +18,8 @@
 
 namespace gmi {
 
+using RendererType = bgfx::RendererType::Enum;
+
 /** Configuration options used when creating an Application instance. */
 struct ApplicationConfig {
     /** Initial width of the Application window. */
@@ -35,17 +37,24 @@ struct ApplicationConfig {
     bool resizable = true;
 
     /**
-     * The renderer/graphics API to use.
-     * Not all renderers are available on all platforms.
-     * If the specified renderer is not available, Glimmerite will automatically fall back to a different one.
-     */
-    bgfx::RendererType::Enum renderer = bgfx::RendererType::Count;
-
-    /**
      * Syncs the framerate of the Application to the monitor's refresh rate.
      * Recommended to reduce resource usage and screen tearing.
      */
     bool vsync = true;
+
+    /**
+     * Smooths jagged edges.
+     * The default Msaa4x is generally a good balance between visuals and performance.
+     * For maximum performance, antialiasing can be set to None.
+     */
+    Antialiasing antialiasing = Antialiasing::Msaa4x;
+
+    /**
+     * The renderer/graphics API to use.
+     * Not all renderers are available on all platforms.
+     * If the specified renderer is not available, Glimmerite will automatically fall back to a different one.
+     */
+    RendererType renderer = RendererType::Count;
 };
 
 class Application {

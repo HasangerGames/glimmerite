@@ -12,26 +12,20 @@
 
 namespace gmi {
 
-void Renderer::init(
-    Application& parentApp,
-    uint32_t width,
-    uint32_t height,
-    bool vsync,
-    bgfx::RendererType::Enum rendererType
-) {
+void Renderer::init(Application& parentApp, const ApplicationConfig& config) {
     if (m_initialized) {
         throw GmiException("Renderer has already been initialized");
     }
 
     m_parentApp = &parentApp;
-    m_width = width;
-    m_height = height;
+    m_vsync = config.vsync;
+    m_antialiasing = config.antialiasing;
 
     bgfx::Init init;
-    init.type = rendererType;
-    init.resolution.width = width;
-    init.resolution.height = height;
-    init.resolution.reset = vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE;
+    init.type = config.renderer;
+    init.resolution.width = config.width;
+    init.resolution.height = config.height;
+    init.resolution.reset = config.vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE;
     const SDL_PropertiesID props = SDL_GetWindowProperties(parentApp.getWindow());
 #if defined(SDL_PLATFORM_WIN32)
     init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
@@ -59,7 +53,7 @@ void Renderer::init(
     static constexpr bx::Vec3 eye{0.0f, 0.0f, -1.0f};
     static constexpr bx::Vec3 at{0.0f, 0.0f, 0.0f};
     bx::mtxLookAt(m_viewMatrix, eye, at);
-    resize(width, height);
+    resize(config.width, config.height);
 
     bgfx::RendererType::Enum actualRenderer = bgfx::getRendererType();
     m_spriteProgram = bgfx::createProgram(
@@ -81,6 +75,8 @@ void Renderer::init(
         .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
         .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
         .end();
+
+    setClearColor(config.backgroundColor);
 
     m_initialized = true;
 }
@@ -117,7 +113,31 @@ void Renderer::resize(uint32_t width, uint32_t height) {
 }
 
 void Renderer::reset() const {
-    bgfx::reset(m_width, m_height, m_vsync ? BGFX_RESET_VSYNC : BGFX_RESET_NONE);
+    uint32_t resetFlags = 0;
+
+    if (m_vsync) {
+        resetFlags |= BGFX_RESET_VSYNC;
+    }
+
+    switch (m_antialiasing) {
+    case Antialiasing::Msaa2x:
+        resetFlags |= BGFX_RESET_MSAA_X2;
+        break;
+    case Antialiasing::Msaa4x:
+        resetFlags |= BGFX_RESET_MSAA_X4;
+        break;
+    case Antialiasing::Msaa8x:
+        resetFlags |= BGFX_RESET_MSAA_X8;
+        break;
+    case Antialiasing::Msaa16x:
+        resetFlags |= BGFX_RESET_MSAA_X16;
+        break;
+    case Antialiasing::None:
+    default:
+        break;
+    }
+
+    bgfx::reset(m_width, m_height, resetFlags);
 }
 
 void Renderer::setClearColor(const Color& color) {
