@@ -46,15 +46,25 @@ jobs:
             c_compiler: clang
             cpp_compiler: clang++
     steps:
-      - uses: actions/checkout@v6
+      - name: Clone Repo
+        uses: actions/checkout@v6
+
+      - name: Cache Submodules
+        id: cache-submodules
+        uses: actions/cache@v5
         with:
-          submodules: "recursive"
+          path: vendored
+          key: ${{ runner.os }}-${{ hashFiles('.gitmodules') }}
+
+      - name: Init Submodules
+        run: git submodule update --init --recursive --depth 1
+        if: steps.cache-submodules.outputs.cache-hit != 'true'
 
       - name: Install Dependencies
+        uses: tecolicom/actions-use-homebrew-tools@v1
         # TODO: use brew SDL3 when new enough SDL3 releases
-        run: |
-          brew update
-          brew install ccache glaze
+        with:
+          tools: ccache glaze
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2.20
@@ -65,7 +75,6 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-ccache
 
       - name: Configure CMake
-        if: ${{ runner.os != 'linux' }}
         run: >
           cmake -B build -G "Ninja Multi-Config"
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
