@@ -32,11 +32,13 @@ struct Tween {
 
 class TweenManager {
 public:
-    void add(const TweenOptions& opts);
+    uint16_t add(const TweenOptions& opts);
+    bool kill(uint16_t id);
 
     void update();
 private:
-    std::vector<Tween> m_tweens;
+    std::unordered_map<uint16_t, Tween> m_tweens;
+    uint16_t m_nextId = 0;
 };
 
 }
