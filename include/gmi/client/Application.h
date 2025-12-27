@@ -55,6 +55,8 @@ struct ApplicationConfig {
     RendererType renderer = RendererType::Count;
 };
 
+using EventListener = std::function<void(const SDL_Event&)>;
+
 class Application {
 public:
     Application() : m_stage(this, nullptr) { }
@@ -104,7 +106,7 @@ public:
      * Registers a function to be called every frame.
      * @param ticker The ticker function
      */
-    void addTicker(const std::function<void()>& ticker);
+    void onTick(const std::function<void()>& ticker);
 
     /**
      * Registers a function to listen for an event.
@@ -112,7 +114,20 @@ public:
      * @param event The event to listen for
      * @param listener The function to be called when the event is triggered
      */
-    void addEventListener(SDL_EventType event, const std::function<void(const SDL_Event&)>& listener) { m_eventListeners[event] = listener; }
+    void onEvent(SDL_EventType event, const EventListener& listener) { m_eventListeners[event] = listener; }
+
+    /**
+     * Registers a function to listen for all events.
+     * If a listener was previously registered, that listener will be overwritten by this one.
+     * @param listener The function to be called when any event is triggered
+     */
+    void onEvent(const EventListener& listener) { m_eventListener = listener; }
+
+    /**
+     * Registers a function to be called at Application shutdown.
+     * @param listener The function to be called before the Application shuts down
+     */
+    void onShutdown(const std::function<void()>& listener) { m_shutdownListener = listener; }
 
     /** @return The Size of the Application window */
     [[nodiscard]] math::Size getSize() const;
@@ -148,7 +163,9 @@ private:
     float m_dt = 0.0f;
 
     std::vector<std::function<void()>> m_tickers;
-    std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
+    std::unordered_map<Uint32, EventListener> m_eventListeners;
+    EventListener m_eventListener;
+    std::function<void()> m_shutdownListener;
 
     TextureManager m_textureManager;
     SoundManager m_soundManager;

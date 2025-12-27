@@ -65,7 +65,7 @@ void Application::init(const ApplicationConfig& config) {
     m_initialized = true;
 }
 
-void Application::addTicker(const std::function<void()>& ticker) {
+void Application::onTick(const std::function<void()>& ticker) {
     m_tickers.push_back(ticker);
 }
 
@@ -94,6 +94,9 @@ SDL_AppResult Application::processEvent(SDL_Event* event) {
 
     if (m_eventListeners.contains(event->type)) {
         m_eventListeners[event->type](*event);
+    }
+    if (m_eventListener != nullptr) {
+        m_eventListener(*event);
     }
 
     return SDL_APP_CONTINUE;
@@ -125,6 +128,9 @@ SDL_AppResult Application::iterate() {
 }
 
 void Application::shutdown(SDL_AppResult /*result*/) const {
+    if (m_shutdownListener != nullptr) {
+        m_shutdownListener();
+    }
     m_textureManager.destroyAll();
     m_renderer.shutdown();
 }

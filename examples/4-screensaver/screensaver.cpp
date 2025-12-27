@@ -24,7 +24,7 @@ void gmiMain(Application& app) {
         math::random(0, static_cast<int>(yMax))
     ));
     dvdLogo.setPivot({0, 0}); // Makes the math simpler
-    app.addTicker([&app, &dvdLogo, xMax, yMax] {
+    app.onTick([&app, &dvdLogo, xMax, yMax] {
         math::Vec2f position = dvdLogo.getPosition();
         bool xFlip = position.x < 0 || position.x > xMax;
         bool yFlip = position.y < 0 || position.y > yMax;

@@ -123,7 +123,7 @@ void gmiMain(Application& app) {
         false
     );
 
-    app.addTicker([&gfx] {
+    app.onTick([&gfx] {
         gfx.clear();
         for (const DemoShape& shape : SHAPES) {
             gfx.fillShape(*shape.shape, shape.color);
@@ -131,7 +131,7 @@ void gmiMain(Application& app) {
     });
 
     // select / deselect / move selected shape
-    app.addEventListener(SDL_EVENT_MOUSE_BUTTON_DOWN, [](const SDL_Event& event) {
+    app.onEvent(SDL_EVENT_MOUSE_BUTTON_DOWN, [](const SDL_Event& event) {
         if (event.button.button != 1) return;
 
         Vec2f pos = {event.button.x, event.button.y};
@@ -146,13 +146,13 @@ void gmiMain(Application& app) {
         }
     });
 
-    app.addEventListener(SDL_EVENT_MOUSE_BUTTON_UP, [](const SDL_Event& event) {
+    app.onEvent(SDL_EVENT_MOUSE_BUTTON_UP, [](const SDL_Event& event) {
         if (event.button.button != 1) return;
 
         SELECTED_SHAPE = -1;
     });
 
-    app.addEventListener(SDL_EVENT_MOUSE_MOTION, [](const SDL_Event& event) {
+    app.onEvent(SDL_EVENT_MOUSE_MOTION, [](const SDL_Event& event) {
         if (SELECTED_SHAPE < 0) return;
         DemoShape& shape = SHAPES[SELECTED_SHAPE];
 
@@ -162,7 +162,7 @@ void gmiMain(Application& app) {
     });
 
     // scale shapes with mouse wheel
-    app.addEventListener(SDL_EVENT_MOUSE_WHEEL, [](const SDL_Event& event) {
+    app.onEvent(SDL_EVENT_MOUSE_WHEEL, [](const SDL_Event& event) {
         Vec2f pos{event.wheel.mouse_x, event.wheel.mouse_y};
 
         float scale = event.wheel.y < 0 ? 0.95 : 1.05;
