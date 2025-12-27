@@ -27,15 +27,21 @@ if (BUILD_CLIENT)
     set(BGFX_DIR "${GMI_DIR}/vendored/bgfx.cmake/bgfx")
     set(BX_DIR   "${GMI_DIR}/vendored/bgfx.cmake/bx")
     set(BIMG_DIR "${GMI_DIR}/vendored/bgfx.cmake/bimg")
+
     # makes cmake shut up about bgfx.cmake's use of add_custom_command
     set(CMAKE_POLICY_DEFAULT_CMP0175 "OLD")
     set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
+    add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
+
+    if (EMSCRIPTEN)
+        set(BGFX_CONFIG_MULTITHREADED OFF CACHE INTERNAL "" FORCE)
+        target_link_options(shaderc PRIVATE -lnodefs.js -sNODERAWFS -sSTACK_SIZE=1048576) # TODO Remove once this fix gets added to bgfx.cmake
+    endif()
+
     #
     # SDL3
     #
-    add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
-
     # TODO: use system package once newer SDL3 releases
     # currently SDL3_Mixer depends on SDL3 git master
     # find_package(SDL3 CONFIG COMPONENTS SDL3-shared)

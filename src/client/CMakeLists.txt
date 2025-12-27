@@ -97,4 +97,12 @@ target_link_libraries(glimmerite_client PUBLIC
 
 set_target_properties(glimmerite_client PROPERTIES LINKER_LANGUAGE CXX)
 
+if (EMSCRIPTEN)
+    target_link_options(glimmerite_client PUBLIC
+        "-sASSERTIONS"
+        "-sINITIAL_MEMORY=512MB"
+        "-sALLOW_MEMORY_GROWTH=1"
+    )
+endif()
+
 add_library(glimmerite::client ALIAS glimmerite_client)

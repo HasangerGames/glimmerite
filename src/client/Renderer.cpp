@@ -46,7 +46,7 @@ void Renderer::init(Application& parentApp, const ApplicationConfig& config) {
     init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_SURFACE_POINTER, nullptr);
     init.platformData.ndt = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_ANDROID_DISPLAY_POINTER, nullptr);
 #elif defined(EMSCRIPTEN)
-    init.platformData.nwh = reinterpret_cast<void*>("#canvas");
+    init.platformData.nwh = (void*) "#canvas";
 #endif
     bgfx::init(init);
 
