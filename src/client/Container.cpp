@@ -87,16 +87,15 @@ void Container::animate(const AnimateOptions<math::Vec2f>& opts) {
     default:
         throw GmiException("Attempted to animate a non-Vec2f property to a Vec2f target");
     }
-    m_parentApp->tweens().add({
+    uint16_t tweenId = m_parentApp->tweens().add({
         .values = {{&prop->x, opts.target.x}, {&prop->y, opts.target.y}},
         .duration = opts.duration,
         .ease = opts.easing,
         .yoyo = opts.yoyo,
         .infinite = opts.infinite,
-        .onUpdate = [this] {
-            m_transformDirty = true;
-        },
+        .onComplete = [this, &tweenId] { removeAnim(tweenId); },
     });
+    m_animations.emplace(opts.prop, tweenId);
 }
 
 void Container::animate(const AnimateOptions<float>& opts) {
@@ -108,21 +107,31 @@ void Container::animate(const AnimateOptions<float>& opts) {
     default:
         throw GmiException("Attempted to animate a non-float property to a float target");
     }
-    m_parentApp->tweens().add({
+    uint16_t tweenId = m_parentApp->tweens().add({
         .values = {{prop, opts.target}},
         .duration = opts.duration,
         .ease = opts.easing,
         .yoyo = opts.yoyo,
         .infinite = opts.infinite,
-        .onUpdate = [this] {
-            m_transformDirty = true;
-        },
+        .onComplete = [this, &tweenId] { removeAnim(tweenId); },
     });
+    m_animations.emplace(opts.prop, tweenId);
+}
+
+void Container::stopAnimate(math::TransformProps prop) {
+    uint16_t id = m_animations[prop];
+    m_parentApp->tweens().kill(id);
+    removeAnim(id);
+}
+
+void Container::removeAnim(uint16_t id) {
+    std::erase_if(m_animations, [id](const std::pair<math::TransformProps, uint16_t>& anim) { return anim.second == id; });
 }
 
 void Container::render(Renderer& renderer) {
-    if (m_transformDirty) {
+    if (m_transformDirty || !m_animations.empty()) {
         updateAffine();
+        m_transformDirty = false;
     }
 
     for (const auto& child : m_children) {

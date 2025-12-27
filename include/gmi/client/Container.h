@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 #include "gmi/client/Renderer.h"
 
@@ -110,6 +111,8 @@ public:
 
     void animate(const AnimateOptions<float>& opts);
 
+    void stopAnimate(math::TransformProps prop);
+
     /**
      * Renders the contents of this Container using the given @ref Renderer.
      * @param renderer The renderer to use
@@ -126,6 +129,9 @@ protected:
 
     int m_zIndex = 0;
     bool m_visible = true;
+
+    std::unordered_map<math::TransformProps, uint16_t> m_animations;
+    void removeAnim(uint16_t id);
 
     virtual void updateAffine();
 };
