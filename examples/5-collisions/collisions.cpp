@@ -15,7 +15,6 @@ constexpr int BORDER_SIZE = 20;
 
 struct DemoShape {
     std::unique_ptr<collision::Shape> shape;
-
     Color color;
     bool isStatic;
 };
@@ -23,7 +22,7 @@ struct DemoShape {
 std::vector<DemoShape> SHAPES;
 int SELECTED_SHAPE = -1;
 
-void checkCollision(DemoShape& shape) {
+void checkCollision(const DemoShape& shape) {
     bool collided = true;
 
     // yes this is "slow"
@@ -31,7 +30,7 @@ void checkCollision(DemoShape& shape) {
     // doing 20 collision steps to make sure it separates properly more often
     for (size_t i = 0; i < 20 && collided; i++) {
         collided = false;
-        for (const auto& shapeB : SHAPES) {
+        for (const DemoShape& shapeB : SHAPES) {
             if (&shapeB == &shape) continue;
 
             collision::Response res;
@@ -89,44 +88,44 @@ void gmiMain(Application& app) {
     //
 
     SHAPES.emplace_back(
-        std::make_unique<collision::Circle>(Vec2f{90.0f, 100.0f}, 30),
+        std::make_unique<collision::Circle>(Vec2f(90, 100), 30),
         Color::Blue,
         false
     );
 
     SHAPES.emplace_back(
-        std::make_unique<collision::Circle>(Vec2f{100.0f, 400.0f}, 60),
+        std::make_unique<collision::Circle>(Vec2f(100, 400), 60),
         Color::Green,
         false
     );
 
     SHAPES.emplace_back(
-        std::make_unique<collision::Rect>(collision::Rect::fromDims(80, 100, Vec2f{600, 600})),
+        std::make_unique<collision::Rect>(collision::Rect::fromDims(80, 100, Vec2f(600, 600))),
         Color::Cyan,
         false
     );
 
     SHAPES.emplace_back(
-        std::make_unique<collision::Polygon>(collision::Polygon::fromSides(6, {400, 400}, 80)),
+        std::make_unique<collision::Polygon>(collision::Polygon::fromSides(6, Vec2f(400, 400), 80)),
         Color::Red,
         false
     );
 
     SHAPES.emplace_back(
-        std::make_unique<collision::Polygon>(collision::Polygon::fromSides(3, {600, 300}, 60)),
+        std::make_unique<collision::Polygon>(collision::Polygon::fromSides(3, Vec2f(600, 300), 60)),
         Color::Yellow,
         false
     );
 
     SHAPES.emplace_back(
-        std::make_unique<collision::Rect>(collision::Rect::fromDims(80, 20, Vec2f{100, 600})),
+        std::make_unique<collision::Rect>(collision::Rect::fromDims(80, 20, Vec2f(100, 600))),
         Color::Yellow,
         false
     );
 
-    app.addTicker([&app, &gfx]() {
+    app.addTicker([&gfx] {
         gfx.clear();
-        for (const auto& shape : SHAPES) {
+        for (const DemoShape& shape : SHAPES) {
             gfx.fillShape(*shape.shape, shape.color);
         }
     });
@@ -135,9 +134,9 @@ void gmiMain(Application& app) {
     app.addEventListener(SDL_EVENT_MOUSE_BUTTON_DOWN, [](const SDL_Event& event) {
         if (event.button.button != 1) return;
 
-        Vec2f pos{event.button.x, event.button.y};
+        Vec2f pos = {event.button.x, event.button.y};
         for (size_t i = 0; i < SHAPES.size(); i++) {
-            auto& shape = SHAPES[i];
+            DemoShape& shape = SHAPES[i];
             if (shape.isStatic) continue;
 
             if (shape.shape->pointInside(pos)) {
@@ -155,7 +154,7 @@ void gmiMain(Application& app) {
 
     app.addEventListener(SDL_EVENT_MOUSE_MOTION, [](const SDL_Event& event) {
         if (SELECTED_SHAPE < 0) return;
-        auto& shape = SHAPES[SELECTED_SHAPE];
+        DemoShape& shape = SHAPES[SELECTED_SHAPE];
 
         shape.shape->translate({event.motion.xrel, event.motion.yrel});
 
@@ -168,7 +167,7 @@ void gmiMain(Application& app) {
 
         float scale = event.wheel.y < 0 ? 0.95 : 1.05;
 
-        for (auto& shape : SHAPES) {
+        for (const DemoShape& shape : SHAPES) {
             if (shape.isStatic) continue;
 
             if (shape.shape->pointInside(pos)) {

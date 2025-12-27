@@ -11,9 +11,10 @@ void gmiMain(Application& app) {
 
     app.textures().load("assets/bunny.png");
 
-    auto& bunny = app.stage().createChild<Sprite>("bunny");
-    bunny.setPosition({400, 300});
-    bunny.setScale(4);
+    auto& bunny = app.stage().createChild<Sprite>("bunny", math::Transform{
+        .position = {400, 300},
+        .scale = {4, 4},
+    });
     bunny.animate(AnimateOptions{
         .prop = math::TransformProps::Rotation,
         .target = math::PI * 2,
