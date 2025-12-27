@@ -31,12 +31,12 @@ struct Tween {
 };
 
 class TweenManager {
-    std::vector<Tween> m_tweens;
-
 public:
     void add(const TweenOptions& opts);
 
     void update();
+private:
+    std::vector<Tween> m_tweens;
 };
 
 }

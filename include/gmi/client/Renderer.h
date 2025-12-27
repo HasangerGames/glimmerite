@@ -11,6 +11,8 @@ class Application;
 struct ApplicationConfig;
 class Container;
 
+using RendererType = bgfx::RendererType::Enum;
+
 enum class Antialiasing : uint8_t {
     Msaa2x,
     Msaa4x,
@@ -23,6 +25,28 @@ enum class Antialiasing : uint8_t {
  * The Renderer is an API which handles communication between the Application and bgfx.
  */
 class Renderer {
+public:
+    Renderer() = default;
+    virtual ~Renderer() = default;
+
+    void init(Application& parentApp, const ApplicationConfig& config);
+
+    /** @return The type of renderer being used. */
+    [[nodiscard]] RendererType getType();
+
+    /** Controls VSync. See @ref Application for more info. */
+    void setVsync(bool vsync);
+
+    void resize(uint32_t width, uint32_t height);
+
+    void setBackgroundColor(const Color& color);
+
+    void queueDrawable(const Drawable& drawable);
+
+    void render(Container& container);
+
+    void shutdown() const;
+private:
     bool m_initialized = false;
     Application* m_parentApp = nullptr;
     uint32_t m_width = 0, m_height = 0;
@@ -41,27 +65,6 @@ class Renderer {
     std::vector<uint16_t> m_batchIndices;
     bgfx::TextureHandle m_batchTexture = BGFX_INVALID_HANDLE;
     void submitBatch();
-public:
-    Renderer() = default;
-    virtual ~Renderer() = default;
-
-    void init(Application& parentApp, const ApplicationConfig& config);
-
-    /** @return The type of renderer being used. */
-    [[nodiscard]] static bgfx::RendererType::Enum getType();
-
-    /** Controls VSync. See @ref Application for more info. */
-    void setVsync(bool vsync);
-
-    void resize(uint32_t width, uint32_t height);
-
-    static void setBackgroundColor(const Color& color);
-
-    void queueDrawable(const Drawable& drawable);
-
-    void render(Container& container);
-
-    void shutdown() const;
 };
 
 }

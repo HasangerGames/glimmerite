@@ -23,20 +23,6 @@ class Application;
 class Renderer;
 
 class Container {
-protected:
-    Application* m_parentApp = nullptr;
-    Container* m_parent = nullptr;
-    std::vector<std::unique_ptr<Container>> m_children;
-
-    math::Affine m_affine;
-    math::Transform m_transform;
-    bool m_transformDirty = true;
-
-    int m_zIndex = 0;
-    bool m_visible = true;
-
-    virtual void updateAffine();
-
 public:
     Container() = default;
 
@@ -129,6 +115,19 @@ public:
      * @param renderer The renderer to use
      */
     virtual void render(Renderer& renderer);
+protected:
+    Application* m_parentApp = nullptr;
+    Container* m_parent = nullptr;
+    std::vector<std::unique_ptr<Container>> m_children;
+
+    math::Affine m_affine;
+    math::Transform m_transform;
+    bool m_transformDirty = true;
+
+    int m_zIndex = 0;
+    bool m_visible = true;
+
+    virtual void updateAffine();
 };
 
 }

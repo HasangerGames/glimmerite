@@ -119,11 +119,6 @@ class Polygon : public Shape {
 public:
     std::vector<Vec2f> points;
 
-private:
-    std::vector<Vec2f> m_normals;
-    Vec2f m_center;
-
-public:
     explicit Polygon(const std::vector<Vec2f>& points);
 
     static Polygon fromSides(size_t sides, Vec2f center, float radius);
@@ -149,6 +144,9 @@ public:
     Polygon& scale(float scale) override;
 
     std::pair<Vec2f, Vec2f> getAABB() override;
+private:
+    std::vector<Vec2f> m_normals;
+    Vec2f m_center;
 };
 
 }

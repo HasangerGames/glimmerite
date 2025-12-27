@@ -32,8 +32,6 @@ struct StrokeStyle {
 };
 
 class Graphics : public Container {
-    Drawable m_drawable;
-
 public:
     Graphics(Application* parentApp, Container* parent) : Container(parentApp, parent) { }
 
@@ -52,6 +50,8 @@ public:
     Graphics& fillShape(const collision::Shape& shape, Color color);
 
     void render(Renderer& renderer) override;
+private:
+    Drawable m_drawable;
 };
 
 }

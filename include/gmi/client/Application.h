@@ -18,8 +18,6 @@
 
 namespace gmi {
 
-using RendererType = bgfx::RendererType::Enum;
-
 /** Configuration options used when creating an Application instance. */
 struct ApplicationConfig {
     /** Initial width of the Application window. */
@@ -58,24 +56,6 @@ struct ApplicationConfig {
 };
 
 class Application {
-    bool m_initialized = false;
-
-    SDL_Window* m_window = nullptr;
-
-    uint16_t m_maxFps = 0;
-    bool m_firstRun = true;
-    std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
-    float m_dt = 0.0f;
-
-    std::vector<std::function<void()>> m_tickers;
-    std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
-
-    TextureManager m_textureManager;
-    SoundManager m_soundManager;
-    TweenManager m_tweenManager;
-    Renderer m_renderer;
-    Container m_stage;
-
 public:
     Application() : m_stage(this, nullptr) { }
     ~Application() = default;
@@ -157,6 +137,24 @@ public:
 
     /** This method is called internally when the program terminates and should never be called manually. */
     void shutdown(SDL_AppResult result) const;
+private:
+    bool m_initialized = false;
+
+    SDL_Window* m_window = nullptr;
+
+    uint16_t m_maxFps = 0;
+    bool m_firstRun = true;
+    std::chrono::time_point<std::chrono::steady_clock> m_lastFrame;
+    float m_dt = 0.0f;
+
+    std::vector<std::function<void()>> m_tickers;
+    std::unordered_map<Uint32, std::function<void(const SDL_Event&)>> m_eventListeners;
+
+    TextureManager m_textureManager;
+    SoundManager m_soundManager;
+    TweenManager m_tweenManager;
+    Renderer m_renderer;
+    Container m_stage;
 };
 
 }

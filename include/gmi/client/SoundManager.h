@@ -7,10 +7,6 @@
 namespace gmi {
 
 class SoundManager {
-    bool m_initialized = false;
-    MIX_Mixer* m_mixer = nullptr;
-    std::unordered_map<std::string, MIX_Audio*> m_sounds;
-
 public:
     /** Initializes this SoundManager. This method is called internally and should never be called manually. */
     void init();
@@ -27,6 +23,10 @@ public:
      * @param name The name of the sound
      */
     void play(const std::string& name);
+private:
+    bool m_initialized = false;
+    MIX_Mixer* m_mixer = nullptr;
+    std::unordered_map<std::string, MIX_Audio*> m_sounds;
 };
 
 }
