@@ -76,7 +76,7 @@ void Renderer::init(Application& parentApp, const ApplicationConfig& config) {
         .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Uint8, true)
         .end();
 
-    setClearColor(config.backgroundColor);
+    setBackgroundColor(config.backgroundColor);
 
     m_initialized = true;
 }
@@ -140,7 +140,7 @@ void Renderer::reset() const {
     bgfx::reset(m_width, m_height, resetFlags);
 }
 
-void Renderer::setClearColor(const Color& color) {
+void Renderer::setBackgroundColor(const Color& color) {
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR, color.rgbaHex());
 }
 

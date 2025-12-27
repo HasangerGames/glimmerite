@@ -55,7 +55,7 @@ public:
 
     void resize(uint32_t width, uint32_t height);
 
-    static void setClearColor(const Color& color);
+    static void setBackgroundColor(const Color& color);
 
     void queueDrawable(const Drawable& drawable);
 
