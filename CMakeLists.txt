@@ -32,10 +32,13 @@ if (BUILD_CLIENT)
     set(CMAKE_POLICY_DEFAULT_CMP0175 "OLD")
     set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
+    if (EMSCRIPTEN)
+        set(BGFX_CONFIG_MULTITHREADED OFF CACHE INTERNAL "" FORCE)
+    endif()
+
     add_subdirectory(vendored/bgfx.cmake EXCLUDE_FROM_ALL)
 
     if (EMSCRIPTEN)
-        set(BGFX_CONFIG_MULTITHREADED OFF CACHE INTERNAL "" FORCE)
         target_link_options(shaderc PRIVATE -lnodefs.js -sNODERAWFS -sSTACK_SIZE=1048576) # TODO Remove once this fix gets added to bgfx.cmake
     endif()
 

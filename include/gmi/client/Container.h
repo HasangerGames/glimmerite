@@ -93,6 +93,12 @@ public:
     /** @param visible Whether the Container should be visible */
     void setVisible(bool visible) { m_visible = visible; }
 
+    /**
+     * Forces this Container to recalculate its transforms.
+     * This method should not need to be called manually under normal circumstances.
+     */
+    void setDirty() { m_transformDirty = true; }
+
     /** @return The Transform applied to this Container (position, rotation, scale, etc.) */
     [[nodiscard]] const math::Transform& getTransform() const { return m_transform; }
 

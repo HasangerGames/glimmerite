@@ -7,6 +7,10 @@ Sprite::Sprite(Application* parentApp, Container* parent, const std::string& tex
     m_texture(parentApp->textures().get(textureName)) {
     m_transform = transform;
     m_transformDirty = true;
+
+    if (m_texture.loading) {
+        parentApp->textures().updateOnLoad(textureName, this);
+    }
 }
 
 Sprite::~Sprite() = default;
@@ -14,9 +18,7 @@ Sprite::~Sprite() = default;
 void Sprite::updateAffine() {
     Container::updateAffine();
 
-    auto& [handle, textureSize, frame] = m_texture;
-
-    math::Affine affineScaled = m_affine * math::Affine::scaleAbout(m_transform.pivot, math::Vec2f(frame.w, frame.h));
+    auto& [handle, textureSize, frame, _] = m_texture;
 
     auto tw = static_cast<float>(textureSize.w);
     auto th = static_cast<float>(textureSize.h);
@@ -25,22 +27,22 @@ void Sprite::updateAffine() {
     auto fw = static_cast<float>(frame.w);
     auto fh = static_cast<float>(frame.h);
 
-    float lx = fx / tw; // left X
+    auto [a, b, c, d, x, y, color] = m_affine * math::Affine::scaleAbout(m_transform.pivot, {fw, fh});
+
+    // clang-format off
+    float lx = fx / tw;        // left X
     float rx = (fx + fw) / tw; // right X
-    float ty = fy / th; // top Y
+    float ty = fy / th;        // top Y
     float by = (fy + fh) / th; // bottom Y
 
-    auto [a, b, c, d, x, y, color] = affineScaled;
-
     m_drawable = {
-        // clang-format off
         .vertices = {
             {c + x,     d + y,     lx, by, color}, // Top left
             {a + c + x, b + d + y, rx, by, color}, // Top right
             {a + x,     b + y,     rx, ty, color}, // Bottom right
             {x,         y,         lx, ty, color}, // Bottom left
         },
-        // clang-format on
+    // clang-format on
         .indices = {0, 1, 2, 0, 2, 3},
         .texture = handle
     };

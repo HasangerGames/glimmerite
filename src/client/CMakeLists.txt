@@ -41,6 +41,7 @@ bgfx_compile_shaders(
 add_library(glimmerite_client STATIC
     Application.cpp
     Container.cpp
+    gmi.cpp
     Graphics.cpp
     Renderer.cpp
     SoundManager.cpp
@@ -100,6 +101,7 @@ set_target_properties(glimmerite_client PROPERTIES LINKER_LANGUAGE CXX)
 if (EMSCRIPTEN)
     target_link_options(glimmerite_client PUBLIC
         "-sASSERTIONS"
+        "-sNO_DISABLE_EXCEPTION_CATCHING"
         "-sINITIAL_MEMORY=512MB"
         "-sALLOW_MEMORY_GROWTH=1"
     )
