@@ -48,7 +48,7 @@ add_library(glimmerite_client STATIC
     TextureManager.cpp
     TweenManager.cpp
 
-    shaders.h
+    shaders/shaders.h
 
     shaders/sprite/varying.def.sc
     shaders/sprite/fs_sprite.sc

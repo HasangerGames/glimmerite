@@ -8,7 +8,7 @@
 #include "gmi/client/Renderer.h"
 #include "gmi/client/gmi.h"
 
-#include "shaders.h"
+#include "shaders/shaders.h"
 
 namespace gmi {
 
