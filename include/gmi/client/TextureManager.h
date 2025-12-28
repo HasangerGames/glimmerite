@@ -26,18 +26,26 @@ public:
      * Loads a @ref Texture from disk.
      * @param name The name to give the texture
      * @param filePath The path to the texture file to load
+     * @param isPixelArt Whether the texture is pixel art, using nearest-neighbor interpolation
      * @param width Default width of the texture to set while it's being loaded
      * @param height Default height of the texture to set while it's being loaded
      */
-    void load(const std::string& name, const std::string& filePath, uint32_t width = 1, uint32_t height = 1);
+    void load(
+        const std::string& name,
+        const std::string& filePath,
+        bool isPixelArt = false,
+        uint32_t width = 1,
+        uint32_t height = 1
+    );
 
     /**
      * Loads a @ref Texture from disk.
      * The name will be assigned automatically based on the filename.
      * For example, `assets/test.png` will result in a texture named `test`.
      * @param filePath The path to the texture file to load
+     * @param isPixelArt Whether the texture is pixel art, using nearest-neighbor interpolation
      */
-    void load(const std::string& filePath);
+    void load(const std::string& filePath, bool isPixelArt = false);
 
     /**
      * Loads a spritesheet from disk, adding all its textures.

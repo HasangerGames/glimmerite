@@ -9,7 +9,7 @@ void gmiMain(Application& app) {
         .backgroundColor = Color::rgb(128, 128, 255),
     });
 
-    app.textures().load("assets/bunny.png");
+    app.textures().load("assets/bunny.png", true);
 
     auto& bunny = app.stage().createChild<Sprite>("bunny", math::Transform{
         .position = {400, 300},

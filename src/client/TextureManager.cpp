@@ -13,7 +13,13 @@
 
 namespace gmi {
 
-void TextureManager::load(const std::string &name, const std::string &filePath, uint32_t width, uint32_t height) {
+void TextureManager::load(
+    const std::string& name,
+    const std::string& filePath,
+    bool isPixelArt,
+    uint32_t width,
+    uint32_t height
+) {
     if (m_textures.contains(name)) {
         throw GmiException("Failed to load texture '" + name + "': Texture already exists");
     }
@@ -50,7 +56,7 @@ void TextureManager::load(const std::string &name, const std::string &filePath, 
 
     loadFile(
         filePath,
-        [this, &name](const Buffer& data) {
+        [this, name, isPixelArt](const Buffer& data) {
             bimg::ImageContainer* image = bimg::imageParse(&m_allocator, data.data(), data.size());
             uint32_t width = image->m_width;
             uint32_t height = image->m_height;
@@ -60,7 +66,7 @@ void TextureManager::load(const std::string &name, const std::string &filePath, 
                 image->m_numMips > 1,
                 1u,
                 static_cast<bgfx::TextureFormat::Enum>(image->m_format),
-                BGFX_TEXTURE_NONE, //BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT,
+                isPixelArt ? BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT : BGFX_TEXTURE_NONE,
                 bgfx::copy(image->m_data, image->m_size)
             );
             bimg::imageFree(image);
@@ -81,14 +87,14 @@ void TextureManager::load(const std::string &name, const std::string &filePath, 
             }
             m_pendingTextureUpdates.erase(name);
         },
-        [&name, &filePath] {
+        [name, filePath] {
             throw GmiException("Failed to load texture '" + name + "': File not found: " + filePath);
         }
     );
 }
 
-void TextureManager::load(const std::string& filePath) {
-    load(std::filesystem::path(filePath).stem().string(), filePath);
+void TextureManager::load(const std::string &filePath, bool isPixelArt) {
+    load(std::filesystem::path(filePath).stem().string(), filePath, isPixelArt);
 }
 
 struct SpritesheetFrame {
@@ -153,7 +159,6 @@ void TextureManager::updateOnLoad(const std::string& name, Container* container)
         m_pendingTextureUpdates[name] = {container};
     }
 }
-
 
 void TextureManager::destroyAll() const {
     for (const bgfx::TextureHandle& handle : m_handles) {
