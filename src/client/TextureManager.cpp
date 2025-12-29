@@ -113,7 +113,7 @@ struct Spritesheet {
     std::unordered_map<std::string, SpritesheetFrame> frames;
 };
 
-void TextureManager::loadSpritesheet(const std::string& name, const std::string& filePath) {
+void TextureManager::loadSpritesheet(const std::string& name, const std::string& filePath, bool isPixelArt) {
     auto dataFile = std::ifstream(filePath);
     if (!dataFile.good()) {
         throw GmiException("Failed to parse spritesheet '" + name + "': File not found: " + filePath);
@@ -129,7 +129,13 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
     }
 
     std::string sheetPath = (std::filesystem::path{filePath}.parent_path() / sheet.meta.image).string();
-    load(name, sheetPath, sheet.meta.size.w * sheet.meta.scale, sheet.meta.size.h * sheet.meta.scale);
+    load(
+        name,
+        sheetPath,
+        isPixelArt,
+        (uint32_t) ((float) sheet.meta.size.w * sheet.meta.scale),
+        (uint32_t) ((float) sheet.meta.size.h * sheet.meta.scale)
+    );
     Texture texture = m_textures[name];
 
     for (const auto& [subName, frame] : sheet.frames) {
@@ -141,8 +147,8 @@ void TextureManager::loadSpritesheet(const std::string& name, const std::string&
     }
 }
 
-void TextureManager::loadSpritesheet(const std::string& filePath) {
-    loadSpritesheet(std::filesystem::path(filePath).string(), filePath);
+void TextureManager::loadSpritesheet(const std::string& filePath, bool isPixelArt) {
+    loadSpritesheet(std::filesystem::path(filePath).string(), filePath, isPixelArt);
 }
 
 Texture& TextureManager::get(const std::string& name) {

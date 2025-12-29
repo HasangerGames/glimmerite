@@ -52,15 +52,17 @@ public:
      * This method expects a JSON file of the type outputted by tools like [TexturePacker](https://www.codeandweb.com/texturepacker).
      * @param name The name to give the spritesheet texture
      * @param filePath The path to the spritesheet JSON file
+     * @param isPixelArt Whether the spritesheet texture is pixel art, using nearest-neighbor interpolation
      */
-    void loadSpritesheet(const std::string& name, const std::string& filePath);
+    void loadSpritesheet(const std::string &name, const std::string &filePath, bool isPixelArt = false);
 
     /**
      * Loads a spritesheet from disk, adding all its textures.
      * This method expects a JSON file of the type outputted by tools like [TexturePacker](https://www.codeandweb.com/texturepacker).
      * @param filePath The path to the spritesheet JSON file
+     * @param isPixelArt Whether the spritesheet texture is pixel art, using nearest-neighbor interpolation
      */
-    void loadSpritesheet(const std::string& filePath);
+    void loadSpritesheet(const std::string& filePath, bool isPixelArt = false);
 
     /** @return The @ref Texture with the given name */
     Texture& get(const std::string& name);
