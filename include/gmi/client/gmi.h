@@ -21,6 +21,8 @@ using Buffer = std::vector<char>;
 using LoadCallback = std::function<void(const Buffer&)>;
 using ErrorCallback = std::function<void()>;
 
-void loadFile(const std::string& path, LoadCallback onLoad, ErrorCallback onError);
+void readFile(const std::string& path, LoadCallback onLoad, ErrorCallback onError);
+
+Buffer readFileSync(const std::string& path);
 
 }

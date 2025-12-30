@@ -102,6 +102,7 @@ if (EMSCRIPTEN)
     target_link_options(glimmerite_client PUBLIC
         "-sASSERTIONS"
         "-sNO_DISABLE_EXCEPTION_CATCHING"
+        "-sASYNCIFY"
         "-sINITIAL_MEMORY=512MB"
         "-sALLOW_MEMORY_GROWTH=1"
     )

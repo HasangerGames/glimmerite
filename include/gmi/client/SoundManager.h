@@ -1,4 +1,5 @@
 #pragma once
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -27,6 +28,7 @@ private:
     bool m_initialized = false;
     MIX_Mixer* m_mixer = nullptr;
     std::unordered_map<std::string, MIX_Audio*> m_sounds;
+    std::set<std::string> m_pendingSounds;
 };
 
 }

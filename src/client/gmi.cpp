@@ -3,17 +3,13 @@
 #include <cstring>
 
 #ifndef __EMSCRIPTEN__
+
 #include <fstream>
-#else
-#include <emscripten.h>
-#include <emscripten/html5.h>
-#include <iostream>
-#endif
 
 namespace gmi {
 
-void loadFile(const std::string& path, LoadCallback onLoad, ErrorCallback onError) {
-#ifndef __EMSCRIPTEN__
+void readFile(const std::string& path, LoadCallback onLoad, ErrorCallback onError) {
+    // TODO Make this actually async
     auto stream = std::ifstream(path, std::ios::binary);
     if (!stream.good()) {
         onError();
@@ -26,7 +22,33 @@ void loadFile(const std::string& path, LoadCallback onLoad, ErrorCallback onErro
     auto data = Buffer(size);
     stream.read(data.data(), size);
     onLoad(data);
-#else
+}
+
+Buffer readFileSync(const std::string& path) {
+    auto stream = std::ifstream(path, std::ios::binary);
+    if (!stream.good()) {
+        throw std::runtime_error("File not found: " + path);
+    }
+
+    stream.seekg(0, std::ios::end);
+    std::streamsize size = stream.tellg();
+    stream.seekg(0, std::ios::beg);
+
+    auto data = Buffer(size);
+    stream.read(data.data(), size);
+    return data;
+}
+
+}
+
+#else // using emscripten
+
+#include <emscripten.h>
+#include <emscripten/html5.h>
+
+namespace gmi {
+
+void readFile(const std::string& path, LoadCallback onLoad, ErrorCallback onError) {
     struct LoadContext {
         LoadCallback onLoad;
         ErrorCallback onError;
@@ -52,7 +74,25 @@ void loadFile(const std::string& path, LoadCallback onLoad, ErrorCallback onErro
             delete ctx;
         }
     );
-#endif
+}
+
+Buffer readFileSync(const std::string& path) {
+    void* bufferPtr;
+    int size;
+    int error;
+    emscripten_wget_data(path.c_str(), &bufferPtr, &size, &error);
+
+    if (error) {
+        delete bufferPtr;
+        throw std::runtime_error("File not found: " + path);
+    }
+
+    auto data = Buffer(size);
+    std::memcpy(data.data(), bufferPtr, size);
+    delete bufferPtr;
+    return data;
 }
 
 }
+
+#endif
