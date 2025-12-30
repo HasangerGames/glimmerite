@@ -15,14 +15,14 @@ void gmiMain(Application& app) {
 
     app.textures().load("assets/dvd_logo.png");
     auto [logoWidth, logoHeight] = app.textures().get("dvd_logo").size;
-    auto xMax = static_cast<float>(800 - logoWidth);
-    auto yMax = static_cast<float>(600 - logoHeight);
+    auto xMax = (float) (800 - logoWidth);
+    auto yMax = (float) (600 - logoHeight);
 
     auto& dvdLogo = app.stage().createChild<Sprite>("dvd_logo");
-    dvdLogo.setPosition((
-        math::random(0, static_cast<int>(xMax)),
-        math::random(0, static_cast<int>(yMax))
-    ));
+    dvdLogo.setPosition({
+        (float) math::random(0, (int) xMax),
+        (float) math::random(0, (int) yMax),
+    });
     dvdLogo.setPivot({0, 0}); // Makes the math simpler
     app.addTicker([&app, &dvdLogo, xMax, yMax] {
         math::Vec2f position = dvdLogo.getPosition();
