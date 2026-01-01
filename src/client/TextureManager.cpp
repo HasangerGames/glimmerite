@@ -1,13 +1,14 @@
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 
 #include <glaze/core/context.hpp>
 #include <glaze/json/read.hpp>
 
-#include "bimg/decode.h"
-
 #include "gmi/client/TextureManager.h"
+
+#include "../../vendored/bgfx.cmake/bgfx/src/bgfx_p.h"
 #include "gmi/client/gmi.h"
 #include "gmi/math/Rect.h"
 
@@ -20,31 +21,16 @@ void TextureManager::load(
     uint32_t width,
     uint32_t height
 ) {
-    if (m_textures.contains(name)) {
-        throw GmiException("Failed to load texture '" + name + "': Texture already exists");
-    }
+    ensureTextureDoesNotExist(name);
 
-    // Create a placeholder 1x1 texture if it doesn't exist
-    // We have to do this here because bgfx isn't initialized yet in the constructor
-    if (!bgfx::isValid(m_placeholderHandle)) {
-        uint32_t white = 0xffffffff;
-        m_placeholderHandle = bgfx::createTexture2D(
-            1,
-            1,
-            false,
-            1u,
-            bgfx::TextureFormat::RGBA8,
-            BGFX_TEXTURE_NONE,
-            bgfx::copy(&white, sizeof(white))
-        );
-    }
+    initPlaceholderHandle();
 
     // Use the placeholder texture until the actual texture gets loaded
     m_textures[name] = {
         .handle = m_placeholderHandle,
         .size = {
             .w = width,
-            .h = height
+            .h = height,
         },
         .frame = {
             .x = 0,
@@ -54,38 +40,18 @@ void TextureManager::load(
         }
     };
 
-    loadFile(
+    readFile(
         filePath,
         [this, name, isPixelArt](const Buffer& data) {
-            bimg::ImageContainer* image = bimg::imageParse(&m_allocator, data.data(), data.size());
-            uint32_t width = image->m_width;
-            uint32_t height = image->m_height;
-            bgfx::TextureHandle handle = bgfx::createTexture2D(
-                width,
-                height,
-                image->m_numMips > 1,
-                1u,
-                static_cast<bgfx::TextureFormat::Enum>(image->m_format),
-                isPixelArt ? BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT : BGFX_TEXTURE_NONE,
-                bgfx::copy(image->m_data, image->m_size)
-            );
-            bimg::imageFree(image);
+            auto [handle, w, h] = createTexture(data, name, isPixelArt);
 
-            if (!bgfx::isValid(handle)) {
-                throw GmiException("Failed to load texture '" + name + "': Texture is not valid");
-            }
-
-            m_handles.push_back(handle);
             Texture& texture = m_textures[name];
             texture.handle = handle;
-            texture.frame.w = texture.size.w = width;
-            texture.frame.h = texture.size.h = height;
+            texture.frame.w = texture.size.w = w;
+            texture.frame.h = texture.size.h = h;
             texture.loading = false;
 
-            for (Container* container : m_pendingTextureUpdates[name]) {
-                container->setDirty();
-            }
-            m_pendingTextureUpdates.erase(name);
+            releaseTextureUpdates(name);
         },
         [name, filePath] {
             throw GmiException("Failed to load texture '" + name + "': File not found: " + filePath);
@@ -108,47 +74,120 @@ struct SpritesheetMeta {
     math::UintSize size;
 };
 
+using SpritesheetFrames = std::unordered_map<std::string, SpritesheetFrame>;
+
 struct Spritesheet {
     SpritesheetMeta meta;
-    std::unordered_map<std::string, SpritesheetFrame> frames;
+    SpritesheetFrames frames;
 };
 
-void TextureManager::loadSpritesheet(const std::string& name, const std::string& filePath, bool isPixelArt) {
-    auto dataFile = std::ifstream(filePath);
-    if (!dataFile.good()) {
-        throw GmiException("Failed to parse spritesheet '" + name + "': File not found: " + filePath);
-    }
-
-    std::ostringstream stream;
-    stream << dataFile.rdbuf();
-    std::string sheetData = stream.str();
-
-    Spritesheet sheet{};
-    if (const glz::error_ctx err = glz::read_json(sheet, sheetData)) {
-        throw GmiException("Failed to parse spritesheet '" + name + "': " + glz::format_error(err, sheetData));
-    }
-
-    std::string sheetPath = (std::filesystem::path{filePath}.parent_path() / sheet.meta.image).string();
-    load(
-        name,
-        sheetPath,
-        isPixelArt,
-        (uint32_t) ((float) sheet.meta.size.w * sheet.meta.scale),
-        (uint32_t) ((float) sheet.meta.size.h * sheet.meta.scale)
-    );
-    Texture texture = m_textures[name];
-
-    for (const auto& [subName, frame] : sheet.frames) {
-        m_textures[subName] = {
-            .handle = texture.handle,
-            .size = texture.size,
-            .frame = frame.frame,
-        };
-    }
+void TextureManager::loadSpritesheet(const std::string& filePath, bool isPixelArt) {
+    loadSpritesheets({filePath}, isPixelArt);
 }
 
-void TextureManager::loadSpritesheet(const std::string& filePath, bool isPixelArt) {
-    loadSpritesheet(std::filesystem::path(filePath).string(), filePath, isPixelArt);
+void TextureManager::loadSpritesheets(const std::vector<std::string>& filePaths, bool isPixelArt) {
+    std::unordered_map<std::string, Spritesheet> sheets;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    for (const std::string& path : filePaths) {
+        std::string name = nameFromPath(path);
+        ensureTextureDoesNotExist(name);
+
+        Buffer data = readFileSync(path, "Failed to parse spritesheet '" + name + "'");
+        auto sheetData = std::string(data.data());
+
+        auto sheet = Spritesheet();
+        if (const glz::error_ctx err = glz::read_json(sheet, sheetData)) {
+            throw GmiException("Failed to parse spritesheet '" + name + "': " + glz::format_error(err, sheetData));
+        }
+
+        // Determine the dimensions of the texture array from the largest dimensions of the textures
+        auto [w, h] = sheet.meta.size;
+        width = std::max(w, width);
+        height = std::max(h, height);
+
+        sheets.emplace(path, sheet);
+    }
+
+    size_t numLayers = filePaths.size();
+    if (numLayers > 255) {
+        throw GmiException("Failed to load spritesheets: Cannot create more than 255 spritesheets");
+    }
+    bool supportsTextureArrays = (bgfx::getCaps()->supported & BGFX_CAPS_TEXTURE_2D_ARRAY) != 0u;
+    if (!supportsTextureArrays) {
+        numLayers = 1;
+    }
+
+    uint64_t flags = BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP;
+    if (isPixelArt) {
+        flags |= BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT;
+    }
+
+    bgfx::TextureHandle handle; // NOLINT shut up it's initialized below
+    auto createTexture = [&](uint32_t w, uint32_t h) {
+        handle = bgfx::createTexture2D(
+            w,
+            h,
+            false,
+            numLayers,
+            bgfx::TextureFormat::BC1,
+            flags
+        );
+
+        if (!bgfx::isValid(handle)) {
+            throw GmiException("Failed to load spritesheets: Unable to create texture");
+        }
+
+        m_handles.push_back(handle);
+    };
+
+    if (supportsTextureArrays) {
+        createTexture(width, height);
+    }
+
+    uint8_t layer = 0;
+    for (const auto& [filePath, sheet] : sheets) {
+        if (!supportsTextureArrays) {
+            createTexture(sheet.meta.size.w, sheet.meta.size.h);
+        }
+
+        for (const auto& [subName, frame] : sheet.frames) {
+            m_textures[subName] = {
+                .handle = handle,
+                .layer = layer,
+                .size = {
+                    .w = sheet.meta.size.w,
+                    .h = sheet.meta.size.h,
+                },
+                .frame = frame.frame,
+                .scale = sheet.meta.scale,
+            };
+        }
+
+        auto* t = new Timer("image parse");
+        std::string sheetPath = (std::filesystem::path(filePath).parent_path() / sheet.meta.image).string();
+        readImage(
+            sheetPath,
+            [handle, layer, t](const Image& image) {
+                bgfx::updateTexture2D(
+                    handle,
+                    layer,
+                    0,
+                    0,
+                    0,
+                    image.width,
+                    image.height,
+                    image.data
+                );
+                t->stop();
+            },
+            "Failed to load spritesheet"
+        );
+
+        if (supportsTextureArrays) {
+            ++layer;
+        }
+    }
 }
 
 Texture& TextureManager::get(const std::string& name) {
@@ -159,18 +198,78 @@ Texture& TextureManager::get(const std::string& name) {
 }
 
 void TextureManager::updateOnLoad(const std::string& name, Container* container) {
-    if (m_pendingTextureUpdates.contains(name)) {
-        m_pendingTextureUpdates[name].push_back(container);
-    } else {
-        m_pendingTextureUpdates[name] = {container};
-    }
+    m_pendingTextureUpdates[name].push_back(container);
 }
 
 void TextureManager::destroyAll() const {
     for (const bgfx::TextureHandle& handle : m_handles) {
         bgfx::destroy(handle);
     }
-    // bgfx::destroy(m_placeholderHandle); TODO Figure out why this handle is invalid here (does it get destroyed elsewhere?)
+    if (bgfx::isValid(m_placeholderHandle)) {
+        bgfx::destroy(m_placeholderHandle);
+    }
+}
+
+void TextureManager::ensureTextureDoesNotExist(const std::string& name) const {
+    if (m_textures.contains(name)) {
+        throw GmiException("Failed to load texture '" + name + "': Texture already exists");
+    }
+}
+
+TextureManager::TextureInfo TextureManager::createTexture(
+    const Buffer& data,
+    const std::string& name,
+    bool isPixelArt
+) {
+    // auto [rawData, size, width, height] = imageParse(data);
+    //
+    // uint64_t flags = BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP;
+    // if (isPixelArt) {
+    //     flags |= BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT;
+    // }
+    //
+    // bgfx::TextureHandle handle = bgfx::createTexture2D(
+    //     width,
+    //     height,
+    //     false,
+    //     1u,
+    //     bgfx::TextureFormat::RGBA8,
+    //     flags,
+    //     bgfx::copy(rawData, size)
+    // );
+    // free(rawData);
+    //
+    // if (!bgfx::isValid(handle)) {
+    //     throw GmiException("Failed to load texture '" + name + "': Texture is not valid");
+    // }
+    //
+    // m_handles.push_back(handle);
+    //
+    // return {handle, width, height};
+}
+
+void TextureManager::initPlaceholderHandle() {
+    if (bgfx::isValid(m_placeholderHandle)) return;
+
+    // Create a placeholder 1x1 texture if it doesn't exist
+    // We have to do this here because bgfx isn't initialized yet in the constructor
+    uint32_t black = 0xff000000;
+    m_placeholderHandle = bgfx::createTexture2D(
+        1,
+        1,
+        false,
+        1u,
+        bgfx::TextureFormat::RGBA8,
+        BGFX_TEXTURE_NONE,
+        bgfx::copy(&black, sizeof(black))
+    );
+}
+
+void TextureManager::releaseTextureUpdates(const std::string& name) {
+    for (Container* container : m_pendingTextureUpdates[name]) {
+        container->setDirty();
+    }
+    m_pendingTextureUpdates.erase(name);
 }
 
 }

@@ -49,6 +49,8 @@ add_library(glimmerite_client STATIC
     TextureManager.cpp
     TweenManager.cpp
 
+    stb_image.h
+
     shaders/shaders.h
 
     shaders/sprite/varying.def.sc
@@ -103,6 +105,8 @@ if (EMSCRIPTEN)
         "-sASSERTIONS"
         "-sNO_DISABLE_EXCEPTION_CATCHING"
         "-sASYNCIFY"
+        "-sEXPORTED_FUNCTIONS=_main,_readImageOnLoad,_readImageOnError"
+        "-sEXPORTED_RUNTIME_METHODS=ccall"
         "-sINITIAL_MEMORY=512MB"
         "-sALLOW_MEMORY_GROWTH=1"
     )

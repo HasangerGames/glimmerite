@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Container.h"
+#include "gmi.h"
 #include "bgfx/bgfx.h"
 #include "bx/allocator.h"
 
@@ -15,8 +16,10 @@ namespace gmi {
 
 struct Texture {
     bgfx::TextureHandle handle;
+    uint8_t layer;
     math::UintSize size;
     math::UintRect frame;
+    float scale = 1;
     bool loading = true;
 };
 
@@ -50,19 +53,18 @@ public:
     /**
      * Loads a spritesheet from disk, adding all its textures.
      * This method expects a JSON file of the type outputted by tools like [TexturePacker](https://www.codeandweb.com/texturepacker).
-     * @param name The name to give the spritesheet texture
-     * @param filePath The path to the spritesheet JSON file
-     * @param isPixelArt Whether the spritesheet texture is pixel art, using nearest-neighbor interpolation
-     */
-    void loadSpritesheet(const std::string &name, const std::string &filePath, bool isPixelArt = false);
-
-    /**
-     * Loads a spritesheet from disk, adding all its textures.
-     * This method expects a JSON file of the type outputted by tools like [TexturePacker](https://www.codeandweb.com/texturepacker).
      * @param filePath The path to the spritesheet JSON file
      * @param isPixelArt Whether the spritesheet texture is pixel art, using nearest-neighbor interpolation
      */
     void loadSpritesheet(const std::string& filePath, bool isPixelArt = false);
+
+    /**
+     * Loads multiple spritesheets from disk, adding all their textures and combining their base textures into an array.
+     * This method expects a JSON file of the type outputted by tools like [TexturePacker](https://www.codeandweb.com/texturepacker).
+     * @param filePaths The paths to the spritesheet JSON files
+     * @param isPixelArt Whether the spritesheet texture is pixel art, using nearest-neighbor interpolation
+     */
+    void loadSpritesheets(const std::vector<std::string>& filePaths, bool isPixelArt = false);
 
     /** @return The @ref Texture with the given name */
     Texture& get(const std::string& name);
@@ -77,11 +79,27 @@ public:
     /** Destroys all textures belonging to this TextureManager. */
     void destroyAll() const;
 private:
-    bx::DefaultAllocator m_allocator;
     std::vector<bgfx::TextureHandle> m_handles;
     std::unordered_map<std::string, Texture> m_textures;
     std::unordered_map<std::string, std::vector<Container*>> m_pendingTextureUpdates;
     bgfx::TextureHandle m_placeholderHandle = BGFX_INVALID_HANDLE;
+
+    void ensureTextureDoesNotExist(const std::string& name) const;
+
+    struct TextureInfo {
+        bgfx::TextureHandle handle;
+        uint32_t width;
+        uint32_t height;
+    };
+
+    TextureInfo createTexture(
+        const Buffer& data,
+        const std::string& name,
+        bool isPixelArt
+    );
+
+    void initPlaceholderHandle();
+    void releaseTextureUpdates(const std::string& name);
 };
 
 }

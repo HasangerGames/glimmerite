@@ -18,16 +18,17 @@ Sprite::~Sprite() = default;
 void Sprite::updateAffine() {
     Container::updateAffine();
 
-    auto& [handle, textureSize, frame, _] = m_texture;
+    auto& [handle, layer, size, frame, scale, _] = m_texture;
 
-    auto tw = static_cast<float>(textureSize.w);
-    auto th = static_cast<float>(textureSize.h);
-    auto fx = static_cast<float>(frame.x);
-    auto fy = static_cast<float>(frame.y);
-    auto fw = static_cast<float>(frame.w);
-    auto fh = static_cast<float>(frame.h);
+    auto tw = (float) size.w;
+    auto th = (float) size.h;
+    auto fx = (float) frame.x;
+    auto fy = (float) frame.y;
+    auto fw = (float) frame.w;
+    auto fh = (float) frame.h;
+    auto l  = (float) layer;
 
-    auto [a, b, c, d, x, y, color] = m_affine * math::Affine::scaleAbout(m_transform.pivot, {fw, fh});
+    auto [a, b, c, d, x, y, color] = m_affine * math::Affine::scaleAbout(m_transform.pivot, {fw * scale, fh * scale});
 
     // clang-format off
     float lx = fx / tw;        // left X
@@ -37,14 +38,14 @@ void Sprite::updateAffine() {
 
     m_drawable = {
         .vertices = {
-            {c + x,     d + y,     lx, by, color}, // Top left
-            {a + c + x, b + d + y, rx, by, color}, // Top right
-            {a + x,     b + y,     rx, ty, color}, // Bottom right
-            {x,         y,         lx, ty, color}, // Bottom left
+            {c + x,     d + y,     lx, by + l, color}, // Top left
+            {a + c + x, b + d + y, rx, by + l, color}, // Top right
+            {a + x,     b + y,     rx, ty + l, color}, // Bottom right
+            {x,         y,         lx, ty + l, color}, // Bottom left
         },
     // clang-format on
         .indices = {0, 1, 2, 0, 2, 3},
-        .texture = handle
+        .texture = handle,
     };
 }
 

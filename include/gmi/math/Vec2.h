@@ -18,7 +18,7 @@ public:
 
     Vec2() : x(0), y(0) { }
 
-    Vec2(VecT xAndY) : x(xAndY), y(xAndY) { }
+    explicit Vec2(VecT xAndY) : x(xAndY), y(xAndY) { }
 
     Vec2(VecT xPos, VecT yPos) : x(xPos), y(yPos) { }
 
@@ -120,6 +120,10 @@ public:
 
     [[nodiscard]] VecT distanceTo(const Vec2& a) const {
         return (*this - a).length();
+    }
+
+    [[nodiscard]] VecT angleTo(Vec2 a) const {
+        return std::atan2(a.y - y, a.x - x);
     }
 
     [[nodiscard]] VecT dot(const Vec2& a) const {

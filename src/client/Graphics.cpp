@@ -155,7 +155,8 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle&
         return *this;
     }
 
-    auto& [vertices, indices, _] = m_drawable;
+    std::vector<Vertex>& vertices = m_drawable.vertices;
+    std::vector<uint16_t>& indices = m_drawable.indices;
 
     std::vector<math::Vec2f> verts;
 
@@ -425,7 +426,8 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle&
 }
 
 Graphics& Graphics::fillRect(float x, float y, float w, float h, Color color) {
-    auto& [vertices, indices, _] = m_drawable;
+    std::vector<Vertex>& vertices = m_drawable.vertices;
+    std::vector<uint16_t>& indices = m_drawable.indices;
 
     size_t numVertices = vertices.size();
     indices.reserve(indices.size() + 6);
@@ -452,7 +454,8 @@ Graphics& Graphics::fillCircle(float x, float y, float r, Color color) {
 }
 
 Graphics& Graphics::fillEllipse(float x, float y, float rx, float ry, Color color) {
-    auto& [vertices, indices, _] = m_drawable;
+    std::vector<Vertex>& vertices = m_drawable.vertices;
+    std::vector<uint16_t>& indices = m_drawable.indices;
 
     // Choose a number of segments such that the maximum absolute deviation from the circle is approximately 0.029
     size_t numSegments = std::ceil(2.3 * std::sqrt(rx + ry));
@@ -477,7 +480,8 @@ Graphics& Graphics::fillEllipse(float x, float y, float rx, float ry, Color colo
 }
 
 Graphics& Graphics::fillPoly(const std::vector<math::Vec2f>& points, Color color) {
-    auto& [vertices, indices, texture] = m_drawable;
+    std::vector<Vertex>& vertices = m_drawable.vertices;
+    std::vector<uint16_t>& indices = m_drawable.indices;
 
     std::vector<uint16_t> polyIndices = mapbox::earcut<uint16_t>(std::vector<std::vector<math::Vec2f>>{points});
     size_t numVertices = vertices.size();
