@@ -5,10 +5,13 @@ project(glimmerite CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 include(FeatureSummary)
 
 option(BUILD_EXAMPLES "Build example games"  ON)
 option(BUILD_CLIENT   "Build client library" ON)
+option(BUILD_TOOLS    "Build tools" ON)
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
@@ -93,6 +96,22 @@ if (BUILD_TESTING)
     include(CTest)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+if (BUILD_TOOLS)
+    set(RESVG_DIR "${GMI_DIR}/vendored/resvg" CACHE PATH "Path to resvg repo" FORCE)
+
+    add_library(resvg STATIC IMPORTED)
+
+    set_target_properties(resvg PROPERTIES
+            IMPORTED_LOCATION "${RESVG_DIR}/target/release/libresvg.a"
+            INTERFACE_INCLUDE_DIRECTORIES "${RESVG_DIR}/crates/c-api"
+            LINKER_LANGUAGE CXX
+    )
+
+    add_subdirectory(vendored/rectpack2D)
+
+    add_subdirectory(tools/spritesheetc)
 endif()
 
 feature_summary(WHAT ALL)

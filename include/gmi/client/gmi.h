@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "bgfx/bgfx.h"
+#include "gmi/util/util.h"
 
 namespace gmi {
 
@@ -23,29 +24,6 @@ inline uint64_t nowMs() {
 inline std::string nameFromPath(const std::string& path) {
     return std::filesystem::path(path).stem().string();
 }
-
-/**
- * Prints the time elapsed since the object's creation when it is destroyed.
- * Can be used to profile functions, or smaller blocks of code by enclosing in braces.
- */
-class Timer {
-public:
-    explicit Timer(const std::string& name) :
-        m_name(name), m_start(std::chrono::steady_clock::now()) { }
-    ~Timer() {
-        auto elapsed = std::chrono::steady_clock::now() - m_start;
-        auto ms = std::chrono::duration<double, std::milli>(elapsed);
-        std::cout << std::format("{}: {:.3f} ms\n", m_name, ms.count());
-    }
-    void stop() const {
-        delete this;
-    }
-private:
-    std::string m_name;
-    std::chrono::steady_clock::time_point m_start;
-};
-
-using Buffer = std::vector<char>;
 
 using LoadCallback = std::function<void(const Buffer&)>;
 using ErrorCallback = std::function<void()>;

@@ -4,5 +4,5 @@ add_subdirectory(3-graphics)
 add_subdirectory(4-screensaver)
 add_subdirectory(5-collisions)
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_BINARY_DIR}/Debug/assets)
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/assets)
 

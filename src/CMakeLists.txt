@@ -3,3 +3,4 @@ if (BUILD_CLIENT)
 endif()
 
 add_subdirectory(math)
+add_subdirectory(util)

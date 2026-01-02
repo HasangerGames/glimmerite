@@ -13,3 +13,9 @@
 [submodule "vendored/earcut.hpp"]
 	path = vendored/earcut.hpp
 	url = https://github.com/mapbox/earcut.hpp.git
+[submodule "vendored/resvg"]
+	path = vendored/resvg
+	url = https://github.com/linebender/resvg.git
+[submodule "vendored/rectpack2D"]
+	path = vendored/rectpack2D
+	url = https://github.com/TeamHypersomnia/rectpack2D.git
