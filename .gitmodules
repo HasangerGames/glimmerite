@@ -19,3 +19,9 @@
 [submodule "vendored/rectpack2D"]
 	path = vendored/rectpack2D
 	url = https://github.com/TeamHypersomnia/rectpack2D.git
+[submodule "vendored/libwebp"]
+	path = vendored/libwebp
+	url = https://chromium.googlesource.com/webm/libwebp
+[submodule "vendored/basis_universal"]
+	path = vendored/basis_universal
+	url = https://github.com/BinomialLLC/basis_universal.git

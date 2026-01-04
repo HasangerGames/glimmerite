@@ -89,6 +89,7 @@ include_directories("${CMAKE_BINARY_DIR}/include/generated/shaders")
 
 target_link_libraries(glimmerite_client PUBLIC
     glimmerite::math
+    glimmerite::util
     SDL3::SDL3
     SDL3_mixer::SDL3_mixer
     bgfx

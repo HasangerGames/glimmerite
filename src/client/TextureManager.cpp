@@ -8,9 +8,9 @@
 
 #include "gmi/client/TextureManager.h"
 
-#include "../../vendored/bgfx.cmake/bgfx/src/bgfx_p.h"
 #include "gmi/client/gmi.h"
 #include "gmi/math/Rect.h"
+#include "gmi/util/spritesheet.h"
 
 namespace gmi {
 
@@ -62,24 +62,6 @@ void TextureManager::load(
 void TextureManager::load(const std::string &filePath, bool isPixelArt) {
     load(std::filesystem::path(filePath).stem().string(), filePath, isPixelArt);
 }
-
-struct SpritesheetFrame {
-    math::UintRect frame;
-    math::UintSize sourceSize;
-};
-
-struct SpritesheetMeta {
-    std::string image;
-    float scale;
-    math::UintSize size;
-};
-
-using SpritesheetFrames = std::unordered_map<std::string, SpritesheetFrame>;
-
-struct Spritesheet {
-    SpritesheetMeta meta;
-    SpritesheetFrames frames;
-};
 
 void TextureManager::loadSpritesheet(const std::string& filePath, bool isPixelArt) {
     loadSpritesheets({filePath}, isPixelArt);

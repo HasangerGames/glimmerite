@@ -104,12 +104,24 @@ if (BUILD_TOOLS)
     add_library(resvg STATIC IMPORTED)
 
     set_target_properties(resvg PROPERTIES
-            IMPORTED_LOCATION "${RESVG_DIR}/target/release/libresvg.a"
-            INTERFACE_INCLUDE_DIRECTORIES "${RESVG_DIR}/crates/c-api"
-            LINKER_LANGUAGE CXX
+        IMPORTED_LOCATION "${RESVG_DIR}/target/release/libresvg.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${RESVG_DIR}/crates/c-api"
+        LINKER_LANGUAGE CXX
     )
 
     add_subdirectory(vendored/rectpack2D)
+
+    add_subdirectory(vendored/libwebp)
+    set(WEBP_BUILD_ANIM_UTILS OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_CWEBP      OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_DWEBP      OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_GIF2WEBP   OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_IMG2WEBP   OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_VWEBP      OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_WEBPINFO   OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_LIBWEBPMUX OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_WEBPMUX    OFF CACHE INTERNAL "" FORCE)
+    set(WEBP_BUILD_EXTRAS     OFF CACHE INTERNAL "" FORCE)
 
     add_subdirectory(tools/spritesheetc)
 endif()
@@ -119,8 +131,8 @@ feature_summary(WHAT ALL)
 add_library(glimmerite_glimmerite INTERFACE)
 add_library(glimmerite::glimmerite ALIAS glimmerite_glimmerite)
 
-target_link_libraries(glimmerite_glimmerite
-    INTERFACE
+target_link_libraries(glimmerite_glimmerite INTERFACE
     glimmerite::math
+    glimmerite::util
     glimmerite::client
 )

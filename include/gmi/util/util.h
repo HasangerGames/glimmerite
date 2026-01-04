@@ -11,16 +11,13 @@ namespace gmi {
 using Buffer = std::vector<char>;
 
 /**
- * Prints the time elapsed since the object's creation when it is destroyed.
- * Can be used to profile functions, or smaller blocks of code by enclosing in braces.
+ * Simple timer for profiling code.
  */
 class Timer {
 public:
     Timer() : Timer("") { }
     explicit Timer(std::string name) :
         m_name(std::move(name)), m_start(std::chrono::steady_clock::now()) { }
-
-    ~Timer() { stop(); }
 
     void stop() {
         stop(m_name);
