@@ -29,7 +29,7 @@ struct ApplicationConfig {
     std::string title = "Glimmerite Application";
 
     /** Background color of the Application window. */
-    Color backgroundColor = Color::Black;
+    Color backgroundColor = Color::BLACK;
 
     /** Whether the Application window can be resized. */
     bool resizable = true;
@@ -68,7 +68,7 @@ public:
      */
     void init(const ApplicationConfig& config);
 
-    bool isInitialized() const { return m_initialized; }
+    [[nodiscard]] bool isInitialized() const { return m_initialized; }
 
     /** @return The @ref TextureManager associated with the Application, used to load textures */
     [[nodiscard]] TextureManager& textures() { return m_textureManager; }

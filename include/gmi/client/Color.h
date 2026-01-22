@@ -78,17 +78,17 @@ struct Color {
     /** @return The RGBA hex value of this Color */
     [[nodiscard]] uint32_t rgbaHex() const;
 
-    static const Color White, Black, Red, Green, Blue, Yellow, Cyan, Magenta;
+    static const Color WHITE, BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA;
 };
 
-inline const Color Color::White   = rgb(255, 255, 255);
-inline const Color Color::Black   = rgb(0,   0,   0  );
-inline const Color Color::Red     = rgb(255, 0,   0  );
-inline const Color Color::Green   = rgb(0,   255, 0  );
-inline const Color Color::Blue    = rgb(0,   0,   255);
-inline const Color Color::Yellow  = rgb(255, 255, 0  );
-inline const Color Color::Cyan    = rgb(0,   255, 255);
-inline const Color Color::Magenta = rgb(255, 0,   255);
+inline const Color Color::WHITE   = rgb(255, 255, 255);
+inline const Color Color::BLACK   = rgb(0,   0,   0  );
+inline const Color Color::RED     = rgb(255, 0,   0  );
+inline const Color Color::GREEN   = rgb(0,   255, 0  );
+inline const Color Color::BLUE    = rgb(0,   0,   255);
+inline const Color Color::YELLOW  = rgb(255, 255, 0  );
+inline const Color Color::CYAN    = rgb(0,   255, 255);
+inline const Color Color::MAGENTA = rgb(255, 0,   255);
 
 inline Color Color::rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     return {r, g, b, a};
@@ -169,7 +169,7 @@ constexpr std::ostream& operator<<(std::ostream& stream, Color c) {
     return stream;
 }
 
-constexpr Color operator*(Color a, Color b) {
+constexpr Color operator*(const Color& a, const Color& b) {
     return {
         static_cast<uint8_t>(a.r * b.r / 255),
         static_cast<uint8_t>(a.g * b.g / 255),
@@ -178,7 +178,7 @@ constexpr Color operator*(Color a, Color b) {
     };
 }
 
-constexpr Color operator*(Color c, float s) {
+constexpr Color operator*(const Color& c, float s) {
     s = std::clamp(s, 0.0f, 1.0f);
     return {
         static_cast<uint8_t>(static_cast<float>(c.r) * s),

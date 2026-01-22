@@ -10,7 +10,7 @@ math::Vec2f VELOCITY = {SPEED, SPEED};
 void gmiMain(Application& app) {
     app.init({
         .title = "Glimmerite DVD Screensaver",
-        .backgroundColor = Color::Black,
+        .backgroundColor = Color::BLACK,
     });
 
     app.textures().load("assets/dvd_logo.png");

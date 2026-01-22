@@ -9,8 +9,6 @@ Sprite::Sprite(Application* parentApp, Container* parent, const std::string& tex
     m_transformDirty = true;
 }
 
-Sprite::~Sprite() = default;
-
 void Sprite::updateAffine() {
     Container::updateAffine();
 
