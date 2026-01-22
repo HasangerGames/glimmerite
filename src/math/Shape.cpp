@@ -129,12 +129,12 @@ Circle& Circle::translate(Vec2f posToAdd) {
     return *this;
 }
 
-Circle& Circle::scale(const float scale) {
+Circle& Circle::scale(float scale) {
     rad *= scale;
     return *this;
 }
 
-std::pair<Vec2f, Vec2f> Circle::getAABB() {
+std::pair<Vec2f, Vec2f> Circle::getAABB() const {
     return {
         {pos.x - rad, pos.y - rad},
         {pos.x + rad, pos.y + rad}
@@ -156,7 +156,7 @@ Rect Rect::fromDims(float width, float height, Vec2f center) {
     return Rect{center - size, center + size};
 }
 
-Rect& Rect::scale(const float scale) {
+Rect& Rect::scale(float scale) {
     Vec2f center = this->center();
 
     min = (min - center) * scale + center;
@@ -165,7 +165,7 @@ Rect& Rect::scale(const float scale) {
     return *this;
 }
 
-std::pair<Vec2f, Vec2f> Rect::getAABB() {
+std::pair<Vec2f, Vec2f> Rect::getAABB() const {
     return {min, max};
 };
 
@@ -197,11 +197,11 @@ Vec2f Rect::center() const {
     return min + ((max - min) / 2);
 }
 
-Polygon::Polygon(const std::vector<Vec2f>& points) :
+Polygon::Polygon(std::vector<Vec2f> points) :
     Shape(POLYGON),
-    points(points),
-    m_normals(points.size()) {
-    assert(points.size() >= 3);
+    points(std::move(points)),
+    m_normals(this->points.size()) {
+    assert(this->points.size() >= 3);
 
     calculateNormals();
     calculateCenter();
@@ -227,7 +227,7 @@ Polygon Polygon::fromSides(size_t sides, Vec2f center, float radius) {
     return Polygon{points};
 }
 
-Polygon& Polygon::scale(const float scale) {
+Polygon& Polygon::scale(float scale) {
     for (auto& pt : points) {
         Vec2f toCenter = m_center - pt;
         float length = toCenter.length();
@@ -248,10 +248,10 @@ Polygon& Polygon::translate(Vec2f posToAdd) {
     return *this;
 }
 
-std::pair<Vec2f, Vec2f> Polygon::getAABB() {
+std::pair<Vec2f, Vec2f> Polygon::getAABB() const {
     Vec2f min{FLT_MAX, FLT_MAX};
     Vec2f max{-FLT_MAX, -FLT_MAX};
-    for (Vec2f& pt : points) {
+    for (const Vec2f& pt : points) {
         min = Vec2f::min(pt, min);
         max = Vec2f::max(pt, max);
     }

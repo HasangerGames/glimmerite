@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,7 @@ public:
     virtual Shape& translate(Vec2f posToAdd) = 0;
     virtual Shape& scale(float scale) = 0;
 
-    virtual std::pair<Vec2f, Vec2f> getAABB() = 0;
+    [[nodiscard]] virtual std::pair<Vec2f, Vec2f> getAABB() const = 0;
 
     virtual ~Shape() = default;
 
@@ -59,6 +60,11 @@ public:
      */
     [[nodiscard]] bool getCollision(const Shape& other, Response* res) const;
 
+    friend std::ostream& operator<<(std::ostream& os, const Shape& shape) {
+        os << shape.toString();
+        return os;
+    }
+
 protected:
     explicit Shape(Type type) : type(type) { }
 };
@@ -71,16 +77,14 @@ public:
     Circle(Vec2f pos, float rad);
 
     [[nodiscard]] std::string toString() const override;
-
     [[nodiscard]] bool pointInside(Vec2f point) const override;
 
     [[nodiscard]] Vec2f center() const override;
 
     Circle& translate(Vec2f posToAdd) override;
-
     Circle& scale(float scale) override;
 
-    std::pair<Vec2f, Vec2f> getAABB() override;
+    [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
 };
 
 class Rect : public Shape {
@@ -100,26 +104,24 @@ public:
         return max.y - min.y;
     }
 
-    [[nodiscard]] Vec2f center() const override;
-
     [[nodiscard]] std::vector<Vec2f> getPoints() const;
 
     [[nodiscard]] std::string toString() const override;
-
     [[nodiscard]] bool pointInside(Vec2f point) const override;
 
-    Rect& translate(Vec2f posToAdd) override;
+    [[nodiscard]] Vec2f center() const override;
 
+    Rect& translate(Vec2f posToAdd) override;
     Rect& scale(float scale) override;
 
-    std::pair<Vec2f, Vec2f> getAABB() override;
+    [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
 };
 
 class Polygon : public Shape {
 public:
     std::vector<Vec2f> points;
 
-    explicit Polygon(const std::vector<Vec2f>& points);
+    explicit Polygon(std::vector<Vec2f> points);
 
     static Polygon fromSides(size_t sides, Vec2f center, float radius);
 
@@ -127,23 +129,22 @@ public:
 
     void calculateCenter();
 
-    [[nodiscard]] Vec2f center() const override;
-
     [[nodiscard]] const std::vector<Vec2f>& normals() const {
         return m_normals;
     };
 
     [[nodiscard]] std::string toString() const override;
-
     [[nodiscard]] bool pointInside(Vec2f point) const override;
 
+    [[nodiscard]] Vec2f center() const override;
+
     Polygon& translate(Vec2f posToAdd) override;
+    Polygon& scale(float scale) override;
 
     Polygon& rotate(float rotation);
 
-    Polygon& scale(float scale) override;
+    [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
 
-    std::pair<Vec2f, Vec2f> getAABB() override;
 private:
     std::vector<Vec2f> m_normals;
     Vec2f m_center;

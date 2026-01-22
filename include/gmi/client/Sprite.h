@@ -4,10 +4,10 @@
 
 namespace gmi {
 
-class Sprite final : public Container {
+class Sprite : public Container {
 public:
     Sprite(Application* parentApp, Container* parent, const std::string& textureName, const math::Transform& transform = {});
-    ~Sprite() override;
+    ~Sprite() override = default;
 
     void updateAffine() override;
 

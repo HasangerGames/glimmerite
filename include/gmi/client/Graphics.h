@@ -23,7 +23,7 @@ enum class LineJoin : uint8_t {
 
 struct StrokeStyle {
     float width = 1;
-    Color color = Color::White;
+    Color color = Color::WHITE;
     LineCap cap = LineCap::Square;
     LineJoin join = LineJoin::Miter;
     float alignment = 0.5f;
