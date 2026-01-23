@@ -1,6 +1,7 @@
 add_library(glimmerite_math STATIC
     Shape.cpp
     collision.cpp
+    BitStream.cpp
 )
 
 set(GMI_MATH_INCLUDE_DIR "${GMI_INCLUDE_DIR}/gmi/math")
@@ -20,6 +21,8 @@ target_sources(
         ${GMI_MATH_INCLUDE_DIR}/collision.h
         ${GMI_MATH_INCLUDE_DIR}/math.h
         ${GMI_MATH_INCLUDE_DIR}/random.h
+        ${GMI_MATH_INCLUDE_DIR}/BitStream.h
+        ${GMI_MATH_INCLUDE_DIR}/Buffer.h
 )
 
 set_target_properties(glimmerite_math PROPERTIES LINKER_LANGUAGE CXX)
