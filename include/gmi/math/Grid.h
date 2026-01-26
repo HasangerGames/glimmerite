@@ -76,7 +76,7 @@ private:
 
     struct EntityGridData {
         bool valid = false;
-        uint32_t queryID;
+        uint32_t queryID = 0;
         GridAABB bounds;
     };
 
