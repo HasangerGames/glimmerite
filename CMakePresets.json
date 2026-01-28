@@ -1,0 +1,127 @@
+{
+    "$schema": "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+    "version": 8,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 24
+    },
+    "configurePresets": [
+        {
+            "name": "base_dev",
+            "hidden": true,
+            "binaryDir": "build",
+            "installDir": "install",
+            "cacheVariables": {
+                "BUILD_EXAMPLES": "ON",
+                "BUILD_TESTING": "ON"
+            }
+        },
+        {
+            "name": "dev_linux",
+            "displayName": "Linux Dev",
+            "hidden": false,
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "inherits": [
+                "base_dev"
+            ],
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "dev_macos",
+            "displayName": "MacOS Dev",
+            "hidden": false,
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            },
+            "inherits": [
+                "base_dev"
+            ],
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "dev_wasm",
+            "displayName": "Wasm Dev",
+            "hidden": false,
+            "binaryDir": "build_wasm",
+            "installDir": "install_wasm",
+            "inherits": [
+                "base_dev"
+            ],
+            "environment": {
+                "$comment": "i have mold on my LDFLAGS globally but that breaks emscripten :)",
+                "LDFLAGS": ""
+            },
+            "generator": "Ninja Multi-Config"
+        },
+        {
+            "name": "dev_mingw",
+            "displayName": "Mingw Dev",
+            "hidden": false,
+            "binaryDir": "build_mingw",
+            "installDir": "install_mingw",
+            "inherits": [
+                "base_dev"
+            ],
+            "environment": {
+                "$comment": "i have mold on my LDFLAGS globally but that breaks mingw :)",
+                "LDFLAGS": ""
+            },
+            "generator": "Ninja Multi-Config"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "base_dev",
+            "hidden": true,
+            "configuration": "Debug"
+        },
+        {
+            "name": "dev_linux",
+            "displayName": "Linux Dev",
+            "inherits": [
+                "base_dev"
+            ],
+            "configurePreset": "dev_linux",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "dev_macos",
+            "displayName": "MacOS Dev",
+            "inherits": [
+                "base_dev"
+            ],
+            "configurePreset": "dev_macos",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        },
+        {
+            "name": "dev_wasm",
+            "displayName": "Wasm Dev",
+            "inherits": [
+                "base_dev"
+            ],
+            "configurePreset": "dev_wasm"
+        },
+        {
+            "name": "dev_mingw",
+            "displayName": "Mingw Dev",
+            "inherits": [
+                "base_dev"
+            ],
+            "configurePreset": "dev_wasm"
+        }
+    ]
+}
