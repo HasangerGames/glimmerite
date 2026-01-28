@@ -63,7 +63,7 @@ jobs:
       - name: Install Dependencies
         uses: tecolicom/actions-use-homebrew-tools@v1
         with:
-          tools: ccache glaze sdl3
+          tools: ccache glaze sdl3 doctest
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2.20
