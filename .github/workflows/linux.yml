@@ -76,16 +76,16 @@ jobs:
             libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
             libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev \
             libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev \
-            ccache lld
+            sccache lld
           version: 1.0
 
-      - name: Setup ccache
+      - name: Setup sccache
         uses: hendrikmuhs/ccache-action@v1.2.20
         with:
-          variant: ccache
+          variant: sccache
           create-symlink: true
           update-package-index: false
-          key: ${{ runner.os }}-${{ runner.arch }}-ccache
+          key: ${{ runner.os }}-${{ runner.arch }}-sccache
 
       - name: Configure CMake
         run: >
@@ -93,8 +93,8 @@ jobs:
           -G "Ninja Multi-Config"
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_C_COMPILER_LAUNCHER=ccache
-          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          -DCMAKE_C_COMPILER_LAUNCHER=sccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           -DBUILD_TESTING=ON
 
       - name: Build (Debug)
