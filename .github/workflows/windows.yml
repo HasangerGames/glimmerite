@@ -63,6 +63,7 @@ jobs:
             ninja:p
             sccache:p
             glaze:p
+            doctest:p
 
       - name: Clone Repo
         uses: actions/checkout@v6
