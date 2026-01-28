@@ -28,7 +28,7 @@ void SoundManager::init() {
 }
 
 void SoundManager::load(const std::string& name, const std::string& filePath) {
-    if (((m_sounds[name] = MIX_LoadAudio(m_mixer, filePath.c_str(), true))) == nullptr) {
+    if ((m_sounds[name] = MIX_LoadAudio(m_mixer, filePath.c_str(), true)) == nullptr) {
         throw GmiException("Error loading sound '" + name + "': " + SDL_GetError());
     }
 }

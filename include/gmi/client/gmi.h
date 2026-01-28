@@ -4,7 +4,7 @@
 
 namespace gmi {
 
-struct GmiException final : std::runtime_error {
+struct GmiException : std::runtime_error {
     using std::runtime_error::runtime_error;
 };
 

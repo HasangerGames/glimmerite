@@ -89,37 +89,37 @@ void gmiMain(Application& app) {
 
     SHAPES.emplace_back(
         std::make_unique<collision::Circle>(Vec2f(90, 100), 30),
-        Color::Blue,
+        Color::BLUE,
         false
     );
 
     SHAPES.emplace_back(
         std::make_unique<collision::Circle>(Vec2f(100, 400), 60),
-        Color::Green,
+        Color::GREEN,
         false
     );
 
     SHAPES.emplace_back(
         std::make_unique<collision::Rect>(collision::Rect::fromDims(80, 100, Vec2f(600, 600))),
-        Color::Cyan,
+        Color::CYAN,
         false
     );
 
     SHAPES.emplace_back(
         std::make_unique<collision::Polygon>(collision::Polygon::fromSides(6, Vec2f(400, 400), 80)),
-        Color::Red,
+        Color::RED,
         false
     );
 
     SHAPES.emplace_back(
         std::make_unique<collision::Polygon>(collision::Polygon::fromSides(3, Vec2f(600, 300), 60)),
-        Color::Yellow,
+        Color::YELLOW,
         false
     );
 
     SHAPES.emplace_back(
         std::make_unique<collision::Rect>(collision::Rect::fromDims(80, 20, Vec2f(100, 600))),
-        Color::Yellow,
+        Color::YELLOW,
         false
     );
 
