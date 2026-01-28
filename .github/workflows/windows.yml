@@ -56,8 +56,8 @@ jobs:
           install: >-
             git
             make
-          # TODO: use pacboy SDL3 when new enough SDL3 releases
           pacboy: >-
+            sdl3:p
             toolchain:p
             cmake:p
             ninja:p
