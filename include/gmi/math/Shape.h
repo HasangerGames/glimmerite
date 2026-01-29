@@ -36,6 +36,9 @@ public:
 
     virtual ~Shape() = default;
 
+    Shape& operator=(const Shape&) = delete;
+    Shape& operator=(Shape&&) noexcept = delete;
+
     /**
      * Check collision between this and another Shape.
      *
@@ -74,7 +77,11 @@ public:
     Vec2f pos;
     float rad;
 
+    Circle(const Circle& circ);
+    Circle(Circle&& circ) noexcept;
     Circle(Vec2f pos, float rad);
+
+    Circle& operator=(Circle circ);
 
     [[nodiscard]] std::string toString() const override;
     [[nodiscard]] bool pointInside(Vec2f point) const override;
@@ -85,6 +92,9 @@ public:
     Circle& scale(float scale) override;
 
     [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
+
+private:
+    static void swap(Circle& lhs, Circle& rhs) noexcept;
 };
 
 class Rect : public Shape {
@@ -92,7 +102,11 @@ public:
     Vec2f min;
     Vec2f max;
 
+    Rect(const Rect&);
+    Rect(Rect&&) noexcept;
     Rect(Vec2f min, Vec2f max);
+
+    Rect& operator=(Rect rect);
 
     static Rect fromDims(float width, float height, Vec2f center = {0, 0});
 
@@ -115,6 +129,9 @@ public:
     Rect& scale(float scale) override;
 
     [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
+
+private:
+    static void swap(Rect& lhs, Rect& rhs) noexcept;
 };
 
 class Polygon : public Shape {
@@ -122,6 +139,10 @@ public:
     std::vector<Vec2f> points;
 
     explicit Polygon(std::vector<Vec2f> points);
+    Polygon(const Polygon&);
+    Polygon(Polygon&&) noexcept;
+
+    Polygon& operator=(Polygon poly);
 
     static Polygon fromSides(size_t sides, Vec2f center, float radius);
 
@@ -144,10 +165,11 @@ public:
     Polygon& rotate(float rotation);
 
     [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
-
 private:
     std::vector<Vec2f> m_normals;
     Vec2f m_center;
+
+    static void swap(Polygon& lhs, Polygon& rhs) noexcept;
 };
 
 }
