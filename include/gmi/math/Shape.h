@@ -136,6 +136,9 @@ private:
 
 class Polygon : public Shape {
 public:
+    /**
+    * Always specified in counter-clockwise order
+    */
     std::vector<Vec2f> points;
 
     explicit Polygon(std::vector<Vec2f> points);
@@ -166,6 +169,9 @@ public:
 
     [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
 private:
+    /**
+     * `normals[i]` == normal of segment `points[i]` to `points[(i + 1) % size]`
+     */
     std::vector<Vec2f> m_normals;
     Vec2f m_center;
 
