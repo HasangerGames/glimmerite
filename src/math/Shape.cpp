@@ -151,7 +151,7 @@ Circle& Circle::translate(Vec2f posToAdd) {
     return *this;
 }
 
-Circle& Circle::scale(const float scale) {
+Circle& Circle::scale(float scale) {
     rad *= scale;
     return *this;
 }
@@ -198,7 +198,7 @@ Rect Rect::fromDims(float width, float height, Vec2f center) {
     return Rect{center - size, center + size};
 }
 
-Rect& Rect::scale(const float scale) {
+Rect& Rect::scale(float scale) {
     Vec2f center = this->center();
 
     min = (min - center) * scale + center;
@@ -293,7 +293,7 @@ Polygon Polygon::fromSides(size_t sides, Vec2f center, float radius) {
     return Polygon{points};
 }
 
-Polygon& Polygon::scale(const float scale) {
+Polygon& Polygon::scale(float scale) {
     for (auto& pt : points) {
         Vec2f toCenter = m_center - pt;
         float length = toCenter.length();
