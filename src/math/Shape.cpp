@@ -1,9 +1,13 @@
 #include "gmi/math/Shape.h"
+#include "gmi/math/Vec2.h"
 #include "gmi/math/math.h"
 #include <cfloat>
+#include <cstddef>
+#include <utility>
 
 using namespace gmi::math;
-using namespace gmi::collision;
+
+namespace gmi::collision {
 
 using CollisionFn = bool (*)(const Shape&, const Shape&, Response*);
 
@@ -98,8 +102,6 @@ public:
     };
 };
 
-namespace gmi::collision {
-
 bool Shape::getCollision(const Shape& other, Response* res) const {
     static const CollisionFns fns;
     return fns.check(*this, other, res);
@@ -110,6 +112,26 @@ Circle::Circle(Vec2f pos, float rad) :
     pos(pos),
     rad(rad) {
     assert(rad >= 0);
+}
+
+Circle::Circle(const Circle& circ) :
+    Circle(circ.pos, circ.rad) { }
+
+Circle::Circle(Circle&& circ) noexcept :
+    Circle({}, 0) {
+    swap(*this, circ);
+}
+
+Circle& Circle::operator=(Circle circ) {
+    swap(*this, circ);
+    return *this;
+}
+
+void Circle::swap(Circle& lhs, Circle& rhs) noexcept {
+    using std::swap;
+
+    swap(lhs.pos, rhs.pos);
+    swap(lhs.rad, rhs.rad);
 }
 
 std::string Circle::toString() const {
@@ -129,12 +151,12 @@ Circle& Circle::translate(Vec2f posToAdd) {
     return *this;
 }
 
-Circle& Circle::scale(const float scale) {
+Circle& Circle::scale(float scale) {
     rad *= scale;
     return *this;
 }
 
-std::pair<Vec2f, Vec2f> Circle::getAABB() {
+std::pair<Vec2f, Vec2f> Circle::getAABB() const {
     return {
         {pos.x - rad, pos.y - rad},
         {pos.x + rad, pos.y + rad}
@@ -150,13 +172,33 @@ Rect::Rect(Vec2f min, Vec2f max) :
     assert(min.y < max.y);
 }
 
+Rect::Rect(const Rect& rect) :
+    Rect(rect.min, rect.max) { }
+
+Rect::Rect(Rect&& rect) noexcept :
+    Rect({}, {}) {
+    swap(*this, rect);
+}
+
+void Rect::swap(Rect& lhs, Rect& rhs) noexcept {
+    using std::swap;
+
+    swap(lhs.min, rhs.min);
+    swap(lhs.max, rhs.max);
+}
+
+Rect& Rect::operator=(Rect rect) {
+    swap(*this, rect);
+    return *this;
+}
+
 Rect Rect::fromDims(float width, float height, Vec2f center) {
     Vec2f size{width / 2, height / 2};
 
     return Rect{center - size, center + size};
 }
 
-Rect& Rect::scale(const float scale) {
+Rect& Rect::scale(float scale) {
     Vec2f center = this->center();
 
     min = (min - center) * scale + center;
@@ -165,7 +207,7 @@ Rect& Rect::scale(const float scale) {
     return *this;
 }
 
-std::pair<Vec2f, Vec2f> Rect::getAABB() {
+std::pair<Vec2f, Vec2f> Rect::getAABB() const {
     return {min, max};
 };
 
@@ -197,14 +239,35 @@ Vec2f Rect::center() const {
     return min + ((max - min) / 2);
 }
 
-Polygon::Polygon(const std::vector<Vec2f>& points) :
+Polygon::Polygon(std::vector<Vec2f> points) :
     Shape(POLYGON),
-    points(points),
-    m_normals(points.size()) {
-    assert(points.size() >= 3);
+    points(std::move(points)),
+    m_normals(this->points.size()) {
+    assert(this->points.size() >= 3);
+    assert(isCounterClockwise(this->points[0], this->points[1], this->points[2]));
+    assert(isConvex(this->points));
 
     calculateNormals();
     calculateCenter();
+}
+
+Polygon::Polygon(const Polygon& poly) : Polygon(poly.points) { }
+
+Polygon::Polygon(Polygon&& poly) noexcept : Polygon({{}, {}, {}}) {
+    swap(*this, poly);
+}
+
+void Polygon::swap(Polygon& lhs, Polygon& rhs) noexcept {
+    using std::swap;
+
+    swap(lhs.points, rhs.points);
+    swap(lhs.m_normals, rhs.m_normals);
+    swap(lhs.m_center, rhs.m_center);
+}
+
+Polygon& Polygon::operator=(Polygon poly) {
+    swap(*this, poly);
+    return *this;
 }
 
 Polygon Polygon::fromSides(size_t sides, Vec2f center, float radius) {
@@ -227,7 +290,7 @@ Polygon Polygon::fromSides(size_t sides, Vec2f center, float radius) {
     return Polygon{points};
 }
 
-Polygon& Polygon::scale(const float scale) {
+Polygon& Polygon::scale(float scale) {
     for (auto& pt : points) {
         Vec2f toCenter = m_center - pt;
         float length = toCenter.length();
@@ -248,10 +311,10 @@ Polygon& Polygon::translate(Vec2f posToAdd) {
     return *this;
 }
 
-std::pair<Vec2f, Vec2f> Polygon::getAABB() {
+std::pair<Vec2f, Vec2f> Polygon::getAABB() const {
     Vec2f min{FLT_MAX, FLT_MAX};
     Vec2f max{-FLT_MAX, -FLT_MAX};
-    for (Vec2f& pt : points) {
+    for (const Vec2f& pt : points) {
         min = Vec2f::min(pt, min);
         max = Vec2f::max(pt, max);
     }
@@ -267,7 +330,6 @@ Polygon& Polygon::rotate(float rotation) {
         point = m_center - (dir * dist);
     }
 
-    calculateCenter();
     calculateNormals();
 
     return *this;
@@ -304,13 +366,47 @@ void Polygon::calculateCenter() {
 }
 
 void Polygon::calculateNormals() {
-    for (size_t i = 0; i < points.size(); i++) {
-        Vec2f pointA = points[i];
-        Vec2f pointB = points[(i + 1) % points.size()];
+    size_t len = points.size();
+    for (
+        size_t i = 0, j = len - 1;
+        i < len;
+        j = i++
+    ) {
+        Vec2f pointA = points[j];
+        Vec2f pointB = points[i];
         Vec2f edge = pointB - pointA;
 
         m_normals[i] = edge.perp().normalize();
     }
+}
+
+[[nodiscard]] bool Polygon::isCounterClockwise(Vec2f a, Vec2f b, Vec2f c) {
+    float d1 = b.x * a.y + c.x * b.y + a.x * c.y;
+    float d2 = a.x * b.y + b.x * c.y + c.x * a.y;
+    // d1 < d2 | counter-clockwise
+    // d1 = d2 | collinear
+    // d1 > d2 | clockwise
+    return d1 < d2;
+}
+
+[[nodiscard]] bool Polygon::isConvex(const std::vector<Vec2f>& points) {
+    float winding = 0;
+    size_t len = points.size();
+    for (
+        size_t i = 0, j = len - 1;
+        i < len;
+        j = i++
+    ) {
+        Vec2f pointA = points[j];
+        Vec2f pointB = points[i];
+
+        winding += (pointB.x - pointA.x) * (pointB.y + pointA.y);
+    }
+
+    // winding < 0 | counter-clockwise
+    // winding = 0 | probably self-intersecting
+    // winding > 0 | clockwise
+    return winding < 0;
 }
 
 }

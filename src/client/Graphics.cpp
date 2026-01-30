@@ -27,7 +27,7 @@ namespace gmi {
 // Much of this code was adapted from Pixi.js:
 // https://github.com/pixijs/pixijs/blob/dev/src/scene/graphics/shared/buildCommands/buildLine.ts
 
-float getOrientationOfPoints(const std::vector<math::Vec2f>& points) {
+static float getOrientationOfPoints(const std::vector<math::Vec2f>& points) {
     if (points.size() < 3) {
         return 1;
     }
@@ -191,14 +191,12 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle&
 
     // Line segments of interest where (x1,y1) forms the corner.
     math::Vec2f v0 = points[0],
-               v1 = points[1],
-               v2;
+                v1 = points[1],
+                v2;
 
     // perp[?](x|y) = the line normal with magnitude lineWidth.
-    math::Vec2f perp = {-(v0.y - v1.y), v0.x - v1.x};
+    math::Vec2f perp = {v1.y - v0.y, v0.x - v1.x};
     perp = perp / perp.length() * width;
-
-    math::Vec2f perp1;
 
     float ratio = alignment;
     float innerWeight = (1.0f - ratio) * 2.0f;
@@ -222,16 +220,18 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle&
     verts.emplace_back(v0 - (perp * innerWeight));
     verts.emplace_back(v0 + (perp * outerWeight));
 
+    math::Vec2f perp1;
+
     size_t numPoints = points.size();
     for (size_t i = 1; i < numPoints - 1; i++) {
         v0 = points[i - 1];
         v1 = points[i];
         v2 = points[i + 1];
 
-        perp = {-(v0.y - v1.y), v0.x - v1.x};
+        perp = {v1.y - v0.y, v0.x - v1.x};
         perp = perp / perp.length() * width;
 
-        perp1 = {-(v1.y - v2.y), v1.x - v2.x};
+        perp1 = {v2.y - v1.y, v1.x - v2.x};
         perp1 = perp1 / perp1.length() * width;
 
         // d[x|y](0|1) = the component displacement between points p(0,1|1,2)
@@ -239,7 +239,7 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle&
         math::Vec2f d1 = {v1.x - v2.x, v2.y - v1.y};
 
         // +ve if internal angle < 90 degree, -ve if internal angle > 90 degree.
-        float dot = (d0.x * d1.x) + (d0.y * d1.y);
+        float dot = d0 * d1;
         // +ve if internal angle counterclockwise, -ve if internal angle clockwise.
         float cross = (d0.y * d1.x) - (d1.y * d0.x);
         bool clockwise = cross < 0;
@@ -372,10 +372,9 @@ Graphics& Graphics::drawLine(std::vector<math::Vec2f> points, const StrokeStyle&
     }
 
     v0 = points[numPoints - 2];
-
     v1 = points[numPoints - 1];
 
-    perp = {-(v0.y - v1.y), v0.x - v1.x};
+    perp = {v1.y - v0.y, v0.x - v1.x};
     perp = perp / perp.lengthSqr() * width;
 
     verts.emplace_back(v1 - (perp * innerWeight));

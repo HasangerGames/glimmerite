@@ -30,8 +30,8 @@ public:
     Container(Application* parentApp, Container* parent) :
         m_parentApp(parentApp), m_parent(parent) { }
 
-    Container(Application* parentApp, Container* parent, const math::Transform& transform) :
-        m_parentApp(parentApp), m_parent(parent), m_transform(transform) { }
+    Container(Application* parentApp, Container* parent, math::Transform transform) :
+        m_parentApp(parentApp), m_parent(parent), m_transform(std::move(transform)) { }
 
     virtual ~Container() = default;
 

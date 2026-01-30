@@ -30,7 +30,7 @@ void Renderer::init(Application& parentApp, const ApplicationConfig& config) {
 #if defined(SDL_PLATFORM_WIN32)
     init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr);
 #elif defined(SDL_PLATFORM_MACOS)
-    init.platformData.nwh = SDL_GetPointerProperty(props, SDL_PROP_WINDOW_COCOA_WINDOW_POINTER, nullptr);
+    init.platformData.nwh = SDL_Metal_GetLayer(SDL_Metal_CreateView(parentApp.getWindow()));
 #elif defined(SDL_PLATFORM_LINUX)
     if (SDL_strcmp(SDL_GetCurrentVideoDriver(), "x11") == 0) {
         init.platformData.nwh = reinterpret_cast<void*>(SDL_GetNumberProperty(props, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0)); // NOLINT(performance-no-int-to-ptr)
