@@ -380,7 +380,7 @@ void Polygon::calculateNormals() {
     }
 }
 
-bool Polygon::isCounterClockwise(Vec2f a, Vec2f b, Vec2f c) {
+[[nodiscard]] bool Polygon::isCounterClockwise(Vec2f a, Vec2f b, Vec2f c) {
     float d1 = b.x * a.y + c.x * b.y + a.x * c.y;
     float d2 = a.x * b.y + b.x * c.y + c.x * a.y;
     // d1 < d2 | counter-clockwise
@@ -389,7 +389,7 @@ bool Polygon::isCounterClockwise(Vec2f a, Vec2f b, Vec2f c) {
     return d1 < d2;
 }
 
-bool Polygon::isConvex(const std::vector<Vec2f>& points) {
+[[nodiscard]] bool Polygon::isConvex(const std::vector<Vec2f>& points) {
     float winding = 0;
     size_t len = points.size();
     for (

@@ -169,8 +169,8 @@ public:
 
     [[nodiscard]] std::pair<Vec2f, Vec2f> getAABB() const override;
 
-    static bool isCounterClockwise(Vec2f a, Vec2f b, Vec2f c);
-    static bool isConvex(const std::vector<Vec2f>& points);
+    [[nodiscard]] static bool isCounterClockwise(Vec2f a, Vec2f b, Vec2f c);
+    [[nodiscard]] static bool isConvex(const std::vector<Vec2f>& points);
 private:
     /**
      * `normals[i]` == normal of segment `points[i]` to `points[(i + 1) % size]`
