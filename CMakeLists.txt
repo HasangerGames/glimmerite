@@ -91,5 +91,6 @@ add_library(glimmerite::glimmerite ALIAS glimmerite_glimmerite)
 target_link_libraries(glimmerite_glimmerite
     INTERFACE
     glimmerite::math
+    glimmerite::misc
     glimmerite::client
 )
