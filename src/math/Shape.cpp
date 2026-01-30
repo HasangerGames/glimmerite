@@ -239,16 +239,13 @@ Vec2f Rect::center() const {
     return min + ((max - min) / 2);
 }
 
-static void assertCounterClockwise(Vec2f a, Vec2f b, Vec2f c);
-static void assertConvex(const std::vector<Vec2f>& points);
-
 Polygon::Polygon(std::vector<Vec2f> points) :
     Shape(POLYGON),
     points(std::move(points)),
     m_normals(this->points.size()) {
     assert(this->points.size() >= 3);
-    assertCounterClockwise(this->points[0], this->points[1], this->points[2]);
-    assertConvex(this->points);
+    assert(isCounterClockwise(this->points[0], this->points[1], this->points[2]));
+    assert(isConvex(this->points));
 
     calculateNormals();
     calculateCenter();
@@ -383,16 +380,16 @@ void Polygon::calculateNormals() {
     }
 }
 
-static void assertCounterClockwise(Vec2f a, Vec2f b, Vec2f c) {
+bool Polygon::isCounterClockwise(Vec2f a, Vec2f b, Vec2f c) {
     float d1 = b.x * a.y + c.x * b.y + a.x * c.y;
     float d2 = a.x * b.y + b.x * c.y + c.x * a.y;
     // d1 < d2 | counter-clockwise
     // d1 = d2 | collinear
     // d1 > d2 | clockwise
-    assert(d1 < d2);
+    return d1 < d2;
 }
 
-static void assertConvex(const std::vector<Vec2f>& points) {
+bool Polygon::isConvex(const std::vector<Vec2f>& points) {
     float winding = 0;
     size_t len = points.size();
     for (
@@ -409,7 +406,7 @@ static void assertConvex(const std::vector<Vec2f>& points) {
     // winding < 0 | counter-clockwise
     // winding = 0 | probably self-intersecting
     // winding > 0 | clockwise
-    assert(winding < 0);
+    return winding < 0;
 }
 
 }
